@@ -1,28 +1,30 @@
-// reads
+// reads <main> content from #.html files and returns a .json database
 
 const fs = require('fs');
 const jsdom = require('jsdom');
 const JSDOM = jsdom.JSDOM;
-const hymnalRoot = './hymnals/';
 
-readAllHymnals();
-
-async function readAllHymnals() {
+async function readAllHymnals(hymnalRoot = './hymnals/') {
   let folderNames = fs
     .readdirSync(hymnalRoot, { withFileTypes: true })
     .filter((d) => d.isDirectory())
     .map((d) => d.name);
 
   let results = [];
+  let promises = [];
+  let i = 0;
   for (let folder of folderNames) {
-    let folderHymns = await readHymnal(folder);
-    if (folderHymns.length) results = results.concat(folderHymns);
+    let promise = readHymnal(hymnalRoot, folder,).then((hymns) =>
+      hymns.forEach((h) => results.push(h))
+    );
+    promises.push(promise);
+    i++;
   }
-  console.log(results);
+  await Promise.all(promises);
   return results;
 }
 
-async function readHymnal(hymnalName) {
+async function readHymnal(hymnalRoot, hymnalName, i) {
   let hymnalFolder = `${hymnalRoot}${hymnalName}`;
 
   let files = fs
@@ -38,7 +40,7 @@ async function readHymnal(hymnalName) {
     let path = `${hymnalFolder}/${fileName}`;
     let hymnId = `${hymnalName}-${parseInt(fileName)}`;
     try {
-      let fileHymns = await readHymnsFromFile(path, hymnId);
+      let fileHymns = await readHymnsFromFile(path, hymnId, i);
       hymns = hymns.concat(fileHymns);
     } catch (e) {
       hymns.push({
@@ -51,9 +53,17 @@ async function readHymnal(hymnalName) {
   return hymns;
 }
 
-async function readHymnsFromFile(fileName, hymnIdBase) {
+async function readHymnsFromFile(fileName, hymnIdBase, i) {
+  console.log(i);
   const { modifiedDate, textContent } = await readFile(fileName);
   const { document } = new JSDOM(textContent).window;
+
+  if (!hymnIdBase) {
+    let match = /\/([^\/]+)\/([\d]+)\.html/gi.exec(fileName);
+    if (match) {
+      hymnIdBase = `${match[1]}-${match[2]}`;
+    }
+  }
 
   let sections = [...document.querySelectorAll('main > section')];
   if (sections.length == 0) {
@@ -91,7 +101,6 @@ function readHymnContentFromElement(element) {
         html: p.innerHTML.trim(),
       };
     });
-  console.log(hymnContent.lines);
   return hymnContent;
 }
 
@@ -113,11 +122,6 @@ async function readFile(fileName) {
   return { modifiedDate, textContent };
 }
 
-/*
-function buildHymnals() {
-  let path = './hymnals/missions/1.html';
-  console.log(path, fs.pathExistsSync(path));
-  let contents = fs.readdirSync('./hymnals/missions/', { withFileTypes: true });
-  console.log(JSON.stringify(contents.filter((d) => d.isFile())));
-}
-*/
+// exports.readAllHymnals = readAllHymnals;
+// exports.readHymnsFromFile = readHymnsFromFile;
+module.exports = { readAllHymnals, readHymnsFromFile };
