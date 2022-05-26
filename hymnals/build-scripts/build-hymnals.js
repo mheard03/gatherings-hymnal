@@ -3,6 +3,7 @@
 // Runs automatically when...
 
 const fs = require('fs');
+const lunr = require('lunr');
 const hymnFileReader = require('./read-hymn-files');
 const { readFile } = require('./read-file');
 const hymnalRoot = './hymnals/';
@@ -32,6 +33,8 @@ async function run() {
   await fs.promises.writeFile(cachePath, newJson);
 
   console.log('Updated JSON cache saved.');
+
+  buildSearchIndex(cache);
 }
 
 function buildUpdatedCache(html, json) {
@@ -94,4 +97,31 @@ function buildUpdatedCache(html, json) {
   console.log(`  ${exceptions.length} hymns have issues.${exceptionsList}`);
 
   return cache;
+}
+
+function buildSearchIndex(db) {
+  var idx = lunr(function () {
+    this.ref('hymnId');
+    this.field('title');
+    this.field('body');
+
+    this.metadataWhitelist = ['position', 'index'];
+
+    for (let hymn of db) {
+      if (!hymn.lines || hymn.lines.length == 0) continue;
+
+      let indexed = {
+        hymnId: hymn.hymnId,
+        title: hymn.title,
+        body: hymn.lines
+          .filter((l) => l.type != 'copyright')
+          .map((l) => l.html)
+          .join('\n'),
+      };
+      this.add(indexed);
+    }
+  });
+
+  let results = idx.search('lamb');
+  console.log(JSON.stringify(results[0], null, '  '));
 }
