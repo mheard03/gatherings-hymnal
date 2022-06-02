@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite --watch",
+    "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "buildHymnsDB": "node ./hymnals/build-scripts/build-hymnals.js"
