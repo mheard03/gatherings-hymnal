@@ -3,10 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --watch",
     "build": "vite build",
     "preview": "vite preview",
-    "buildHymnsDB": "hymnals/build-scripts/build-hymnals.js"
+    "buildHymnsDB": "node ./hymnals/build-scripts/build-hymnals.js"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.5",

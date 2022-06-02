@@ -3,11 +3,10 @@
 // Runs automatically when...
 
 const fs = require('fs');
-const lunr = require('lunr');
 const hymnFileReader = require('./read-hymn-files');
 const { readFile } = require('./read-file');
 const hymnalRoot = './hymnals/';
-const cachePath = './src/assets/hymns-db.json';
+const cachePath = './src/assets/hymns-db-generated.json';
 
 run();
 async function run() {
@@ -29,13 +28,14 @@ async function run() {
 
   console.log('Comparing versions...');
   let cache = await buildUpdatedCache(html, json);
-  let newJson = JSON.stringify(cache, null, ' ');
-  await fs.promises.writeFile(cachePath, newJson);
-
-  console.log('Updated JSON cache saved.');
-
-  buildSearchIndex(cache);
+  if (cache) {
+    let newJson = JSON.stringify(cache, null, ' ');
+    await fs.promises.writeFile(cachePath, newJson);
+  }
 }
+
+module.exports = { buildHymnals: run };
+
 
 function buildUpdatedCache(html, json) {
   let compare = {};
@@ -96,9 +96,9 @@ function buildUpdatedCache(html, json) {
   console.log(`  ${upsertCount} hymns created or updated from HTML.`);
   console.log(`  ${exceptions.length} hymns have issues.${exceptionsList}`);
 
-  return cache;
+  return (upsertCount >= 0) ? cache : undefined;
 }
-
+/*
 function buildSearchIndex(db) {
   var idx = lunr(function () {
     this.ref('hymnId');
@@ -121,7 +121,5 @@ function buildSearchIndex(db) {
       this.add(indexed);
     }
   });
-
-  let results = idx.search('lamb');
-  console.log(JSON.stringify(results[0], null, '  '));
 }
+*/
