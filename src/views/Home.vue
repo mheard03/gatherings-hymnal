@@ -1,24 +1,25 @@
 <template>
   <h1>Home</h1>
-  <div style="text-align: left; font-size: 0.5rem; margin-left: 20px;">
-    <pre style="margin-bottom: 3em">{{ JSON.stringify(hymn1, null, "  ") }}</pre>
-    <pre style="margin-bottom: 3em">{{ JSON.stringify(hymn2, null, "  ") }}</pre>
-    <pre>{{ JSON.stringify(hymn3, null, "  ") }}</pre>
-  </div>
+  {{ Object.keys(hymns).length }}
+  <Search />
 </template>
 
 <script>
-import hymns from '../assets/hymns-db';
+import Search from '../components/Search.vue';
 
 export default {
+  inject: ['hymns'],
   data() {
+    /*
     return {
-      hymns,
-      hymn1: hymns["missions-1"],
-      hymn2: hymns["supplement-66"],
-      hymn3: hymns["supplement-144-A"],
+      hymns: this.hymns
     }
+    */
+   return {}
   },
-}; 
+  components: {
+    Search
+  }
+};
 </script>
  

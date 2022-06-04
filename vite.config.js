@@ -11,12 +11,11 @@ if (!existsSync('./src/assets/hymns-db-generated.json')) {
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    watch: {
-
-    }
+    watch: {}
   },
   build: {
     watch: {},
+    chunkSizeWarningLimit: 1300
   },
   plugins: [
     vue(),
