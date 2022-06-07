@@ -63,7 +63,7 @@ export default {
     }
   },
   mounted() {
-    window.hymns = this.hymns;
+    // window.hymns = this.hymns;
   }
 }
 
