@@ -1,0 +1,38 @@
+@use "sass:math";
+
+/// Remove the unit of a length
+/// @param {Number} $number - Number to remove unit from
+/// @return {Number} - Unitless number
+@function strip-unit($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+
+  @return $number;
+}
+
+$mobileScreenWidthPx:   440px;
+$vminDeltaPx:           1080px - $mobileScreenWidthPx;
+
+@function fnScaleLinearPx($mobilePx, $desktopPx, $minSize: $mobilePx, $maxSize: $desktopPx) {
+  // y = mx + b where x = screen width in pixels
+  // m = rise (growth between $mobilePx and $desktopPx) over run (window growth between reference mobile and desktop screen sizes) 
+  $m: math.div($desktopPx - $mobilePx, $vminDeltaPx);
+  // b = y - mx
+  $b: $mobilePx - $m * $mobileScreenWidthPx;
+  @return minMaxClamp($minSize, calc(#{100 * $m}vmin + #{$b}), $maxSize);
+}
+
+@function minMaxClamp($min, $value, $max) {
+  @if ($min and $max) {
+    @return clamp(#{$min}, #{$value}, #{$max});
+  }
+  @if ($min) {
+    @return max(#{$min}, #{$value});
+  }
+  @if ($max) {
+    @return min(#{$value}, #{$max});
+  }
+  @return $value;
+}
+

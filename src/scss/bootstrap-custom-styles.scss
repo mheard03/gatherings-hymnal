@@ -1,0 +1,23 @@
+html {
+  font-size: var(--bs-body-font-size);
+}
+body {
+  background-color: var(--body-bg);
+}
+
+.bg-primary {
+  background-color: var(--ui-color);
+}
+.bg-white {
+  background-color: var(--white);
+}
+.text-primary {
+  color: var(--ui-color);
+  fill: var(--ui-color);
+}
+a:active {
+  color: $link-active-color;
+}
+.fs-sm {
+  font-size: $font-size-sm;
+}

@@ -1,0 +1,40 @@
+// Configuration
+@import "../../node_modules/bootstrap/scss/functions";
+
+// Kill color functions
+$show-warnings: false;
+@function to-rgb($value) {
+  @if $show-warnings {
+    @warn "to-rgb called"
+  }
+  @return "#ff0000";
+}
+@function tint-color($color, $weight) {
+  @if $show-warnings {
+    @warn "tint-color called"
+  }
+  @return "#ff0000";
+}
+@function shade-color($color, $weight) {
+  @if $show-warnings {
+    @warn "shade-color called"
+  }
+  @return "#ff0000";
+}
+
+@import "bootstrap-custom-variables";
+@import "../../node_modules/bootstrap/scss/variables";
+
+// re-enable color function warnings
+$show-warnings: true;
+
+@import "../../node_modules/bootstrap/scss/mixins";
+@import "bootstrap-custom-mixins";
+@import "../../node_modules/bootstrap/scss/utilities";
+   
+/*
+// Layout & components
+@import "../../node_modules/bootstrap/scss/reboot";
+@import "../../node_modules/bootstrap/scss/type";
+@import "_links";
+*/

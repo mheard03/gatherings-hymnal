@@ -1,0 +1,170 @@
+// Variables
+//
+// Variables should follow the `$component-state-property-size` formula for
+// consistent naming. Ex: $nav-link-disabled-color and $modal-content-box-shadow-xs.
+
+@use "sass:math";
+
+
+// Color system
+$primary: var(--ui-color);
+$white: #ffffff;
+$gray-100: var(--gray-100);
+$gray-200: var(--gray-200);
+$gray-300: var(--gray-300);
+$gray-400: var(--gray-400);
+$gray-500: var(--gray-500);
+$gray-600: var(--gray-600);
+$gray-700: var(--gray-700);
+$gray-800: var(--gray-800);
+$gray-900: var(--gray-900);
+$black: #000000;
+
+// Emptying out some arrays
+$theme-colors: ();
+$grays: ();
+$utilities-text: ();
+$utilities-colors: ();
+$utilities-bg: ();
+$table-variants: ();
+$display-font-sizes: ();
+
+// Settings
+$enable-caret:                true;
+$enable-rounded:              true;
+$enable-shadows:              false;
+$enable-gradients:            false;
+$enable-transitions:          true;
+$enable-reduced-motion:       true;
+$enable-smooth-scroll:        true;
+$enable-grid-classes:         true;
+$enable-cssgrid:              false;
+$enable-button-pointers:      true;
+$enable-rfs:                  true;
+$enable-validation-icons:     true;
+$enable-negative-margins:     false;
+$enable-deprecation-messages: true;
+$enable-important-utilities:  true;
+
+// Body
+$body-bg: #f8f6f2;
+$link-color: $primary;
+$link-hover-color: var(--dark-2);
+$link-active-color: var(--dark-4);
+$link-focus-width: calc(var(--ui-font-size) * 3 / 16);
+$link-focus-box-shadow: 0 0 0 $link-focus-width var(--link-outline-color);
+$link-active-box-shadow: 0 0 0 0 var(--link-outline-color);
+
+// Typography
+$font-family-sans-serif:      system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+$font-family-monospace:       SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+$font-family-serif:           Constantia, "Lucida Bright", Lucidabright, "Lucida Serif", Lucida, "DejaVu Serif", "Bitstream Vera Serif", "Liberation Serif", Georgia, serif;
+$font-family-base:            $font-family-sans-serif;
+
+$line-height-base:            1.5 !default;
+$line-height-sm:              1.25 !default;
+$line-height-lg:              2 !default;
+
+$line-height-extra-y:         calc(var(--font-size) * #{$line-height-base - 1});
+$line-height-extra-y-half:    calc(var(--font-size) * #{math.div($line-height-base - 1, 2)});
+
+// Grid
+$spacer: 1rem !default;
+$gutters: (
+  0: 0,
+  1: $spacer * .25,
+  2: $spacer * .5,
+  3: $spacer,
+  4: $spacer * 1.5,
+  5: $spacer * 3,
+);
+
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px
+);
+
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px
+);
+
+/* Buttons + Forms --------------------------------------------------------------- */
+// Common
+$input-btn-font-size:                  var(--ui-font-size);
+$input-btn-line-height:                $line-height-base !default;
+$input-btn-line-height-extra-y:        calc(var(--ui-font-size) * #{$input-btn-line-height - 1});
+$input-btn-line-height-extra-y-half:   calc(var(--ui-font-size) * #{math.div($input-btn-line-height - 1, 2)});
+$input-btn-padding-x:                  calc(#{$input-btn-font-size} * .75);
+$input-btn-padding-y:                  calc(#{$input-btn-padding-x} - #{$input-btn-line-height-extra-y-half});
+
+$input-btn-focus-width: calc(#{$input-btn-font-size} * 3 / 16);
+$input-btn-focus-color: var(--ui-outline-color);
+$input-btn-focus-box-shadow: 0 0 0 $input-btn-focus-width $input-btn-focus-color;
+
+$input-btn-font-size-sm:                  var(--ui-font-size-sm);
+$input-btn-line-height-extra-y-half-sm:   calc(var(--ui-font-size-sm) * #{math.div($input-btn-line-height - 1, 2)});
+$input-btn-padding-x-sm:                  calc(#{$input-btn-font-size} * .5);
+$input-btn-padding-y-sm:                  calc(#{$input-btn-padding-x-sm} - #{$input-btn-line-height-extra-y-half-sm});
+
+$input-btn-font-size-lg:                  var(--ui-font-size-lg);
+$input-btn-line-height-extra-y-half-lg:   calc(var(--ui-font-size-lg) * #{math.div($input-btn-line-height - 1, 2)});
+$input-btn-padding-x-lg:                  calc(#{$input-btn-font-size} * 1);
+$input-btn-padding-y-lg:                  calc(#{$input-btn-padding-x-lg} - #{$input-btn-line-height-extra-y-half-lg});
+
+$input-btn-border-radius:    calc(#{$input-btn-padding-x} * .666);
+$input-btn-border-radius-sm: calc(#{$input-btn-padding-x-sm} * .666);
+$input-btn-border-radius-lg: calc(#{$input-btn-padding-x-lg} * .666);
+
+// Buttons
+$btn-white-space: nowrap;
+$btn-link-hover-color: $link-hover-color;
+$btn-link-active-color: $link-active-color;
+$btn-disabled-color: $gray-600;
+
+$btn-box-shadow:         0 0 0 0 $input-btn-focus-color;
+$btn-focus-box-shadow:   $input-btn-focus-box-shadow;
+$btn-active-box-shadow:  0 0 0 0 $input-btn-focus-color;
+
+$btn-border-radius: $input-btn-border-radius;
+$btn-border-radius-sm: $input-btn-border-radius-sm;
+$btn-border-radius-lg: $input-btn-border-radius-lg;
+
+$btn-transition: color .15s ease-in-out, fill .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+
+// Input
+$input-font-size: $input-btn-font-size;
+$input-line-height: $line-height-base;
+
+$input-bg: $white;
+$input-border-color: var(--ui-color);
+$input-placeholder-color: $gray-600;
+
+$input-border-radius: $input-btn-border-radius;
+$input-border-radius-sm: $input-btn-border-radius-sm;
+$input-border-radius-lg: $input-btn-border-radius-lg;
+
+$input-focus-border-color: var(--light-4);
+$input-focus-color: $black;
+
+$input-padding-y: $input-btn-padding-y;
+$input-padding-y-sm: $input-btn-padding-y-sm;
+$input-padding-y-lg: $input-btn-padding-y-lg;
+$input-height-border: 2px;
+
+$input-height-inner:         calc(#{$input-line-height} * var(--ui-font-size) + #{$input-padding-y} * 2);
+$input-height-inner-half:    calc(#{$input-line-height * .5} * var(--ui-font-size) + #{$input-padding-y});
+$input-height-inner-quarter: calc(#{$input-line-height * .25} * var(--ui-font-size) + #{$input-padding-y} / 2);
+
+$input-height:    calc(#{$input-line-height} * var(--ui-font-size) + #{$input-padding-y} + #{$input-height-border});
+$input-height-sm: calc(#{$input-line-height} * var(--ui-font-size) + #{$input-padding-y-sm} + #{$input-height-border});
+$input-height-lg: calc(#{$input-line-height} * var(--ui-font-size) + #{$input-padding-y-lg} + #{$input-height-border});
+
+// Select
+$form-select-indicator-padding: calc(3 * #{$input-btn-font-size} * .75);
+$form-select-feedback-icon-padding-end: calc(5.5 * #{$input-btn-font-size} * .75);
+
+// Links

@@ -1,0 +1,15 @@
+@import "bootstrap-subset";
+
+/* Global  ----------------------------------------------------------------- */
+body {
+  --page-margin-bottom: calc(var(--ui-font-size) * 5);
+}
+
+#primaryNav > .container,
+main > .container {
+  padding: 0 var(--ui-padding-x);
+}
+main {
+  padding: var(--ui-padding-y) 0;
+  margin-bottom: var(--page-margin-bottom);
+}

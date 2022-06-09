@@ -6,93 +6,184 @@ export default {
   inject: ['hymns'],
   data() {
     return {
-      mode: 'hymnNo',
-      isInputFocused: false,
-      hymnNo: undefined,
-      keywords: undefined,
+      input: undefined,
+      value: '',
+      // TODO: Get defaultFocusedHymnal from router
+      defaultFocusedHymnal: 'missions',
+      userFocusedHymnal: ''    
     }
   },
   computed: {
-    input() {
-      if (this.mode == "keyword") return this.$refs.keywordInput;
-      return this.$refs.hymnNoInput;
+    valueasnumber() {
+      return parseInt(this.value);
     },
-    value() {
-      if (this.mode == "keyword") {
-        if (this.keywords && this.keywords.trim) {
-          return this.keywords.trim();
-        }
-        return "";
-      }
-      return parseInt(this.hymnNo);
-    },
-    filteredHymns() {
-      if (this.mode != "hymnNo" || this.value <= 0) return [];
-      let filtered = Object.values(this.hymns).filter(h => h.hymnNo == this.value);
+    results() {
+      let hymnNo = this.valueasnumber;
+      if (!hymnNo || hymnNo < 0) return [];
+      let filtered = Object.values(this.hymns).filter(h => h.hymnNo == hymnNo);
       filtered.sort(hymnCompare);
       return filtered;
     },
-    isListVisible() {
-      return this.isInputFocused && this.filteredHymns.length;
+    resultState() {
+      if (!this.valueasnumber) return 'blank';
+      if (this.results.length) return 'visible';
+      if (!this.hymns || Object.values(this.hymns).length == 0) return 'loading';
+      return 'no-results';
     },
+    focusedHymnal() {
+      if (this.results.length == 0) return '';
+      if (this.results.find(h => h.hymnal == this.userFocusedHymnal)) return this.userFocusedHymnal;
+      if (this.results.find(h => h.hymnal == this.defaultFocusedHymnal)) return this.defaultFocusedHymnal;
+      return this.results[0].hymnal;
+    }
+  },
+  watch: {
+    results(newValue, oldValue) {
+      if (this.focusedHymnal != this.userFocusedHymnal) this.userFocusedHymnal = '';
+    }
   },
   methods: {
     onInput() {
-      this.value = this.input.value
+      this.value = this.value.replaceAll(/[^\d]+/gi, "");
     },
-    async onFocusChange() {
-      await nextTick();
-      this.isInputFocused = this.input && this.input.matches(":focus");
-    },
-    async setMode(value) {
-      if (value != "keyword") value = "hymnNo";
-      this.mode = value;
+    onKeyDown(e) {
+      if (["Enter", "ArrowUp", "ArrowDown"].indexOf(e.key) < 0) return;
+      e.preventDefault();
+      e.stopPropagation();
       
-      await nextTick();
-      if (this.input) {
-        this.input.focus();
-        this.value = this.input.value;
+      let resultCount = this.results.length;
+      if (resultCount == 0) return;
+
+      if (e.key == "Enter") {
+        let selectedHymn = this.results.find(h => h.hymnal == this.focusedHymnal);
+        if (selectedHymn) {
+          // TODO: Navigate
+          console.log('Navigating', selectedHymn.hymnId);
+        }
+        return;
       }
+
+
+
+      
+      if (resultCount == 1) {
+        this.userFocusedHymnal = this.results[0].hymnal
+        return;
+      }
+      let resultIndex = this.results.findIndex(r => r.hymnal == this.focusedHymnal);
+      resultIndex += (e.key == "ArrowUp") ? -1 : 1;
+      while (resultIndex < 0) { resultIndex += resultCount; }
+      resultIndex = resultIndex % resultCount;
+
+      this.userFocusedHymnal = this.results[resultIndex].hymnal;
     },
-    toggleMode() {
-      if (this.mode == "hymnNo") {
-        this.setMode("keyword");
-      } else {
-        this.setMode("hymnNo");
-      }
-    }
+    getHymnClasses(hymn) {
+      console.log('getHymnClasses', this.focusedHymnal);
+      let classList = [`theme-${hymn.hymnal}`];
+      if (hymn.hymnal == this.focusedHymnal) classList.push("focus");
+      return classList;
+    },
   },
   mounted() {
-    // window.hymns = this.hymns;
+    this.input = this.$refs.txtSongNumber;
   }
 }
 
 </script>
 
 <template>
-  <div v-show="mode == 'hymnNo'">
-    <label for="hymnNoInput">Go to hymn number</label><br>
-    <input id="hymnNoInput" ref="hymnNoInput" type="text" autocomplete="off" v-model="hymnNo" @focus="onFocusChange" @blur="onFocusChange"><br>
-    <ul v-show="isListVisible">
-      <li v-for="hymn in filteredHymns" :class="hymn.hymnal">
-        {{ hymn.hymnal }} {{ hymn.hymnNoTxt }} - {{ hymn.title }}
-      </li>
-    </ul>
-    or <a href="#" @click.stop.prevent="toggleMode">search by keyword</a>
+  <div class="form-group">
+    <label for="txtSongNumber" class="form-label">Go to song...</label>
+    <div style="position: relative; height: var(--ui-input-height)">
+      <div id="songLookup" class="form-control d-flex flex-column flex-fill" style="position:absolute;" ref="songLookup" @keydown="onKeyDown">
+        <input id="txtSongNumber" class="form-control" type="text" autocomplete="off" placeholder="Song number" inputmode="decimal" ref="txtSongNumber" v-model="value" @input="onInput">
+        <div id="songLookupResults" class="dropdown-menu force-show" ref="songLookupResults">
+          <a class="dropdown-item disabled" v-show="resultState == 'loading'">Hymn database still loading...</a>
+          <a class="dropdown-item disabled" v-show="resultState == 'no-results'">No hymns found</a>
+          <template v-for="hymn in results">
+            <a :class="['dropdown-item', ...getHymnClasses(hymn)]" href="#">
+              <!-- TODO: Actual hymnal name -->
+              <div class="hymnal-label">{{ hymn.hymnal }}</div>
+              {{ hymn.hymnNoTxt }} - {{ hymn.title }}
+            </a>
+          </template>
+        </div>
+      </div>
+    </div>
   </div>
-  <div v-show="mode == 'keyword'">
-    <label for="hymnNoInput">Search by keyword</label><br>
-    <input ref="keywordInput" type="text" autocomplete="off" v-model="keywords" @focus="onFocusChange" @blur="onFocusChange"><br>
-    or <a href="#" @click.stop.prevent="toggleMode">go to hymn number</a>
-  </div>
+  <p class="mt-3">or <a href="#" @click.stop.prevent="toggleMode">search by keyword</a></p>
   <div>value: {{ value }}</div>
-  <div>focused: {{ isInputFocused }}</div>
-  <div>filteredHymns: {{ filteredHymns.length }}</div>
+  <div>filteredHymns: {{ results.length }}</div>
 </template>
 
 
-<style scoped>
-a {
-  color: #42b983;
+<style scoped lang="scss">
+/* --- Search.vue --- */
+@import "../scss/bootstrap-base";
+
+
+#songLookup {
+  padding: 0;
+  &:focus-within {
+    box-shadow: $input-focus-box-shadow;
+  }
+  &:not(:focus-within) {
+    #songLookupResults {
+      display: none;
+    }
+  }
+}
+
+#txtSongNumber {
+  border: none;
+  
+  &:focus {
+    box-shadow: none;
+  }
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: textfield;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    display: none;
+    margin: 0;
+  }
+}
+
+#songLookupResults {
+  position: static !important;
+  transform: none !important;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  &.force-show {
+    display: block;
+  }
+  & > .dropdown-item {
+    padding: var(--ui-padding-y) $input-padding-x;
+    .hymnal-label {
+      color: var(--ui-color);
+      text-transform: uppercase;
+      font-size: $font-size-sm;
+      letter-spacing: 0.05em;
+      font-weight: 500;
+    }
+    &:active .hymnal-label {
+      color: white;
+    }
+    &:last-child {
+      margin-bottom: var(--ui-border-radius);
+    }
+    &.focus:not(.active, :active) {
+      color: $dropdown-link-hover-color;
+      text-decoration: if($link-hover-decoration == underline, none, null);
+      @include gradient-bg($dropdown-link-hover-bg);
+    }
+  }
+  & > * {
+    box-shadow: none;
+    font-size: var(--ui-font-size);
+  }
 }
 </style>

@@ -11,7 +11,8 @@ if (!existsSync('./src/assets/hymns-db-generated.json')) {
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    watch: {}
+    watch: {},
+    host: true
   },
   build: {
     watch: {},
