@@ -16,7 +16,7 @@
 import Search from '../components/Search.vue';
 
 export default {
-  inject: ['hymns'],
+  inject: ['hymnsDB'],
   data() {
     /*
     return {

@@ -2,7 +2,6 @@ import {
   createRouter,
   createWebHistory,
 } from 'vue-router/dist/vue-router.esm-bundler';
-import Home from './views/Home.vue';
 
 export default () =>
   createRouter({
@@ -10,13 +9,19 @@ export default () =>
     routes: [
       {
         path: '/',
-        name: 'Home',
+        name: 'home',
         component: () => import('./views/Home.vue'),
       },
       {
-        path: '/hymnal',
-        name: 'Hymnal',
+        path: '/hymnal.html',
+        name: 'hymnal',
         component: () => import('./views/Hymnal.vue'),
+      },
+      {
+        path: '/hymn.html',
+        name: 'hymn',
+        component: () => import('./views/Hymn.vue'),
+        props: route => ({ hymnal: route.query.hymnal, hymnNo: route.query.hymnNo, suffix: route.query.suffix })
       },
     ],
   });

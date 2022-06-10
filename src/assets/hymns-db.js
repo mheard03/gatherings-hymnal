@@ -51,7 +51,7 @@ function findHymnPlusN(hymn, n) {
   let hymnNoPlusN = hymn.hymnNo + n;
   let likelyId = `${hymn.hymnal}-${hymnNoPlusN}`;
   let hymnPlusN = hymns[likelyId];
-  if (!hymnPlusN) hymnPlusN = hymnArray.find(h => h.hymnal == hymn.hymnal && h.hymnId == hymnNoPlusN);
+  if (!hymnPlusN) hymnPlusN = hymnArray.find(h => h.hymnal == hymn.hymnal && h.hymnNo == hymnNoPlusN);
   return hymnPlusN;
 }
 
@@ -61,9 +61,50 @@ function hymnCompare(a,b) {
   let result = 0;
   if (result == 0) result = hymnalOrder.indexOf(a.hymnal) - hymnalOrder.indexOf(b.hymnal);
   if (result == 0) result = a.hymnNo - b.hymnNo;
+  if (result == 0) result = a.hymnNoTxt - b.hymnNoTxt;
   if (result == 0) result = a.suffix - b.suffix;
   return result;
 }
+
+function getHymns() {
+  let params = [];
+  for (let arg of [...arguments].filter(a => a)) {
+    if (typeof(arg) == "number") {
+      params.push(arg);
+    }
+    else if (typeof(arg) == "string") {
+      let intArg = parseInt(arg);
+      if (intArg.toString() == arg) {
+        params.push(intArg);
+      }
+      else {
+        params.push(arg);
+      }
+    }
+  }
+
+  let results = Object.values(hymns);
+  for (let param of params) {
+    results = results.filter(h => h.hymnal == param || h.hymnNo == param || h.suffix == param);
+  }
+  results.sort(hymnCompare);
+  return results;
+}
+
+Object.defineProperty(hymns, 'getHymns', {
+  value: getHymns,
+  writable: false,
+  configurable: false,
+  enumerable: false
+});
+
+Object.defineProperty(hymns, 'length', {
+  get() {
+    return Object.values(this).length;
+  },
+  configurable: false,
+  enumerable: false
+});
 
 export default hymns;
 export { hymns, hymnCompare }

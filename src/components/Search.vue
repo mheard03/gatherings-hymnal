@@ -2,15 +2,18 @@
 import { nextTick } from 'vue';
 import { hymnCompare } from '../assets/hymns-db';
 
+// TODO: Fix inputs like 144 generating multiple focused links
+// TODO: Remove double heading for inputs like 144
+
 export default {
-  inject: ['hymns'],
+  inject: ['hymnsDB'],
   data() {
     return {
       input: undefined,
       value: '',
       // TODO: Get defaultFocusedHymnal from router
       defaultFocusedHymnal: 'missions',
-      userFocusedHymnal: ''    
+      userFocusedHymnal: ''
     }
   },
   computed: {
@@ -20,14 +23,13 @@ export default {
     results() {
       let hymnNo = this.valueasnumber;
       if (!hymnNo || hymnNo < 0) return [];
-      let filtered = Object.values(this.hymns).filter(h => h.hymnNo == hymnNo);
-      filtered.sort(hymnCompare);
+      let filtered = this.hymnsDB.getHymns(hymnNo);
       return filtered;
     },
     resultState() {
       if (!this.valueasnumber) return 'blank';
       if (this.results.length) return 'visible';
-      if (!this.hymns || Object.values(this.hymns).length == 0) return 'loading';
+      if (!this.hymnsDB || Object.values(this.hymnsDB).length == 0) return 'loading';
       return 'no-results';
     },
     focusedHymnal() {
@@ -63,9 +65,6 @@ export default {
         return;
       }
 
-
-
-      
       if (resultCount == 1) {
         this.userFocusedHymnal = this.results[0].hymnal
         return;
@@ -101,11 +100,11 @@ export default {
           <a class="dropdown-item disabled" v-show="resultState == 'loading'">Hymn database still loading...</a>
           <a class="dropdown-item disabled" v-show="resultState == 'no-results'">No hymns found</a>
           <template v-for="hymn in results">
-            <a :class="['dropdown-item', ...getHymnClasses(hymn)]" href="#">
+            <router-link :to="{ name: 'hymn', query: { hymnal: hymn.hymnal, hymnNo: hymn.hymnNo }, hash: ((hymn.suffix && hymn.suffix != 'A') ? `#${hymn.suffix}` : '')  }" :class="['dropdown-item', ...getHymnClasses(hymn)]">
               <!-- TODO: Actual hymnal name -->
               <div class="hymnal-label">{{ hymn.hymnal }}</div>
               {{ hymn.hymnNoTxt }} - {{ hymn.title }}
-            </a>
+            </router-link>
           </template>
         </div>
       </div>
