@@ -164,8 +164,27 @@
 
 .btn-lg {
   @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-border-radius-lg);
+  .icon {
+    width: calc(1.5 * var(--ui-font-size-lg));
+    height: calc(1.5 * var(--ui-font-size-lg));
+    margin: 0 calc(-1 * #{$input-btn-line-height-extra-y-half-lg});
+  }
+
+  .icon + span {
+    margin-left: $input-btn-line-height-extra-y-half-lg;
+  }
+
 }
 
 .btn-sm {
   @include button-size($btn-padding-y-sm, $btn-padding-x-sm, $btn-font-size-sm, $btn-border-radius-sm);
+  .icon {
+    width: calc(1.5 * var(--ui-font-size-sm));
+    height: calc(1.5 * var(--ui-font-size-sm));
+    margin: 0 calc(-1 * #{$input-btn-line-height-extra-y-half-sm});
+  }
+
+  .icon + span {
+    margin-left: $input-btn-line-height-extra-y-half-sm;
+  }
 }

@@ -1,4 +1,5 @@
 import hymnArray from './hymns-db-generated.json';
+import hymnalArray from './hymnals.json';
 import attachSearchFunction from './hymns-db-search';
 
 let hymns = {};
@@ -105,6 +106,17 @@ Object.defineProperty(hymns, 'length', {
   configurable: false,
   enumerable: false
 });
+
+let hymnals = hymnalArray.reduce((obj, h) => {
+  obj[h.hymnalId] = h
+  return obj;
+}, {})
+Object.defineProperty(hymns, 'hymnals', {
+  value: hymnals,
+  configurable: false,
+  enumerable: false
+});
+
 
 export default hymns;
 export { hymns, hymnCompare }

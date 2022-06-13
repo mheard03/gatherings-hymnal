@@ -1,0 +1,17 @@
+[
+  {
+    "hymnalId": "redbook",
+    "priority": 1,
+    "title": "Red-back Hymnal"
+  },
+  { 
+    "hymnalId": "supplement",
+    "priority": 2,
+    "title": "Supplement"
+  },
+  {
+    "hymnalId": "missions",
+    "priority": 3,
+    "title": "Songs for World Evangelism"
+  }
+]
