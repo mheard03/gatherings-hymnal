@@ -68,7 +68,6 @@
   --link-active-color: var(--bs-link-active-color);
   --link-outline-color: var(--ui-outline-color);
   --ui-text-color-inactive: var(--gray-200);
-  --ui-input-height: #{$input-height};
 }
 
 
@@ -88,6 +87,8 @@ body {
   --ui-padding-x: #{$input-btn-padding-x};
   --ui-padding-y: #{$input-btn-padding-y};
   --ui-padding:   #{$input-btn-padding-x} #{$input-btn-padding-y};
+
+  --ui-input-height: #{$input-height};
 }
 
 
