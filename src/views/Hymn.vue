@@ -100,6 +100,11 @@ section {
   }
 }
 h1 {
+  color: var(--ui-color);
+  scroll-margin-top: 0.5rem;
+}
+/*
+h1 {
   font-family: sans-serif;
   margin-top: 0;
   margin-bottom: 0.5rem;
@@ -111,6 +116,7 @@ p {
   line-height: 1.2;
   margin: 1rem 0;
 }
+*/
 h1 + p {
   margin-top: 0;
 }

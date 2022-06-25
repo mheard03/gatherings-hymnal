@@ -3,5 +3,9 @@
 </template>
 
 <script>
-export default {};
+import { nextTick } from 'vue';
+
+export default {
+  inject: ['hymnsDB', 'userSettings']
+}
 </script>

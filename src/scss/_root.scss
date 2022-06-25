@@ -46,9 +46,10 @@
   --#{$variable-prefix}font-family-serif:        #{inspect($font-family-serif)};
 
   /* Root and body */
+  --font-size: #{$font-size-base};
+
   --#{$variable-prefix}body-font-family: #{$font-family-base};
-  --#{$variable-prefix}body-font-size-unitless: strip-unit(#{$font-size-base});
-  --#{$variable-prefix}body-font-size: calc(1px * var(--#{$variable-prefix}body-font-size-unitless));
+  --#{$variable-prefix}body-font-size: var(--font-size, 16);
   --#{$variable-prefix}body-font-weight: #{$font-weight-base};
   --#{$variable-prefix}body-line-height: #{$line-height-base};
 
@@ -58,7 +59,7 @@
   --#{$variable-prefix}link-hover-color: #{$link-hover-color};
   --#{$variable-prefix}link-active-color: #{$link-active-color};
 
-  --font-size: #{$font-size-base};
+  
 
   /* Variables overridden by HC themes */
   --body-color: var(--bs-body-color);
@@ -80,15 +81,14 @@ body {
   --ui-font-size-sm: clamp(var(--min-ui-font-size), #{math.div($font-size-sm, $font-size-base)}rem, var(--max-ui-font-size));
   --ui-font-size-lg: clamp(var(--min-ui-font-size), #{math.div($font-size-lg, $font-size-base)}rem, var(--max-ui-font-size));
   
-  --ui-border-radius:    #{$input-btn-border-radius};
-  --ui-border-radius-sm: #{$input-btn-border-radius-sm};
-  --ui-border-radius-lg: #{$input-btn-border-radius-lg};
-
-  --ui-padding-x: #{$input-btn-padding-x};
-  --ui-padding-y: #{$input-btn-padding-y};
-  --ui-padding:   #{$input-btn-padding-x} #{$input-btn-padding-y};
-
   --ui-input-height: #{$input-height};
+}
+
+.ui {
+  font-size: var(--ui-font-size);
+}
+.text {
+  font-size: var(--bs-body-font-size);
 }
 
 

@@ -1,9 +1,14 @@
-<script setup>
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
+<script>
+import { watch } from 'vue';
+import userSettingsMixin from './userSettings.js'
+
+export default {
+  mixins: [ userSettingsMixin ],
+};
 </script>
 
 <template>
+  <input type="range" min="14" max="100" v-model="userSettings.fontSize">
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
     <symbol viewBox="0 0 24 24" id="back">
       <title>Back</title>
@@ -45,3 +50,4 @@
 /* --- App.vue --- */
 @import "./scss/hymnal.scss"; 
 </style>
+

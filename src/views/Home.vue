@@ -1,5 +1,5 @@
 <template>
-  <nav id="primaryNav" class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <nav id="primaryNav" class="ui navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container flex-nowrap overflow-hidden">
       <button id="candle" class="btn flex-shrink-0 me-2">&nbsp;</button>
       <a class="navbar-brand flex-fill me-2">
