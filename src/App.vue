@@ -1,9 +1,21 @@
 <script>
 import { watch } from 'vue';
 import userSettingsMixin from './userSettings.js'
+import hymns from './assets/hymns-db';
 
 export default {
-  mixins: [ userSettingsMixin ],
+    mixins: [userSettingsMixin],
+    data() {
+        return {
+            potato: "potato"
+        };
+    },
+    provide() { 
+      return {
+        userSettings: this.userSettings,
+        hymnsDB: hymns
+      }
+    }
 };
 </script>
 
@@ -49,5 +61,7 @@ export default {
 <style lang="scss">
 /* --- App.vue --- */
 @import "./scss/hymnal.scss"; 
+
+
 </style>
 

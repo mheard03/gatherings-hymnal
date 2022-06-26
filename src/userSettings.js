@@ -1,4 +1,6 @@
 import { reactive, watch } from 'vue'
+import applyFontSizing from './fontSizing';
+
 const onUpdate = {};
 const getFinal = {};
 
@@ -55,7 +57,7 @@ getFinal["fontSize"] = function(newValue, oldValue) {
 }
 
 onUpdate["fontSize"] = function(newValue) {
-  document.documentElement.style.setProperty('--font-size', newValue + "px");
+  applyFontSizing(newValue);
 }
 
 function writeToStorage(userSettings) {

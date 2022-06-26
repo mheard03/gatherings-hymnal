@@ -52,21 +52,21 @@ $font-family-monospace:       SFMono-Regular, Menlo, Monaco, Consolas, "Liberati
 $font-family-serif:           Constantia, "Lucida Bright", Lucidabright, "Lucida Serif", Lucida, "DejaVu Serif", "Bitstream Vera Serif", "Liberation Serif", Georgia, serif;
 $font-family-base:            $font-family-sans-serif;
 
-$font-size-root:              null !default;
-$font-size-base:              1rem !default; // Assumes the browser default, typically `16px`
-$font-size-power:             var(--font-size-power, 1.2);
+$font-size-root:              null;
+$font-size-base:              1rem; // Assumes the browser default, typically `16px`
+$heading-size-increase:       var(--heading-size-increase, 1.2);
 $font-size-scale:             var(--font-size-scale, 1);
 $scaled-font-size:            calc($font-size-base * $font-size-scale);
 
-$h1-font-size:                calc($font-size-base * $font-size-power * $font-size-power * $font-size-power * $font-size-power * $font-size-power);
-$h2-font-size:                calc($font-size-base * $font-size-power * $font-size-power * $font-size-power * $font-size-power);
-$h3-font-size:                calc($font-size-base * $font-size-power * $font-size-power * $font-size-power);
-$h4-font-size:                calc($font-size-base * $font-size-power * $font-size-power);
-$h5-font-size:                calc($font-size-base * $font-size-power);
+$h1-font-size:                calc($font-size-base * $heading-size-increase * $heading-size-increase * $heading-size-increase * $heading-size-increase * $heading-size-increase);
+$h2-font-size:                calc($font-size-base * $heading-size-increase * $heading-size-increase * $heading-size-increase * $heading-size-increase);
+$h3-font-size:                calc($font-size-base * $heading-size-increase * $heading-size-increase * $heading-size-increase);
+$h4-font-size:                calc($font-size-base * $heading-size-increase * $heading-size-increase);
+$h5-font-size:                calc($font-size-base * $heading-size-increase);
 $h6-font-size:                $font-size-base;
 
-$font-size-sm:                calc($font-size-base / $font-size-power);
-$font-size-lg:                calc($font-size-base * $font-size-power);
+$font-size-sm:                calc($font-size-base / $heading-size-increase);
+$font-size-lg:                calc($font-size-base * $heading-size-increase);
 
 $line-height-base:            1.5 !default;
 $line-height-sm:              1.25 !default;
@@ -154,9 +154,9 @@ $input-btn-line-height-extra-y-half-lg:   calc($input-btn-font-size-lg * ($input
 $input-btn-padding-x-lg:                  $input-btn-font-size-lg;
 $input-btn-padding-y-lg:                  calc($input-btn-padding-x-lg - $input-btn-line-height-extra-y-half-lg);
 
-$input-btn-border-radius:    calc($input-btn-padding-x * .666);
-$input-btn-border-radius-sm: calc($input-btn-padding-x-sm * .666);
-$input-btn-border-radius-lg: calc($input-btn-padding-x-lg * .666);
+$input-btn-border-radius:    $border-radius;
+$input-btn-border-radius-sm: $border-radius-sm;
+$input-btn-border-radius-lg: $border-radius-lg;
 
 
 // Buttons

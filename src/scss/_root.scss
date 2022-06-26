@@ -46,10 +46,28 @@
   --#{$variable-prefix}font-family-serif:        #{inspect($font-family-serif)};
 
   /* Root and body */
+
+  // Base font size for all elements
   --font-size: #{$font-size-base};
 
+  // Increase rate used to derive font-size-sm, font-size-lg, and h1-h5
+  --heading-size-increase: 1.2;
+
+  // Scalar used to resize select UI elements
+  --font-size-scale: 1;
+
+  // Font size used for resized UI elements
+  --scaled-font-size: calc($font-size-base * $font-size-scale);
+
+  // Font weignts for headings
+  --h1-font-weight: 400;
+  --h2-font-weight: 400;
+  --h3-font-weight: 400;
+  --h4-font-weight: 400;
+  --h5-font-weight: 400;
+
   --#{$variable-prefix}body-font-family: #{$font-family-base};
-  --#{$variable-prefix}body-font-size: var(--font-size, 16);
+  --#{$variable-prefix}body-font-size: var(--font-size);
   --#{$variable-prefix}body-font-weight: #{$font-weight-base};
   --#{$variable-prefix}body-line-height: #{$line-height-base};
 
@@ -59,9 +77,7 @@
   --#{$variable-prefix}link-hover-color: #{$link-hover-color};
   --#{$variable-prefix}link-active-color: #{$link-active-color};
 
-  
-
-  /* Variables overridden by HC themes */
+    /* Variables overridden by HC themes */
   --body-color: var(--bs-body-color);
   --body-bg: var(--bs-body-bg);
   --link-color: var(--bs-link-color);
@@ -69,23 +85,11 @@
   --link-active-color: var(--bs-link-active-color);
   --link-outline-color: var(--ui-outline-color);
   --ui-text-color-inactive: var(--gray-200);
-}
-
-
-body {
-  /* Dynamic UI and font sizing */
-  --min-ui-font-size: 14px;
-  --max-ui-font-size: #{fnScaleLinearPx(20px, 32px)};
-
-  --ui-font-size:    clamp(var(--min-ui-font-size), var(--font-size), var(--max-ui-font-size));
-  --ui-font-size-sm: clamp(var(--min-ui-font-size), #{math.div($font-size-sm, $font-size-base)}rem, var(--max-ui-font-size));
-  --ui-font-size-lg: clamp(var(--min-ui-font-size), #{math.div($font-size-lg, $font-size-base)}rem, var(--max-ui-font-size));
-  
   --ui-input-height: #{$input-height};
 }
 
 .ui {
-  font-size: var(--ui-font-size);
+  font-size: var(--scaled-font-size);
 }
 .text {
   font-size: var(--bs-body-font-size);
