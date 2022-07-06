@@ -1,5 +1,4 @@
 import { reactive, watch } from 'vue'
-import applyFontSizing from './fontSizing';
 
 const onUpdate = {};
 const getFinal = {};
@@ -54,10 +53,6 @@ getFinal["fontSize"] = function(newValue, oldValue) {
   finalValue = Math.min(finalValue, 100);
   finalValue = Math.max(finalValue, 14);
   return finalValue;
-}
-
-onUpdate["fontSize"] = function(newValue) {
-  applyFontSizing(newValue);
 }
 
 function writeToStorage(userSettings) {

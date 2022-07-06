@@ -161,7 +161,7 @@ export default {
     display: block;
   }
   & > .dropdown-item {
-    padding: var(--ui-padding-y) $input-padding-x;
+    padding: $input-padding-y $input-padding-x;
     .hymnal-label {
       color: var(--ui-color);
       text-transform: uppercase;

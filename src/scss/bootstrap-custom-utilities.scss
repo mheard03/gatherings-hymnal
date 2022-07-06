@@ -1,0 +1,163 @@
+// Custom utilities
+
+$scaled-spacer: var(--scaled-font-size, 1rem);
+$scaled-spacers: (
+  0: 0,
+  1: calc($scaled-spacer * .25),
+  2: calc($scaled-spacer * .5),
+  3: calc($scaled-spacer),
+  4: calc($scaled-spacer * 1.5),
+  5: calc($scaled-spacer * 3)
+);
+
+$scaled-negative-spacers: (
+  n1: calc($scaled-spacer * -.25),
+  n2: calc($scaled-spacer * -.5),
+  n3: calc($scaled-spacer * -1),
+  n4: calc($scaled-spacer * -1.5),
+  n5: calc($scaled-spacer * -3)
+);
+
+$scaled-utilities: (
+  "margin": (
+    responsive: true,
+    property: margin,
+    class: m,
+    values: map-merge($scaled-spacers, (auto: auto))
+  ),
+  "margin-x": (
+    responsive: true,
+    property: margin-right margin-left,
+    class: mx,
+    values: map-merge($scaled-spacers, (auto: auto))
+  ),
+  "margin-y": (
+    responsive: true,
+    property: margin-top margin-bottom,
+    class: my,
+    values: map-merge($scaled-spacers, (auto: auto))
+  ),
+  "margin-top": (
+    responsive: true,
+    property: margin-top,
+    class: mt,
+    values: map-merge($scaled-spacers, (auto: auto))
+  ),
+  "margin-end": (
+    responsive: true,
+    property: margin-right,
+    class: me,
+    values: map-merge($scaled-spacers, (auto: auto))
+  ),
+  "margin-bottom": (
+    responsive: true,
+    property: margin-bottom,
+    class: mb,
+    values: map-merge($scaled-spacers, (auto: auto))
+  ),
+  "margin-start": (
+    responsive: true,
+    property: margin-left,
+    class: ms,
+    values: map-merge($scaled-spacers, (auto: auto))
+  ),
+  // Negative margin utilities
+  "negative-margin": (
+    responsive: true,
+    property: margin,
+    class: m,
+    values: $scaled-negative-spacers
+  ),
+  "negative-margin-x": (
+    responsive: true,
+    property: margin-right margin-left,
+    class: mx,
+    values: $scaled-negative-spacers
+  ),
+  "negative-margin-y": (
+    responsive: true,
+    property: margin-top margin-bottom,
+    class: my,
+    values: $scaled-negative-spacers
+  ),
+  "negative-margin-top": (
+    responsive: true,
+    property: margin-top,
+    class: mt,
+    values: $scaled-negative-spacers
+  ),
+  "negative-margin-end": (
+    responsive: true,
+    property: margin-right,
+    class: me,
+    values: $scaled-negative-spacers
+  ),
+  "negative-margin-bottom": (
+    responsive: true,
+    property: margin-bottom,
+    class: mb,
+    values: $scaled-negative-spacers
+  ),
+  "negative-margin-start": (
+    responsive: true,
+    property: margin-left,
+    class: ms,
+    values: $scaled-negative-spacers
+  ),
+  // Padding utilities
+  "padding": (
+    responsive: true,
+    property: padding,
+    class: p,
+    values: $scaled-spacers
+  ),
+  "padding-x": (
+    responsive: true,
+    property: padding-right padding-left,
+    class: px,
+    values: $scaled-spacers
+  ),
+  "padding-y": (
+    responsive: true,
+    property: padding-top padding-bottom,
+    class: py,
+    values: $scaled-spacers
+  ),
+  "padding-top": (
+    responsive: true,
+    property: padding-top,
+    class: pt,
+    values: $scaled-spacers
+  ),
+  "padding-end": (
+    responsive: true,
+    property: padding-right,
+    class: pe,
+    values: $scaled-spacers
+  ),
+  "padding-bottom": (
+    responsive: true,
+    property: padding-bottom,
+    class: pb,
+    values: $scaled-spacers
+  ),
+  "padding-start": (
+    responsive: true,
+    property: padding-left,
+    class: ps,
+    values: $scaled-spacers
+  )
+);
+
+.scaled {
+  @each $key, $utility in $scaled-utilities {
+    @include generate-utility($utility, "");
+  }
+}
+.fullSize {
+  @each $key, $utility in $utilities {
+    @if map-has-key($scaled-utilities, $key) {
+      @include generate-utility($utility, "");
+    }
+  }
+}

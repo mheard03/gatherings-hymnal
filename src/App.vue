@@ -2,24 +2,27 @@
 import { watch } from 'vue';
 import userSettingsMixin from './userSettings.js'
 import hymns from './assets/hymns-db';
+import FontSizing from './components/FontSizing.vue';
 
 export default {
-    mixins: [userSettingsMixin],
-    data() {
-        return {
-            potato: "potato"
-        };
-    },
-    provide() { 
-      return {
-        userSettings: this.userSettings,
-        hymnsDB: hymns
-      }
-    }
+  mixins: [userSettingsMixin],
+  data() {
+  return {
+      potato: "potato"
+  };
+  },
+  provide() {
+    return {
+      userSettings: this.userSettings,
+      hymnsDB: hymns
+    };
+  },
+  components: { FontSizing }
 };
 </script>
 
 <template>
+  <FontSizing></FontSizing>
   <input type="range" min="14" max="100" v-model="userSettings.fontSize">
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
     <symbol viewBox="0 0 24 24" id="back">

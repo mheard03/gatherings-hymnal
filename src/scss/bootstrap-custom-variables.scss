@@ -88,7 +88,7 @@ $link-active-box-shadow: 0 0 0 0 var(--link-outline-color);
 
 
 // Grid
-$spacer: 1rem !default;
+$spacer: 1rem;
 $gutters: (
   0: 0,
   1: $spacer * .25,
@@ -106,11 +106,10 @@ $grid-breakpoints: (
 );
 
 $container-max-widths: (
-  sm: 540px,
-  md: 720px,
+  sm: min(100vw, calc(540 * var(--font-size, 16px) / 16)),
+  md: min(100vw, calc(720 * var(--font-size, 16px) / 16)),
   lg: min(100vw, calc(960 * var(--font-size, 16px) / 16))
 );
-
 
 
 /* Components -------------------------------------------------------------------- */

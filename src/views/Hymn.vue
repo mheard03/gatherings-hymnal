@@ -17,10 +17,12 @@
       </template>
     </div>
   </main>
+  <Fab></Fab>
 </template>
 
 <script>
 import { nextTick } from 'vue';
+import Fab from '../components/Fab.vue';
 
 export default {
   props: {
@@ -28,6 +30,9 @@ export default {
     hymnNo: { type: Number, required: true }
   },
   inject: ['hymnsDB'],
+  components: {
+    Fab
+  },
   data() {
     return {
       hymns: this.hymnsDB.getHymns(this.hymnal, this.hymnNo)
