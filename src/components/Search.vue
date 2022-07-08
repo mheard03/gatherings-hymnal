@@ -96,7 +96,7 @@ export default {
 <template>
   <div class="form-group">
     <label v-if="showLabel" for="txtSongNumber" class="form-label">Go to song...</label>
-    <div style="position: relative; min-height: var(--ui-input-height)">
+    <div style="position: relative; min-height: var(--input-height)">
       <div id="songLookup" class="form-control d-flex flex-column flex-fill" style="position:absolute;" ref="songLookup" @keydown="onKeyDown">
         <input id="txtSongNumber" class="form-control" type="text" autocomplete="off" placeholder="Song number" inputmode="decimal" ref="txtSongNumber" v-model="value" @input="onInput">
         <div id="songLookupResults" class="dropdown-menu force-show" ref="songLookupResults">

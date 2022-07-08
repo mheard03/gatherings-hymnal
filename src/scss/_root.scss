@@ -64,7 +64,9 @@
   --h5-font-weight: 400;
 
   --ui-text-color-inactive: var(--gray-200);
-  --ui-input-height: #{$input-height};
+  --input-height: #{$input-height};
+  --input-height-sm: #{$input-height-sm};
+  --input-height-lg: #{$input-height-lg};
   --bs-gutter-x: #{fnScaleLinearPx(16px, 32px)};
 
   /* Variables overridden by HC themes */

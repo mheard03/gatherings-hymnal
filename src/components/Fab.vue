@@ -1,4 +1,4 @@
-  <script>
+<script>
 import { nextTick } from 'vue';
 
 export default {
@@ -9,29 +9,27 @@ export default {
         contentHeight: document.scrollingElement.scrollHeight,
         height: window.innerHeight
       },
-      footerMode: "fixed"
+      observer: undefined,
+      animateText: false,
+      expandMarkerVisible: false
     }
   },
-  onMounted() {
-    window.addEventListener("scroll", this.onScroll);
-    window.addEventListener("resize", this.onResize);
+  mounted() {
+    this.observer = new IntersectionObserver((entries) => {
+      this.expandMarkerVisible = entries[0].isIntersecting;
+    });
+    this.observer.observe(this.$refs.expandMarker);
+    setTimeout(() => this.animateText = true, 500);
   },
-  onUnmounted() {
-    window.removeEventListener("scroll", this.onScroll);
-    window.removeEventListener("resize", this.onResize);
+  unmounted() {
+    if (this.observer) this.observer.disconnect();
   },
   computed: {
-    scrollBottom() {
-      return this.windowMetrics.contentHeight - (this.windowMetrics.scrollTop - this.windowMetrics.scrollHeight);
-    }
-  },
-  methods: {
-    onScroll() {
-      this.windowMetrics.scrollTop = document.scrollingElement.scrollTop;
-    },
-    onResize() {
-      this.windowMetrics.contentHeight = document.scrollingElement.scrollHeight;
-      this.windowMetrics.height = window.innerHeight
+    footerClass() {
+      let classes = "";
+      if (this.animateText) classes = "animated ";
+      classes += ((this.expandMarkerVisible) ? "" : "hide-text");
+      return classes;
     }
   }
 }
@@ -39,10 +37,16 @@ export default {
 </script>
 
 <template>
-  <nav id="navBottom">
-    <div id="btnGotoWrapper" :class="footerMode">
+  <nav id="nav-bottom" class="scaled">
+    <div class="fab-wrapper invisible">
       <div class="d-flex justify-content-center">
-        <button id="btnGoto" class="scaled btn btn-fill btn-lg"><svg class="icon"><use href="#hymnal" /></svg><span>Go to...</span></button>
+        <button class="btn btn-fill btn-lg">&nbsp;</button>
+      </div>
+    </div>
+    <div id="expand-marker" ref="expandMarker"></div>
+    <div class="fab-wrapper" :class="footerClass" ref="fabFixed">
+      <div class="d-flex justify-content-center">
+        <button class="btn btn-fill btn-lg fab shadow"><svg class="icon"><use href="#hymnal" /></svg><span>Go to...</span></button>
       </div>
     </div>
   </nav>
@@ -51,12 +55,44 @@ export default {
 
 <style scoped lang="scss">
 /* --- Fab.vue --- */
-#btnGotoWrapper {
+#nav-bottom {
   width: 100%;
+  min-height: var(--page-margin-bottom);
+  padding-top: var(--bs-gutter-x);
+  position: relative;
 }
-#btnGotoWrapper.fixed {
+main + #nav-bottom {
+  margin-top: calc(-1 * var(--page-margin-bottom));
+}
+
+#expand-marker {
+  min-height: 1px;
+  width: auto;
+}
+
+.fab-wrapper {
+  width: 100%;
+  margin-bottom: var(--bs-gutter-x);
   position: fixed;
-  bottom: var(--bs-gutter-x);
+  bottom: 0;
+
+  span {
+    max-width: 6em;
+    overflow: hidden;
+  }
+
+  &.invisible {
+    position: static;
+  }
+
+  &.hide-text {
+    span {
+      max-width: 0em;
+    }
+  }
+
+  &.animated span {
+    transition: max-width 0.5s;
+  }
 }
-// @import "../scss/bootstrap-base";
 </style>

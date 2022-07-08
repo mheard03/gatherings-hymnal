@@ -1,5 +1,5 @@
 <template>
-  <nav id="primaryNav" class="navbar navbar-expand-lg">
+  <nav id="primaryNav" class="scaled navbar navbar-expand-lg">
     <div class="container">
       <button class="btn btn-ghost back" @click="$router.go(-1)"><svg class="icon"><use href="#back" /></svg></button>
       <button class="btn btn-ghost"><svg class="icon"><use href="#text-options" /></svg></button>
@@ -26,8 +26,9 @@ import Fab from '../components/Fab.vue';
 
 export default {
   props: {
-    hymnal: { type: String, required: true },
-    hymnNo: { type: Number, required: true }
+    hymnal: { required: true },
+    hymnNo: { required: true },
+    suffix: { required: false }
   },
   inject: ['hymnsDB'],
   components: {
@@ -35,14 +36,14 @@ export default {
   },
   data() {
     return {
-      hymns: this.hymnsDB.getHymns(this.hymnal, this.hymnNo)
+      hymns: this.hymnsDB.getHymns(this.hymnal, parseInt(this.hymnNo) || 1)
     }
   },
   mounted() {
     nextTick().then(() => {
       /* Scroll to second hymn, if needed */
-      if (window.location.hash) {
-        let id = window.location.hash.replace("#", "");
+      if (this.suffix || window.location.hash) {
+        let id = this.suffix || window.location.hash.replace("#", "");
         if (id) {
           let el = document.getElementById(id);
           if (el) {

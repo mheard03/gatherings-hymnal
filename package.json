@@ -20,6 +20,7 @@
     "@rollup/pluginutils": "^4.2.1",
     "@types/d3-scale": "^4.0.2",
     "@vitejs/plugin-vue": "^2.3.2",
+    "vite-plugin-static-copy": "^0.6.1",
     "jsdom": "^19.0.0",
     "recursive-readdir": "^2.2.2",
     "sass": "^1.52.2",

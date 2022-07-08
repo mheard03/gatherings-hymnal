@@ -23,7 +23,6 @@ export default {
 
 <template>
   <FontSizing></FontSizing>
-  <input type="range" min="14" max="100" v-model="userSettings.fontSize">
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
     <symbol viewBox="0 0 24 24" id="back">
       <title>Back</title>
@@ -48,6 +47,7 @@ export default {
     </symbol>
   </svg>
   <router-view />
+  <input type="range" min="14" max="100" v-model="userSettings.fontSize" style="position: absolute; top: 0;">
 </template>
 <!--
 <template>

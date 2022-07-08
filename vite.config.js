@@ -31,6 +31,16 @@ export default defineConfig({
           console.log('hymns-db updated.');
         }
       }
+    },
+    {
+      name: 'copy-index',
+      handleHotUpdate({ file, server }) {
+        if (file.endsWith('/index.html')) {
+          fs.copyFile("index.html", "hymn.html", (err) => { if (err) throw err; });
+          fs.copyFile("index.html", "hymnal.html", (err) => { if (err) throw err; });
+          fs.copyFile("index.html", "search.html", (err) => { if (err) throw err; });
+        }
+      }
     }
   ]
 });

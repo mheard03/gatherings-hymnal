@@ -66,7 +66,9 @@ $h5-font-size:                calc($font-size-base * $heading-size-increase);
 $h6-font-size:                $font-size-base;
 
 $font-size-sm:                calc($font-size-base / $heading-size-increase);
+$scaled-font-size-sm:         calc($scaled-font-size / $heading-size-increase);
 $font-size-lg:                calc($font-size-base * $heading-size-increase);
+$scaled-font-size-lg:         calc($scaled-font-size * $heading-size-increase);
 
 $line-height-base:            1.5 !default;
 $line-height-sm:              1.25 !default;
@@ -198,8 +200,8 @@ $input-height-inner-half:    calc($input-line-height * .5 * $scaled-font-size + 
 $input-height-inner-quarter: calc($input-line-height * .25 * $scaled-font-size + $input-padding-y / 2);
 
 $input-height:    calc($input-line-height * $scaled-font-size + $input-padding-y + $input-height-border);
-$input-height-sm: calc($input-line-height * $scaled-font-size + $input-padding-y-sm + $input-height-border);
-$input-height-lg: calc($input-line-height * $scaled-font-size + $input-padding-y-lg + $input-height-border);
+$input-height-sm: calc($input-line-height * $scaled-font-size-sm + $input-padding-y-sm + $input-height-border);
+$input-height-lg: calc($input-line-height * $scaled-font-size-lg + $input-padding-y-lg + $input-height-border);
 
 // Select
 $form-select-indicator-padding: calc(3 * $input-btn-font-size * .75);
