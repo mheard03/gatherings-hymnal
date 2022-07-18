@@ -56,12 +56,12 @@ getFinal["fontSize"] = function(newValue, oldValue) {
 }
 
 function writeToStorage(userSettings) {
-  console.log('writeToStorage');
+  // console.log('writeToStorage');
   localStorage["userSettings"] = JSON.stringify(userSettings);
 }
 
 function loadFromStorage(target) {
-  console.log('loadFromStorage');
+  // console.log('loadFromStorage');
   let savedSettings = localStorage["userSettings"];
   if (!savedSettings) return;
 

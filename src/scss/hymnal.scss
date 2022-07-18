@@ -1,6 +1,9 @@
 @import "bootstrap-subset";
 
 /* Global  ----------------------------------------------------------------- */
+* {
+  text-size-adjust: none;
+}
 body {
   --page-margin-bottom: calc(var(--font-size) * 5);
 }

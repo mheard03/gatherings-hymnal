@@ -108,7 +108,7 @@ $grid-breakpoints: (
 );
 
 $container-max-widths: (
-  sm: min(100vw, calc(540 * var(--font-size, 16px) / 16)),
+  sm: min(100vw, max(576px, calc(540 * var(--font-size, 16px) / 16))),
   md: min(100vw, calc(720 * var(--font-size, 16px) / 16)),
   lg: min(100vw, calc(960 * var(--font-size, 16px) / 16))
 );

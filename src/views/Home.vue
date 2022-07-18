@@ -66,6 +66,11 @@ main {
   padding-top: 0;
 }
 
+main a.btn-lg {
+  text-align: left;
+  white-space: normal;
+}
+
 #search-row {
   background-color: white;
   border-color: var(--gray-300);

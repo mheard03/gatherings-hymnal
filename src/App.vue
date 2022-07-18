@@ -7,15 +7,31 @@ import FontSizing from './components/FontSizing.vue';
 export default {
   mixins: [userSettingsMixin],
   data() {
-  return {
-      potato: "potato"
-  };
+    return {
+      appContainer: document.getElementById("app")
+    }
   },
   provide() {
     return {
       userSettings: this.userSettings,
-      hymnsDB: hymns
+      hymnsDB: hymns,
+      appContainer: this.appContainer
     };
+  },
+  watch: {
+    $route: {
+      handler(value) {
+        let allHymnals = Object.keys(hymns.hymnals);
+        document.body.classList.remove(...allHymnals.map(h => `theme-${h}`));
+        
+        let hymnalClass = this.$route.query.hymnal;
+        if (!hymnalClass) return;
+        let match = allHymnals.filter(h => h.localeCompare(hymnalClass, undefined, { sensitivity: 'base' }) == 0);
+        if (match.length != 1) return;
+        document.body.classList.add(`theme-${match[0]}`);
+      },
+      immediate: true
+    }
   },
   components: { FontSizing }
 };
