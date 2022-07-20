@@ -6,7 +6,12 @@ const defaultEventOptions = {
 class Pinch {
   constructor(pinchManager) {
     this.pinchManager = pinchManager;
-    this.reset();
+    this.isIgnored = false;
+    this.isDefaultPrevented = false;
+    this.center = undefined;
+    this.initialDirection = 0;
+    this.initialDistance = 0;
+    this.distance = 0;
 
     Object.defineProperty(this, 'pinchManager', {
       enumerable: false,
@@ -17,15 +22,6 @@ class Pinch {
 
   get delta() {
     return (this.distance - this.initialDistance);
-  }
-
-  reset() {
-    this.isIgnored = false;
-    this.isDefaultPrevented = false;
-    this.center = undefined;
-    this.initialDirection = 0;
-    this.initialDistance = 0;
-    this.distance = 0;
   }
 
   ignore() {
@@ -40,7 +36,7 @@ class Pinch {
 }
 
 
-const PINCH_THRESHOLD = 15;
+const PINCH_THRESHOLD = 5;
 
 class PinchManager {
   constructor(element, eventOptions) {
@@ -92,11 +88,9 @@ class PinchManager {
       return;
     }
 
-
-
-    this.currentPinch.distance = getDistance(...e.touches);
     const eventType = this.hasOngoingPinch ? "pinchmove" : "pinchstart";
-    
+    this.currentPinch.center = getCenter(...e.touches);
+    this.currentPinch.distance = getDistance(...e.touches);
 
     // Handle 2-finger touch events statefully
     //   currentPinch.ignored:  no further events sent to client
@@ -157,7 +151,7 @@ class PinchManager {
 function getDistance(touch1, touch2) {
   let dx = touch1.screenX - touch2.screenX;
   let dy = touch1.screenY - touch2.screenY;
-  return Math.sqrt(dx * dx + dy + dy);
+  return Math.sqrt(dx * dx + dy * dy);
 }
 function getCenter(touch1, touch2) {
   let cx = (touch1.screenX + touch2.screenX) / 2;

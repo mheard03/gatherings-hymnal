@@ -7,7 +7,7 @@ import { nextTick } from 'vue';
 const minFontSize = 14;
 const maxFontSize = 64;
 const h1FontWeightScale = scaleLinear().domain([1.2, 1.067]).range([400, 600]).clamp(true);
-const fontSizeScale = scaleLinear().domain([16, 64, 128]).range([1, 0.5, 0.25]).clamp(true);
+const fontSizeScale = scaleLinear().domain([24, 64]).range([1, 0.5]).clamp(true);
 const h1MaxSize = 90;
 
 export default {
@@ -41,7 +41,6 @@ export default {
       return result;
     },
     headingWeights() {
-      let h1Size = this.fontSize * Math.pow(this.headingSizeIncrease, 5);
       let h1Weight = h1FontWeightScale(this.headingSizeIncrease);
       let fontWeightScale = scaleLinear().domain([6, 1]).range([400, h1Weight]).clamp(true);
       let result = [];
@@ -71,18 +70,7 @@ export default {
       this.enableFontZoom = (this.viewportScale == 1);
 
       await nextTick();
-      let passivePinchEvents = false; // !(this.enableBrowserZoom && this.enableFontZoom);
-      this.pinchManager.addOrUpdateListeners({ passive: passivePinchEvents });
-
-      let obj = {
-        viewportScale: this.viewportScale, 
-        fontSize: this.fontSize,
-        enableBrowserZoom: this.enableBrowserZoom,
-        enableFontZoom: this.enableFontZoom,
-        passive: passivePinchEvents
-      };
-      console.log('zoomProps', JSON.stringify(obj));
-
+      this.pinchManager.addOrUpdateListeners({ passive: !this.enableFontZoom });
     },
     onResize() {
       this.viewportScale = window.visualViewport.scale;
@@ -100,7 +88,6 @@ export default {
     onPinchStart(e) {
       this.onResize();
       let pinch = e.detail;
-      console.log('onPinchStart');
 
       if (!this.enableFontZoom) {
         pinch.ignore();
@@ -115,30 +102,62 @@ export default {
           return;
         }
         else {
-          // Looks like a zoom out; prevent the browser from handling it
+          // Looks like a zoom out; preventDefault and handle it here
           pinch.preventDefault();          
           this.enableBrowserZoom = false;
-          console.log('preventDefault');
         }
       }
 
+      // Pause animations
+      document.scrollingElement.classList.add("pinching");
+      
+      // Establish zoomScale (pinch delta -> font size)
       let tempScale = scaleLinear()
         .domain([0, pinch.initialDistance])
         .range([this.fontSize, this.fontSize * 2]);
       let domainMin = tempScale.invert(minFontSize);
       let domainMax = tempScale.invert(maxFontSize);
       this.zoomScale = scaleLinear().domain([domainMin, domainMax]).range([minFontSize, maxFontSize]).clamp(true);
+
+      // Find zoomTarget
+      let center = { x: pinch.center[0], y: pinch.center[1] };
+
+      let elements = document.elementsFromPoint(center.x, center.y);
+      elements = elements.filter(el => {
+        if (!el.closest("main")) return false;
+        if (el.closest("nav")) return false;
+        let styles = window.getComputedStyle(el);
+        if (styles.display == "none") return false;
+        if (styles.visibility != "visible") return false;
+        if (styles.position != "static" && styles.position != "relative") return false;
+        return true;
+      });
+      elements.push(document.scrollingElement);
+
+      let targetElement = elements[0];
+      let bbox = targetElement.getBoundingClientRect();
+      let elementPct = scaleLinear().domain([bbox.top, bbox.bottom]).range([0,1])(center.y);
+      this.zoomTarget = { element: targetElement, elementPct };
+      console.log('zoomTarget', this.zoomTarget);
     },
-    onPinch(e) {
+    async onPinch(e) {
       this.onResize();
       let pinch = e.detail;
       if (pinch.isIgnored || !this.enableFontZoom) return;
 
-      
-      this.userSettings.fontSize = this.zoomScale(pinch.delta);
+      let newFontSize = this.zoomScale(pinch.delta);
+      newFontSize = Math.round(newFontSize * 4) / 4;
+      this.userSettings.fontSize = newFontSize;
+
+      await nextTick();
+      if (this.zoomTarget) {
+        let offset = getOffset(this.zoomTarget.element);
+        let currentY = offset.top + offset.height * this.zoomTarget.elementPct;
+        document.scrollingElement.scrollTo(0, currentY - pinch.center[1]);
+      }
     },
     onPinchEnd(e) {
-      console.log('onPinchEnd');
+      document.scrollingElement.classList.remove("pinching");
       this.updateZoomProps();
       this.zoomScale = undefined;
       this.zoomTarget = undefined;
@@ -284,42 +303,35 @@ export default {
     enableBrowserZoom: {
       handler(value) {
         if (value) {
-          document.body.classList.remove("browserPinchDisabled");
+          document.scrollingElement.classList.remove("browserPinchDisabled");
         }
         else {
-          document.body.classList.add("browserPinchDisabled");
+          document.scrollingElement.classList.add("browserPinchDisabled");
         }
-
-        /*
-        let maxScale = value ? "10.0" : "1.0";
-        let userScalable = value ? "yes" : "no";
-        let metaContent = `width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=${maxScale}, user-scalable=${userScalable}`;
-
-        let existingMeta = document.querySelector("meta[name=viewport]");
-        if (existingMeta && existingMeta.getAttribute("content") == metaContent) return;
-
-        let newMeta = document.createElement("meta");
-        newMeta.setAttribute("name", "viewport");
-        newMeta.setAttribute("content", metaContent);
-        document.head.append(newMeta);
-        if (existingMeta) existingMeta.remove();
-        */
       },
       immediate: true
     }
   }
+}
+
+function getOffset(el) {
+  let offset = {
+    height: el.offsetHeight,
+    top: el.offsetTop
+  };
+  let parent = el.offsetParent;
+  while (parent) {
+    offset.top += parent.offsetTop;
+    parent = parent.offsetParent;
+  }
+  return offset;
 }
 </script>
 
 <template>
   <Teleport to="head">
     <component :is="'style'" id="fontSizing" type="text/css">
-      html, body {
-        touch-action: pan-x pan-y pinch-zoom
-      }
-      .browserPinchDisabled {
-        touch-action: pan-x pan-y !important;
-      }
+      /* Font sizing */
       :root {
         --font-size: {{ fontSize }}px;
         --font-size-scale: 1;
@@ -329,19 +341,35 @@ export default {
           {{ item.varName }}: {{ item.value }};
         </template>
       }
-
       .fullSize {
         --font-size-scale: 1;
+        --scaled-font-size: calc(var(--font-size) * var(--font-size-scale));
         <template v-for="item in headingWeights">
           {{ item.varName }}: 400;
         </template>
       }
       .scaled {
-        --scaled-font-size: calc(var(--font-size) * var(--font-size-scale));
         --font-size-scale: {{ fontSizeScale }};
+        --scaled-font-size: calc(var(--font-size) * var(--font-size-scale));
         <template v-for="item in headingWeights">
           {{ item.varName }}: 400;
         </template>
+      }
+      html, body  {
+        overflow-wrap: {{ (fontSize > 32) ? "anywhere" : "normal" }};
+      }
+
+      /* Pinch events */
+      html, body {
+        touch-action: auto;
+      }
+      .browserPinchDisabled {
+        touch-action: pan-x pan-y !important;
+      }
+      .pinching, 
+      .pinching * {
+        transition-property: none !important;
+        scroll-behavior: auto !important;
       }
     </component>
   </Teleport>

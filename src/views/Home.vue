@@ -2,7 +2,7 @@
   <nav id="primaryNav" class="scaled navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container flex-nowrap overflow-hidden">
       <button id="candle" class="btn flex-shrink-0 me-2">&nbsp;</button>
-      <a class="navbar-brand flex-fill me-2">
+      <a class="navbar-brand flex-fill me-2 overflow-hidden">
         Gatherings in Jesus' Name
       </a>
       <button class="btn btn-fill"><svg class="icon"><use href="#text-options" /></svg></button>
