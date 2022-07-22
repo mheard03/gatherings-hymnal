@@ -14,9 +14,9 @@ export default {
     return {
       input: undefined,
       value: '',
-      // TODO: Get defaultFocusedHymnal from router
-      defaultFocusedHymnal: 'missions',
-      userFocusedHymnal: ''
+      // TODO: Get defaultFocusedHymnalId from router
+      defaultFocusedHymnalId: 'redbook',
+      userFocusedHymnalId: ''
     }
   },
   computed: {
@@ -35,16 +35,16 @@ export default {
       if (!this.hymnsDB || Object.values(this.hymnsDB).length == 0) return 'loading';
       return 'no-results';
     },
-    focusedHymnal() {
+    focusedHymnalId() {
       if (this.results.length == 0) return '';
-      if (this.results.find(h => h.hymnal == this.userFocusedHymnal)) return this.userFocusedHymnal;
-      if (this.results.find(h => h.hymnal == this.defaultFocusedHymnal)) return this.defaultFocusedHymnal;
-      return this.results[0].hymnal;
+      if (this.results.find(h => h.hymnalId== this.userFocusedHymnalId)) return this.userFocusedHymnalIdId;
+      if (this.results.find(h => h.hymnalId== this.defaultFocusedHymnalId)) return this.defaultFocusedHymnalId;
+      return this.results[0].hymnalId
     }
   },
   watch: {
     results(newValue, oldValue) {
-      if (this.focusedHymnal != this.userFocusedHymnal) this.userFocusedHymnal = '';
+      if (this.focusedHymnalId != this.userFocusedHymnalId) this.userFocusedHymnalId = '';
     }
   },
   methods: {
@@ -60,7 +60,7 @@ export default {
       if (resultCount == 0) return;
 
       if (e.key == "Enter") {
-        let selectedHymn = this.results.find(h => h.hymnal == this.focusedHymnal);
+        let selectedHymn = this.results.find(h => h.hymnalId== this.focusedHymnalId);
         if (selectedHymn) {
           // TODO: Navigate
           console.log('Navigating', selectedHymn.hymnId);
@@ -69,20 +69,20 @@ export default {
       }
 
       if (resultCount == 1) {
-        this.userFocusedHymnal = this.results[0].hymnal
+        this.userFocusedHymnalId = this.results[0].hymnal
         return;
       }
-      let resultIndex = this.results.findIndex(r => r.hymnal == this.focusedHymnal);
+      let resultIndex = this.results.findIndex(r => r.hymnalId== this.focusedHymnalId);
       resultIndex += (e.key == "ArrowUp") ? -1 : 1;
       while (resultIndex < 0) { resultIndex += resultCount; }
       resultIndex = resultIndex % resultCount;
 
-      this.userFocusedHymnal = this.results[resultIndex].hymnal;
+      this.userFocusedHymnalId = this.results[resultIndex].hymnalId
     },
     getHymnClasses(hymn) {
-      console.log('getHymnClasses', this.focusedHymnal);
-      let classList = [`theme-${hymn.hymnal}`];
-      if (hymn.hymnal == this.focusedHymnal) classList.push("focus");
+      console.log('getHymnClasses', this.focusedHymnalId);
+      let classList = [`theme-${hymn.hymnalId}`];
+      if (hymn.hymnalId== this.focusedHymnalId) classList.push("focus");
       return classList;
     },
   },
@@ -103,9 +103,9 @@ export default {
           <a class="dropdown-item disabled" v-show="resultState == 'loading'">Hymn database still loading...</a>
           <a class="dropdown-item disabled" v-show="resultState == 'no-results'">No hymns found</a>
           <template v-for="hymn in results">
-            <router-link :to="{ name: 'hymn', query: { hymnal: hymn.hymnal, hymnNo: hymn.hymnNo }, hash: ((hymn.suffix && hymn.suffix != 'A') ? `#${hymn.suffix}` : '')  }" :class="['dropdown-item', ...getHymnClasses(hymn)]">
+            <router-link :to="{ name: 'hymn', query: { hymnal: hymn.hymnalId, hymnNo: hymn.hymnNo }, hash: ((hymn.suffix && hymn.suffix != 'A') ? `#${hymn.suffix}` : '')  }" :class="['dropdown-item', ...getHymnClasses(hymn)]">
               <!-- TODO: Actual hymnal name -->
-              <div class="hymnal-label">{{ hymn.hymnal }}</div>
+              <div class="hymnal-label">{{ hymn.hymnalId}}</div>
               {{ hymn.hymnNoTxt }} - {{ hymn.title }}
             </router-link>
           </template>
@@ -162,14 +162,14 @@ export default {
   }
   & > .dropdown-item {
     padding: $input-padding-y $input-padding-x;
-    .hymnal-label {
+    .hymnalIdlabel {
       color: var(--ui-color);
       text-transform: uppercase;
       font-size: $font-size-sm;
       letter-spacing: 0.05em;
       font-weight: 500;
     }
-    &:active .hymnal-label {
+    &:active .hymnalIdlabel {
       color: white;
     }
     &:last-child {

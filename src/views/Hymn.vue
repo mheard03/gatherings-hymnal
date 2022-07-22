@@ -26,7 +26,7 @@ import Fab from '../components/Fab.vue';
 
 export default {
   props: {
-    hymnal: { required: true },
+    hymnalId: { required: true },
     hymnNo: { required: true },
     suffix: { required: false }
   },
@@ -36,7 +36,7 @@ export default {
   },
   data() {
     return {
-      hymns: this.hymnsDB.getHymns(this.hymnal, parseInt(this.hymnNo) || 1)
+      hymns: this.hymnsDB.getHymns(this.hymnalId, parseInt(this.hymnNo) || 1)
     }
   },
   mounted() {

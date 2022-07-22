@@ -1,24 +1,23 @@
 import hymnArray from './hymns-db-generated.json';
 import hymnalArray from './hymnals.json';
 import attachSearchFunction from './hymns-db-search';
+import { h } from 'vue';
 
 let hymns = {};
 
-// Hydrate hymns
+// Build hymns object
 for (let hymn of hymnArray) {
   // Populate metadata
   let idComponents = hymn.hymnId.split("-");
-  hymn.hymnal = idComponents[0];
+  hymn.hymnalId = idComponents[0];
   hymn.hymnNo = parseInt(idComponents[1]);
   if (idComponents[2]) hymn.suffix = idComponents[2];
-
-  // Build clone function
 
   // Add to hymns object
   hymns[hymn.hymnId] = hymn;
 }
 
-// Find gaps
+// Find gaps and fill with stubs
 for (let hymn of Object.values(hymns)) {
   if (hymn.isStub) continue;
 
@@ -32,12 +31,12 @@ for (let hymn of Object.values(hymns)) {
   if (!hymnPlusTwo) continue;
  
   hymn.hymnNoTxt = `${hymn.hymnNoTxt}/${(hymn.hymnNo + 1).toString() + suffix}`;
-  let stubHymnId = `${hymn.hymnal}-${hymn.hymnNo + 1}`;
+  let stubHymnId = `${hymn.hymnalId}-${hymn.hymnNo + 1}`;
   if (suffix) stubHymnId += `-${suffix}`;
 
   hymns[stubHymnId] = {
     hymnId: hymn.hymnId,
-    hymnal: hymn.hymnal,
+    hymnal: hymn.hymnalId,
     hymnNo: hymn.hymnNo + 1,
     hymnNoTxt: hymn.hymnNoTxt,
     suffix: hymn.suffix,
@@ -46,21 +45,50 @@ for (let hymn of Object.values(hymns)) {
   }
 }
 
+// Build hymnals object
+let hymnals = hymnalArray.reduce((obj, h) => {
+  obj[h.hymnalId] = h
+  return obj;
+}, {});
+
+for (let hymnal of Object.values(hymnals)) {
+  getHymns(hymnal.hymnalId).forEach(h => h.hymnal = hymnal);
+  for (let section of hymnal.sections || []) {
+    applySectionHeaders(hymnal.hymnalId, section);
+  }
+}
+
+function applySectionHeaders(hymnalId, section, parentHeadings) {
+  parentHeadings = parentHeadings || [];
+  
+  if (section.range) {
+    for (let i = section.range[0]; i <= section.range[1]; i++) {
+      for (let hymn of getHymns(hymnalId, i)) {
+        hymn.sectionHeaders = [...parentHeadings, section.name];
+      }
+    }
+  }
+  for (let childSection of section.children || []) {
+    applySectionHeaders(hymnalId, childSection, [...parentHeadings, section.name]);
+  }
+}
+
+
+// Attach search functions
 attachSearchFunction(hymns);
+
 
 function findHymnPlusN(hymn, n) {
   let hymnNoPlusN = hymn.hymnNo + n;
-  let likelyId = `${hymn.hymnal}-${hymnNoPlusN}`;
+  let likelyId = `${hymn.hymnalId}-${hymnNoPlusN}`;
   let hymnPlusN = hymns[likelyId];
-  if (!hymnPlusN) hymnPlusN = hymnArray.find(h => h.hymnal == hymn.hymnal && h.hymnNo == hymnNoPlusN);
+  if (!hymnPlusN) hymnPlusN = hymnArray.find(h => h.hymnalId == hymn.hymnalId && h.hymnNo == hymnNoPlusN);
   return hymnPlusN;
 }
 
-// TODO: Refer to config instead
-let hymnalOrder = [ "redbook", "supplement", "missions" ];
 function hymnCompare(a,b) {
   let result = 0;
-  if (result == 0) result = hymnalOrder.indexOf(a.hymnal) - hymnalOrder.indexOf(b.hymnal);
+  if (result == 0 && a.hymnal && b.hymnal) result = a.hymnal.priority - b.hymnal.priority;
   if (result == 0) result = a.hymnNo - b.hymnNo;
   if (result == 0) result = a.hymnNoTxt - b.hymnNoTxt;
   if (result == 0) result = a.suffix - b.suffix;
@@ -86,7 +114,7 @@ function getHymns() {
 
   let results = Object.values(hymns);
   for (let param of params) {
-    results = results.filter(h => h.hymnal == param || h.hymnNo == param || h.suffix == param);
+    results = results.filter(h => h.hymnalId == param || h.hymnNo == param || h.suffix == param);
   }
   results.sort(hymnCompare);
   return results;
@@ -107,16 +135,20 @@ Object.defineProperty(hymns, 'length', {
   enumerable: false
 });
 
-let hymnals = hymnalArray.reduce((obj, h) => {
-  obj[h.hymnalId] = h
-  return obj;
-}, {})
 Object.defineProperty(hymns, 'hymnals', {
   value: hymnals,
   configurable: false,
   enumerable: false
 });
 
+hymns.cacheRoutes = function(router) {
+  let allHymns = Object.values(hymns).filter(h => h.hymnId);
+  for (let hymn of allHymns) {
+    let route = router.resolve({ name: 'hymn', query: { hymnal: hymn.hymnalId, hymnNo: hymn.hymnNo }, hash: ((hymn.suffix && hymn.suffix != 'A') ? `#${hymn.suffix}` : '') });
+    hymn.url = route.href;
+  }
+  
+}
 
 export default hymns;
 export { hymns, hymnCompare }

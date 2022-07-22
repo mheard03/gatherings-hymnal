@@ -1,40 +1,46 @@
 [
-  { name: "General Hymns of Worship", range: [1,33] }
-  { name: "Hymns of Worship to The Father", range: [34,40] }
-  { name: "Hymns of Worship to Christ", range: [41,67] }
-  { name: "Hymns of Worship to Lord's Day", range: [68,69] }
-  { name: "Hymns of Worship for the Morning", range: [70,73] }
-  { name: "Hymns of Worship for the Evening", range: [74,79] }
-  { name: "Hymns of Worship for the Closing", range: [80,82] }
-  { name: "Jesus - Advent", range: [83,84] }
-  { name: "Jesus - Birth", range: [85,101] }
-  { name: "Jesus - Early Ministry", range: [102,106] }
-  { name: "Jesus - Triumphal Entry", range: [107,109] }
-  { name: "Jesus - Suffering and Death", range: [110,130] }
-  { name: "Jesus - Resurrection", range: [131,138] }
-  { name: "Jesus - Ascension an Reign", range: [139,145] }
-  { name: "Jesus - Return", range: [146,157] }
-  { name: "The Holy Spirit", range: [158,171] }
-  { name: "The Word of God", range: [172,179] }
-  { name: "The Church", range: [180,188] }
-  { name: "Baptism", range: [189,190] }
-  { name: "The Lord's Supper", range: [191,193] }
-  { name: "Salvation", range: [194,236] }
-  { name: "Invitation", range: [237,254] }
-  { name: "Assurance and Trust", range: [255,283] }
-  { name: "Peace and Comfort", range: [284,289] }
-  { name: "Guidance and Care", range: [290,305] }
-  { name: "Aspiration", range: [306,343] }
-  { name: "Prayer", range: [344,362] }
-  { name: "Challenge", range: [363,382] }
-  { name: "Commitment", range: [383,401] }
-  { name: "Christian Warfare", range: [402,415] }
-  { name: "Service", range: [416,440] }
-  { name: "Praise and Testimony", range: [441,496] }
-  { name: "Eternal Destiny", range: [497,518] }
-  { name: "New Year", range: [519,520] }
-  { name: "Home and Family", range: [521,525] }
-  { name: "Thanksgiving", range: [526,527] }
-  { name: "The Nation", range: [528,532] } 
-  { name: "Service", range: [533,538] } 
+  { name: "Hymns of Worship", children: [
+    { name: "The Father", range: [34, 40] },
+    { name: "Christ", range: [41, 67] },
+    { name: "Lord's Day", range: [68, 69] },
+    { name: "Morning", range: [70, 73] },
+    { name: "Evening", range: [74, 79] },
+    { name: "Closing", range: [80, 82] },
+  ] },
+  { name: "Jesus our Savior", chlidren: [
+    { name: "Advent", range: [83,84] },
+    { name: "Birth", range: [85,101] },
+    { name: "Early Ministry", range: [102,106] },
+    { name: "Triumphal Entry", range: [107,109] },
+    { name: "Suffering and Death", range: [110,130] },
+    { name: "Resurrection", range: [131,138] },
+    { name: "Ascension an Reign", range: [139,145] },
+    { name: "Return", range: [146,157] }
+  ] },
+  { name: "The Holy Spirit", range: [158,171] },
+  { name: "The Word of God", range: [172,179] },
+  { name: "The Church", children: [
+    { name: "Baptism", range: [189,190] },
+    { name: "The Lord's Supper", range: [191,193] },
+  ] },
+  { name: "Salvation", range: [194,236] },
+  { name: "Invitation", range: [237,254] },
+  { name: "Assurance and Trust", range: [255,283] },
+  { name: "Peace and Comfort", range: [284,289] },
+  { name: "Guidance and Care", range: [290,305] },
+  { name: "Aspiration", range: [306,343] },
+  { name: "Prayer", range: [344,362] },
+  { name: "Challenge", range: [363,382] },
+  { name: "Commitment", range: [383,401] },
+  { name: "Christian Warfare", range: [402,415] },
+  { name: "Service", range: [416,440] },
+  { name: "Praise and Testimony", range: [441,496] },
+  { name: "Eternal Destiny", range: [497,518] },
+  { name: "Special Subjects", children: [
+    { name: "New Year", range: [519,520] },
+    { name: "Home and Family", range: [521,525] },
+    { name: "Thanksgiving", range: [526,527] },
+    { name: "The Nation", range: [528,532] },
+  ] },
+  { name: "Service Music", range: [533,538] }
 ]

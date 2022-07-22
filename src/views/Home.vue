@@ -19,9 +19,9 @@
       <h3 class="mb-3">Browse the songbooks</h3>
       <template v-for="hymnal of Object.values(hymnsDB.hymnals)">
         <p>
-          <a :class="[hymnalClasses, `theme-${hymnal.hymnalId}`]">
+          <router-link :class="[hymnalClasses, `theme-${hymnal.hymnalId}`]" :to="{ name: 'hymnal', query: { hymnal: hymnal.hymnalId }}">
             <span>{{ hymnal.title }}</span>
-          </a>
+          </router-link>
         </p>
       </template>      
     </div>
