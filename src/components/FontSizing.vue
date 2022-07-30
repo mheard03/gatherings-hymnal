@@ -11,7 +11,7 @@ const fontSizeScale = scaleLinear().domain([24, 64]).range([1, 0.5]).clamp(true)
 const h1MaxSize = 90;
 
 export default {
-  inject: ['userSettings', 'appContainer'],
+  inject: ['userSettings'],
   data() {
     return {
       viewportScale: window.visualViewport.scale,
@@ -64,16 +64,26 @@ export default {
     this.pinchManager.destroy();
   },
   methods: {
+    setChonkClass() {
+      if (this.fontSize / window.visualViewport.width > 0.05) {
+        document.body.classList.add("chonk");
+      }
+      else {
+        document.body.classList.remove("chonk");
+      }
+    },
     async updateZoomProps() {
       this.viewportScale = window.visualViewport.scale;
       this.enableBrowserZoom = (this.viewportScale != 1 || this.fontSize >= maxFontSize);
       this.enableFontZoom = (this.viewportScale == 1);
+      this.setChonkClass;
 
       await nextTick();
       this.pinchManager.addOrUpdateListeners({ passive: !this.enableFontZoom });
     },
     onResize() {
       this.viewportScale = window.visualViewport.scale;
+      this.setChonkClass();
     },
     addPinchListeners() {
       this.pinchManager.element.addEventListener('pinchstart', this.onPinchStart);
@@ -161,139 +171,15 @@ export default {
       this.updateZoomProps();
       this.zoomScale = undefined;
       this.zoomTarget = undefined;
-    },
-    /*
-    onPinchStart(state) {
-      this.viewportScale = window.visualViewport.scale;
-      this.isFontZoomActive = false;
-      if (this.isViewportScaled) {
-        console.log('ignoring pinchStart', state);
-        return "po-tae-toe";
-      };
-
-      console.log('pinchStart', state);
-
-      // zoomTarget
-      let origin = { x: state.origin[0], y: state.origin[1] };
-      let elements = document.elementsFromPoint(origin.x, origin.y);
-      elements = elements.filter(el => {
-        if (!el.closest("main")) return false;
-        if (el.closest("nav")) return false;
-        let styles = window.getComputedStyle(el);
-        if (styles.display == "none") return false;
-        if (styles.visibility != "visible") return false;
-        if (styles.position != "static" && styles.position != "relative") return false;
-        return true;
-      });
-      elements.push(document.scrollingElement);
-
-      const getPct = (el, y) => {
-        let bbox = el.getBoundingClientRect();
-        return scaleLinear().domain([bbox.top, bbox.bottom]).range([0,1])(y);
-      }
-
-      let targetElement = elements[0];
-      let targetElementPct = getPct(targetElement, origin.y);
-      let viewportPct = getPct(document.scrollingElement, origin.y);
-      this.zoomTarget = { element: targetElement, elementPct: targetElementPct, viewportPct };
-
-      // zoomScale
-      let pointerDistance = state.da[0];
-      let distanceTo64 = maxFontSize - this.fontSize;
-      let distanceTo14 = this.fontSize - minFontSize;
-      distanceTo64 *= 4;
-      distanceTo14 *= 4;
-      this.zoomScale = scaleLinear().domain([pointerDistance - distanceTo14, pointerDistance + distanceTo64]).range([minFontSize, maxFontSize]).clamp(true);
-
-      return 'potato';
-    },
-    onPinch(state) {
-      this.viewportScale = window.visualViewport.scale;
-      if (this.isViewportScaled) return;
-
-      if (!this.isFontZoomActive) {
-        let scale = state.movement[0];
-        if (scale > 1 && this.fontSize < maxFontSize) {
-          this.isFontZoomActive = true;
-        }
-        if (scale < 1 && this.fontSize > minFontSize) {
-          this.isFontZoomActive = true;
-        }
-      }
-
-      if (this.isFontZoomActive) {
-        let pointerDistance = state.da[0];
-        this.userSettings.fontSize = Math.round(this.zoomScale(pointerDistance));
-      }
-    },
-    onPinchEnd(state) {
-      this.viewportScale = window.visualViewport.scale;
-      console.log('pinchEnd', state);
-      this.isFontZoomActive = false;
-      this.zoomScale = undefined;
-      this.zoomTarget = undefined;
-    },
-    logPointerLocation(e) {
-      if (e.pointerType != "touch") return;
-      if (window.visualViewport.scale > 1) return;
-
-      let oldLength = Object.values(this.pointerEventCache).length;
-      this.pointerEventCache[e.pointerId] = e;
-      console.log(Object.keys(this.pointerEventCache));
-      let pointers = Object.values(this.pointerEventCache);
-      if (pointers.length != 2) return;
-      pointers.forEach(p => {
-        p.preventDefault();
-      });
-
-      let a = pointers[0].clientX - pointers[1].clientX;
-      let b = pointers[0].clientY - pointers[1].clientY;
-      let pointerDistance = Math.sqrt(a * a + b * b);
-
-      if (this.zoomScale) {
-        console.log(pointerDistance, this.zoomScale(400), this.zoomScale(pointerDistance));
-      }
-      if (oldLength == 2) return;
-
-      // Set this.zoomScale
-
-      
-      let distanceTo64 = maxFontSize - this.fontSize;
-      let distanceTo14 = this.fontSize - minFontSize;
-      this.zoomScale = scaleLinear().domain([pointerDistance - distanceTo14, pointerDistance + distanceTo64]).range([minFontSize, maxFontSize]).clamp(true);
-      window.zoomScale = this.zoomScale;
-
-      // Set this.zoomTarget and metrics
-      let zoomCenter = { 
-        x: (pointers[0].clientX + pointers[1].clientX) / 2,
-        y: (pointers[0].clientY + pointers[1].clientY) / 2
-      };
-      let elements = document.elementsFromPoint(zoomCenter.x, zoomCenter.y);
-      elements = elements.filter(el => {
-        if (!el.closest("main")) return false;
-        if (el.closest("nav")) return false;
-        let styles = window.getComputedStyle(el);
-        if (styles.display == "none") return false;
-        if (styles.visibility != "visible") return false;
-        if (styles.position != "static" && styles.position != "relative") return false;
-        return true;
-      });
-      elements.push(document.scrollingElement);
-
-      const getPct = (el, y) => {
-        let bbox = el.getBoundingClientRect();
-        return scaleLinear().domain([bbox.top, bbox.bottom]).range([0,1])(y);
-      }
-
-      let targetElement = elements[0];
-      let targetElementPct = getPct(targetElement, zoomCenter.y);
-      let viewportPct = getPct(document.scrollingElement, zoomCenter.y);
-      this.zoomTarget = { element: targetElement, elementPct: targetElementPct, viewportPct };
-      console.log(this.zoomTarget);
     }
-    */
   },
   watch: {
+    fontSize: {
+      handler() {
+        this.setChonkClass();
+      },
+      immediate: true
+    },
     viewportScale: {
       handler() {
         this.updateZoomProps;
@@ -329,48 +215,45 @@ function getOffset(el) {
 </script>
 
 <template>
-  <Teleport to="head">
-    <component :is="'style'" id="fontSizing" type="text/css">
-      /* Font sizing */
-      :root {
-        --font-size: {{ fontSize }}px;
-        --font-size-scale: 1;
-        --scaled-font-size: calc(var(--font-size) * var(--font-size-scale));
-        --heading-size-increase: {{ headingSizeIncrease }};
-        <template v-for="item in headingWeights">
-          {{ item.varName }}: {{ item.value }};
-        </template>
-      }
-      .fullSize {
-        --font-size-scale: 1;
-        --scaled-font-size: calc(var(--font-size) * var(--font-size-scale));
-        <template v-for="item in headingWeights">
-          {{ item.varName }}: 400;
-        </template>
-      }
-      .scaled {
-        --font-size-scale: {{ fontSizeScale }};
-        --scaled-font-size: calc(var(--font-size) * var(--font-size-scale));
-        <template v-for="item in headingWeights">
-          {{ item.varName }}: 400;
-        </template>
-      }
-      html, body  {
-        overflow-wrap: {{ (fontSize > 32) ? "anywhere" : "normal" }};
-      }
+  <Teleport to="#fontSizing">
+    :root {
+      --font-size: {{ fontSize }}px;
+      --font-size-scale: 1;
+      --scaled-font-size: calc(var(--font-size) * var(--font-size-scale));
+      --heading-size-increase: {{ headingSizeIncrease }};
+      <template v-for="item in headingWeights">
+        {{ item.varName }}: {{ item.value }};
+      </template>
+    }
+    .fullSize {
+      --font-size-scale: 1;
+      --scaled-font-size: calc(var(--font-size) * var(--font-size-scale));
+      <template v-for="item in headingWeights">
+        {{ item.varName }}: 400;
+      </template>
+    }
+    .scaled {
+      --font-size-scale: {{ fontSizeScale }};
+      --scaled-font-size: calc(var(--font-size) * var(--font-size-scale));
+      <template v-for="item in headingWeights">
+        {{ item.varName }}: 400;
+      </template>
+    }
+    html, body  {
+      overflow-wrap: {{ (fontSize > 32) ? "anywhere" : "normal" }};
+    }
 
-      /* Pinch events */
-      html, body {
-        touch-action: auto;
-      }
-      .browserPinchDisabled {
-        touch-action: pan-x pan-y !important;
-      }
-      .pinching, 
-      .pinching * {
-        transition-property: none !important;
-        scroll-behavior: auto !important;
-      }
-    </component>
+    /* Pinch events */
+    html, body {
+      touch-action: auto;
+    }
+    .browserPinchDisabled {
+      touch-action: pan-x pan-y !important;
+    }
+    .pinching, 
+    .pinching * {
+      transition-property: none !important;
+      scroll-behavior: auto !important;
+    }
   </Teleport>
 </template>

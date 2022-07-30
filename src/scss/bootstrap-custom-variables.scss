@@ -58,12 +58,12 @@ $heading-size-increase:       var(--heading-size-increase, 1.2);
 $font-size-scale:             var(--font-size-scale, 1);
 $scaled-font-size:            calc($font-size-base * $font-size-scale);
 
-$h1-font-size:                calc($font-size-base * $heading-size-increase * $heading-size-increase * $heading-size-increase * $heading-size-increase * $heading-size-increase);
-$h2-font-size:                calc($font-size-base * $heading-size-increase * $heading-size-increase * $heading-size-increase * $heading-size-increase);
-$h3-font-size:                calc($font-size-base * $heading-size-increase * $heading-size-increase * $heading-size-increase);
-$h4-font-size:                calc($font-size-base * $heading-size-increase * $heading-size-increase);
-$h5-font-size:                calc($font-size-base * $heading-size-increase);
-$h6-font-size:                $font-size-base;
+$h1-font-size:                calc($scaled-font-size * $heading-size-increase * $heading-size-increase * $heading-size-increase * $heading-size-increase * $heading-size-increase);
+$h2-font-size:                calc($scaled-font-size * $heading-size-increase * $heading-size-increase * $heading-size-increase * $heading-size-increase);
+$h3-font-size:                calc($scaled-font-size * $heading-size-increase * $heading-size-increase * $heading-size-increase);
+$h4-font-size:                calc($scaled-font-size * $heading-size-increase * $heading-size-increase);
+$h5-font-size:                calc($scaled-font-size * $heading-size-increase);
+$h6-font-size:                $scaled-font-size;
 
 $font-size-sm:                calc($font-size-base / $heading-size-increase);
 $scaled-font-size-sm:         calc($scaled-font-size / $heading-size-increase);
@@ -91,6 +91,7 @@ $link-active-box-shadow: 0 0 0 0 var(--link-outline-color);
 
 // Grid
 $spacer: 1rem;
+$scaled-spacer: var(--scaled-font-size, 1rem);
 $gutters: (
   0: 0,
   1: $spacer * .25,
@@ -222,3 +223,16 @@ $nav-link-height:                   calc($scaled-font-size * $line-height-base +
 $navbar-brand-height:               calc($navbar-brand-font-size * $line-height-base);
 $navbar-brand-padding-y:            calc(($nav-link-height - $navbar-brand-height) * .5);
 $navbar-brand-margin-end:           $scaled-font-size;
+
+
+
+/* Dropdowns ------------------------------------------------------------------------ */
+$dropdown-min-width:                10rem !default;
+$dropdown-padding-y:                calc(.5rem * $font-size-scale);
+$dropdown-spacer:                   calc(.125rem * $font-size-scale);
+$dropdown-font-size:                $scaled-font-size;
+
+$dropdown-divider-margin-y:         calc($scaled-spacer * .5);
+
+$dropdown-item-padding-y:           calc($scaled-spacer * .25);
+$dropdown-item-padding-x:           $scaled-spacer;

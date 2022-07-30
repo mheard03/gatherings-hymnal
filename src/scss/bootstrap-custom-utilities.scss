@@ -1,6 +1,4 @@
 // Custom utilities
-
-$scaled-spacer: var(--scaled-font-size, 1rem);
 $scaled-spacers: (
   0: 0,
   1: calc($scaled-spacer * .25),

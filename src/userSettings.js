@@ -6,6 +6,11 @@ const getFinal = {};
 let defaultValues = {
   fontSize: 16
 };
+let readers = {
+  fontSize: readFloat
+};
+
+
 
 export default {
   data() {
@@ -15,12 +20,15 @@ export default {
     // Create a watcher for each property
     for (let setting of Object.keys(this.userSettings)) {
       watch(() => this.userSettings[setting], (newValue, oldValue) => {
-        
         let finalValue = newValue;
+        if (readers[setting]) {
+          finalValue = readers[setting](finalValue);
+        }
         if (getFinal[setting]) {
           finalValue = getFinal[setting](newValue, oldValue, this.userSettings);
         }
         if (finalValue != newValue) {
+          // this write triggers watch again; return to avoid firing update/write logic twice
           this.userSettings[setting] = finalValue;
           return;
         }
@@ -28,6 +36,7 @@ export default {
         if (onUpdate[setting]) {
           onUpdate[setting](newValue, oldValue, this.userSettings);
         }
+
         writeToStorage(this.userSettings);
       });
     }
@@ -44,24 +53,52 @@ export default {
 };
 
 getFinal["fontSize"] = function(newValue, oldValue) {
-  let oldValueNum = parseFloat(oldValue);
-  if (!oldValueNum || oldValueNum <= 0) oldValueNum = defaultValues.fontSize;
+  let oldValueNum = readFloat(oldValue, defaultValues.fontSize);
+  return readFloat(newValue, oldValueNum);
+}
 
-  let finalValue = parseFloat(newValue);
-  if (isNaN(finalValue)) return oldValueNum;
+function readFloat(value, defaultValue) {
+  if (typeof(value) == "undefined") return defaultValue;
+  if (typeof(value) == "number") return value;
+  if (typeof(value) == "string") {
+    let result = parseFloat(value);
+    if (value != NaN.toString() && Number.isNaN(result)) result = undefined;
+    return result;
+  }
+  return undefined;
+}
 
-  finalValue = Math.min(finalValue, 100);
-  finalValue = Math.max(finalValue, 14);
-  return finalValue;
+function readDate(value, defaultValue) {
+  if (typeof(value) == "undefined") return defaultValue;
+  if (value instanceof Date) {
+    if (isNaN(value.getTime())) return defaultValue;
+    return value;
+  }
+
+  let result = undefined;
+  try {
+    result = new Date(value);
+  }
+  catch (e) {
+    result = undefined;
+  }
+  return readDate(result);
 }
 
 function writeToStorage(userSettings) {
-  // console.log('writeToStorage');
-  localStorage["userSettings"] = JSON.stringify(userSettings);
+  let newJson = JSON.stringify(userSettings);
+  try {
+    let oldJson = JSON.stringify(localStorage["userSettings"]);
+    if (newJson != oldJson) {
+      localStorage["userSettings"] = newJson;
+    }
+  }
+  catch (e) {
+    localStorage["userSettings"] = newJson;
+  }
 }
 
 function loadFromStorage(target) {
-  // console.log('loadFromStorage');
   let savedSettings = localStorage["userSettings"];
   if (!savedSettings) return;
 
@@ -70,6 +107,12 @@ function loadFromStorage(target) {
   }
   catch(e) {
     return;
+  }
+
+  for (let field of Object.keys(savedSettings)) {
+    if (readers[field]) {
+      savedSettings[field] = readers[field](savedSettings[field], target[field]);
+    }
   }
 
   Object.assign(target, savedSettings);

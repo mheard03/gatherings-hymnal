@@ -1,5 +1,5 @@
 <script>
-import { watch } from 'vue';
+import { computed, nextTick } from 'vue';
 import userSettingsMixin from './userSettings.js'
 import hymns from './assets/hymns-db';
 import FontSizing from './components/FontSizing.vue';
@@ -7,20 +7,20 @@ window.hymnsDB = hymns;
 
 export default {
   mixins: [userSettingsMixin],
-  data() {
-    return {
-      appContainer: document.getElementById("app")
-    }
-  },
   provide() {
     return {
       userSettings: this.userSettings,
       hymnsDB: hymns,
-      appContainer: this.appContainer
+      fontSizing: computed(() => this.$refs.fontSizing)
     };
   },
   mounted() {
     hymns.cacheRoutes(this.$router);
+
+    document.scrollingElement.style.scrollBehavior = "auto";
+    setTimeout(function() { 
+      document.scrollingElement.style.scrollBehavior = "";
+    }, 100);
   },
   watch: {
     $route: {
@@ -33,6 +33,13 @@ export default {
         let match = allHymnals.filter(h => h.localeCompare(hymnalClass, undefined, { sensitivity: 'base' }) == 0);
         if (match.length != 1) return;
         document.body.classList.add(`theme-${match[0]}`);
+
+        if (value.hash) {
+          document.scrollingElement.style.scrollBehavior = "auto";
+          setTimeout(function() { 
+            document.scrollingElement.style.scrollBehavior = "";
+          }, 100);
+        }
       },
       immediate: true
     }
@@ -42,7 +49,7 @@ export default {
 </script>
 
 <template>
-  <FontSizing></FontSizing>
+  <FontSizing ref="fontSizing"></FontSizing>
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
     <symbol viewBox="0 0 24 24" id="back">
       <title>Back</title>
@@ -70,7 +77,7 @@ export default {
     </symbol>
   </svg>
   <router-view />
-  <input type="range" min="14" max="100" v-model="userSettings.fontSize" style="position: absolute; top: 0;">
+  <input type="range" min="14" max="64" step="0.25" v-model="userSettings.fontSize" style="position: absolute; top: 0;">
 </template>
 <!--
 <template>
@@ -84,10 +91,8 @@ export default {
 </template>
 -->
 
-<style lang="scss">
+<style id="appDotVue" lang="scss">
 /* --- App.vue --- */
 @import "./scss/hymnal.scss"; 
-
-
 </style>
 

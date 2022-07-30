@@ -57,16 +57,7 @@
   --#{$variable-prefix}link-active-color: #{$link-active-color};
 
   /* Custom */
-  --h1-font-weight: 400;
-  --h2-font-weight: 400;
-  --h3-font-weight: 400;
-  --h4-font-weight: 400;
-  --h5-font-weight: 400;
-
   --ui-text-color-inactive: var(--gray-200);
-  --input-height: #{$input-height};
-  --input-height-sm: #{$input-height-sm};
-  --input-height-lg: #{$input-height-lg};
   --bs-gutter-x: #{fnScaleLinearPx(16px, 32px)};
 
   /* Variables overridden by HC themes */
@@ -76,7 +67,12 @@
   --link-hover-color: var(--bs-link-hover-color);
   --link-active-color: var(--bs-link-active-color);
   --link-outline-color: var(--ui-outline-color);
- 
+}
+
+:root, .scaled, .fullSize {
+  --input-height: #{$input-height};
+  --input-height-sm: #{$input-height-sm};
+  --input-height-lg: #{$input-height-lg};
 }
 
 

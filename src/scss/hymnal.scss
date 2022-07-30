@@ -28,3 +28,25 @@ h4 {
 h5 {
   font-weight: var(--h5-font-weight, 400);
 }
+
+svg.icon {
+  width: var(--scaled-font-size);
+  height: var(--scaled-font-size);
+}
+
+body:not(.chonk) {
+  ul.markerWidth {
+    padding-left: max(2rem, var(--marker-width));
+  }
+}
+body.chonk {
+  ul.markerWidth {
+    padding-left: 0;
+    li {
+      list-style-position: inside;
+      line-height: 1.2;
+      padding-top: calc(var(--scaled-font-size) * 0.15);
+      padding-bottom: calc(var(--scaled-font-size) * 0.15);
+    }
+  }
+}

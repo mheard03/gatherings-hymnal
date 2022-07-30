@@ -35,7 +35,7 @@ for (let hymn of Object.values(hymns)) {
   if (suffix) stubHymnId += `-${suffix}`;
 
   hymns[stubHymnId] = {
-    hymnId: hymn.hymnId,
+    hymnId: stubHymnId,
     hymnal: hymn.hymnalId,
     hymnNo: hymn.hymnNo + 1,
     hymnNoTxt: hymn.hymnNoTxt,

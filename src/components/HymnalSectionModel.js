@@ -32,7 +32,7 @@ class HymnalSectionModel {
         };
         
         if (!dummyChild) {
-          dummyChild = new HymnalSectionModel({ name: "", range: [i, i], isVirtual: true });
+          dummyChild = new HymnalSectionModel({ name: "", range: [i, i], isVirtual: true }, this);
           this.children.push(dummyChild);
         }
         dummyChild.range[1] = i;
@@ -57,7 +57,8 @@ class HymnalSectionModel {
       .toLocaleLowerCase()
       .replace(/[\s]+/g, " ")
       .replaceAll(" ", "-")
-      .replace(/[^a-z\-]/gi, "");
+      .replace(/[^a-z0-9\-]/gi, "");
+    if (/^[0-9]/.test(myId)) myId = 's' + myId;
     myId = myId || `s${this.index}`;
     
     if (!this.parent) return myId;
@@ -92,7 +93,7 @@ class HymnalSectionModel {
   populateHymnsFromRanges(hymns) {
     let leafSections = this.descendantsAndSelf.filter(s => !s.children || s.children.length == 0);
     for (let s of leafSections.filter(s => s.range)) {
-      s.hymns = hymns.filter(h => h.hymnNo >= s.range[0] && h.hymnNo <= s.range[1]);
+      s.hymns = hymns.filter(h => !h.isStub && h.hymnNo >= s.range[0] && h.hymnNo <= s.range[1]);
     }
   }
 }
