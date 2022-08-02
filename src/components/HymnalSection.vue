@@ -9,7 +9,7 @@
     <template v-if="renderMode == 'hymns'">
       <ul class="markerWidth" ref="ul" :style="`--marker-width: ${markerWidth}`">
         <template v-for="hymn of hymnInfos">
-          <li :style="`--hymnNo: '${hymn.hymnNo}'`" ref="lis"><span>{{ hymn.hymnNo2 }}</span><a :href="hymn.url">{{ hymn.title }}</a></li>
+          <li :style="`--hymnNo: '${hymn.hymnNo}'`" ref="lis"><span>{{ hymn.hymnNo2 }}</span><a :href="hymn.url" @click="onHymnClick($event, hymn)">{{ hymn.title }}</a></li>
         </template>
       </ul>     
     </template>
@@ -69,6 +69,13 @@ export default {
           return result;
         });
       }
+    }
+  },
+  methods: {
+    onHymnClick(event, hymn) {
+      if (!hymn) return;
+      this.$router.push(hymn.url);
+      event.preventDefault();
     }
   },
   watch: {

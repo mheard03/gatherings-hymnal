@@ -117,14 +117,10 @@ export default {
       },
       immediate: true
     },
-    scrollPosition() {
+    async scrollPosition() {
       this.onScrollChange();
     },
     currentSectionId(newValue) {
-      let hash = (newValue) ? `#${newValue}` : "";
-      let { name, path, query } = this.$router.currentRoute.value;
-      this.$router.replace({ name, path, query, hash });
-
       let currentSection = document.getElementById(newValue);
       while (currentSection) {
         let currentHeading = currentSection.querySelector("h1, h2, h3, h4, h5, h6");
@@ -141,7 +137,8 @@ export default {
       }      
     }
   },
-  mounted() {
+  async mounted() {
+  
     const applyMaxSize = {
       name: 'applyMaxSize',
       enabled: true,
@@ -254,6 +251,7 @@ export default {
       let sections = [];
       if (this.sort == "alpha") {
         // A-Z headings
+        // TODO: Smarter chunking. Use https://observablehq.com/d/92bf24b8a3524026
         this.hymns.sort((a,b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
 
         let alphaHymns = this.hymns.filter(h => /[A-Z]/i.test(h.title));
@@ -329,10 +327,10 @@ export default {
     content: var(--hymnNo);
     color: var(--ui-color);
   }
-  .hymnalSection + .hymnalSection > h2 {
+  .hymnalSection > h2 {
     margin-top: 1.5rem;
   }
-  .hymnalSection + .hymnalSection > h3 {
+  .hymnalSection > h3 {
     margin-top: 0.5rem;
   }
   main .dropdown-menu a.dropdown-item {

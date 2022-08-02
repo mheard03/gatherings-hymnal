@@ -16,11 +16,6 @@ export default {
   },
   mounted() {
     hymns.cacheRoutes(this.$router);
-
-    document.scrollingElement.style.scrollBehavior = "auto";
-    setTimeout(function() { 
-      document.scrollingElement.style.scrollBehavior = "";
-    }, 100);
   },
   watch: {
     $route: {
@@ -33,13 +28,6 @@ export default {
         let match = allHymnals.filter(h => h.localeCompare(hymnalClass, undefined, { sensitivity: 'base' }) == 0);
         if (match.length != 1) return;
         document.body.classList.add(`theme-${match[0]}`);
-
-        if (value.hash) {
-          document.scrollingElement.style.scrollBehavior = "auto";
-          setTimeout(function() { 
-            document.scrollingElement.style.scrollBehavior = "";
-          }, 100);
-        }
       },
       immediate: true
     }
