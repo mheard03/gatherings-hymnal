@@ -9,11 +9,32 @@ function attachSearchFunction(hymnsObj) {
   Object.defineProperty(hymnsObj, 'search', {
     value: function() {
       index = index || buildSearchIndex(hymnArray);
-      let rawResults = index.search(...arguments);
+      let rawResults;
+
+      let params = [...arguments];
+      if (params.length == 1 && typeof(params[0]) == "string" && params[0].includes('"')) {
+        let query = buildPhraseQuery(params[0]);
+        rawResults = index.search(query);
+      }
+      else {
+        rawResults = index.search(...arguments);
+      }
+
       let results = processSearchResults(rawResults);
       return results;
     }
   });
+}
+
+function buildPhraseQuery(text) {
+  // Thank you https://stackoverflow.com/questions/11456850/split-a-string-by-commas-but-ignore-commas-within-double-quotes-using-javascript
+  let wordsAndPhrases = text.match(/[\-\+]?(".*?"|[^"\s]+)(?=\s*|\s*$)/g);
+
+  let processedWordsAndPhrases = wordsAndPhrases.map(wp => {
+    return wp.replaceAll('"', '')            // remove all quotation marks
+             .replaceAll(/[\s]+/g, '\\ ');   // escape all spaces
+  });
+  return processedWordsAndPhrases.join(" ")
 }
 
 function processSearchResults(rawResults) {
