@@ -148,8 +148,16 @@ $scaled-utilities: (
 );
 
 .scaled {
+  @each $key, $size in map-merge($scaled-spacers, $scaled-negative-spacers) {
+    --spacer-#{$key}: #{$size};
+  }
   @each $key, $utility in $scaled-utilities {
     @include generate-utility($utility, "");
+  }
+}
+:root, .fullSize {
+  @each $key, $size in map-merge($scaled-spacers, $scaled-negative-spacers) {
+    --spacer-#{$key}: #{$size};
   }
 }
 .fullSize {

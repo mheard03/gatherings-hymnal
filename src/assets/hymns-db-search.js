@@ -21,6 +21,7 @@ function processSearchResults(rawResults) {
   for (let result of processed) {
     result.title = addHighlights(result.fields["title"]);
     result.preview = addHighlights(findPreviewField(result));
+    result.preview = result.preview || "No preview";
     delete result.fields;
   }
   return processed;
@@ -88,6 +89,7 @@ function findPreviewField(result) {
   } else {
     selectedFieldId = verseMatches[0] || chorusMatches[0];
   }
+  selectedFieldId = selectedFieldId || "line00";
   return result.fields[selectedFieldId];
 }
 

@@ -81,13 +81,9 @@ export default {
 };
 </script>
  
-<style lang="scss">
+<style scoped lang="scss">
 /* --- Hymn.vue --- */
 @import "../scss/bootstrap-base";
-
-#primaryNav button.back {
-  margin-left: calc(-1 * $btn-padding-x)
-}
 
 #hymnContainer {
   --verse-indent: 0.75rem;

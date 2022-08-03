@@ -6,6 +6,7 @@
 }
 body {
   --page-margin-bottom: calc(var(--font-size) * 5);
+  overflow-y: scroll;
 }
 
 main {
@@ -34,6 +35,32 @@ svg.icon {
   height: var(--scaled-font-size);
 }
 
+#primaryNav {
+  button.back {
+    margin-left: calc(-1 * $btn-padding-x)
+  }
+
+  .navbar-brand {
+    text-overflow: ellipsis;
+  }
+}
+
+.top-block {
+  background-color: white;
+  @extend .mt-0;
+  @extend .mb-3;
+  @extend .pt-3;
+  @extend .pb-3;
+  @extend .border-bottom;
+  border-color: var(--gray-300);
+
+  h1, .h1 {
+    &:not([class*="mb-"]) {
+      @extend .mb-3;
+    }
+  }
+}
+
 body:not(.chonk) {
   ul.markerWidth {
     padding-left: max(2rem, var(--marker-width));
@@ -48,5 +75,25 @@ body.chonk {
       padding-top: calc(var(--scaled-font-size) * 0.15);
       padding-bottom: calc(var(--scaled-font-size) * 0.15);
     }
+  }
+}
+
+mark {
+  @extend .rounded;
+  padding: 0 0.15em;
+  margin: 0 -0.15em;
+  font-weight: 500;
+  background-color: transparent;
+  color: inherit;
+}
+
+.hymnal-label {
+  text-transform: uppercase;
+  font-size: var(--scaled-font-size-sm);
+  color: var(--gray-600);
+  line-height: 1;
+  .dropdown-item.active &, 
+  .dropdown-item:active & {
+     color: var(--gray-400);
   }
 }

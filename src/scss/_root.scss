@@ -59,6 +59,9 @@
   /* Custom */
   --ui-text-color-inactive: var(--gray-200);
   --bs-gutter-x: #{fnScaleLinearPx(16px, 32px)};
+  --line-height-extra-y: calc(var(--scaled-font-size) * #{$line-height-base - 1});
+  --line-height-extra-y-half: calc(var(--scaled-font-size) * #{math.div($line-height-base - 1, 2)});
+  
 
   /* Variables overridden by HC themes */
   --body-color: var(--bs-body-color);
@@ -73,6 +76,8 @@
   --input-height: #{$input-height};
   --input-height-sm: #{$input-height-sm};
   --input-height-lg: #{$input-height-lg};
+  --scaled-font-size-sm: #{$scaled-font-size-sm};
+  --scaled-font-size-lg: #{$scaled-font-size-lg};
 }
 
 

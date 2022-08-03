@@ -3,14 +3,14 @@ import {
   createWebHistory,
 } from 'vue-router/dist/vue-router.esm-bundler';
 
+let instantScrollTimeout = 0;
 function enableInstantScroll() {
-  console.log('enableInstantScroll');
-  if (document.scrollingElement.style.scrollBehavior != "auto") {
-    document.scrollingElement.style.scrollBehavior = "auto";
-    setTimeout(function() { 
-      document.scrollingElement.style.scrollBehavior = "";
-    }, 500);
-  }
+  clearTimeout(instantScrollTimeout);
+  document.scrollingElement.style.scrollBehavior = "auto";
+  setTimeout(function() { 
+    document.scrollingElement.style.scrollBehavior = "";
+    instantScrollTimeout = 0;
+  }, 500);
 }
 
 export default () => {
@@ -19,6 +19,10 @@ export default () => {
     routes: [
       {
         path: '/',
+        component: () => import('./views/Home.vue'),
+      },
+      {
+        path: '/index.html',
         name: 'home',
         component: () => import('./views/Home.vue'),
       },
@@ -33,6 +37,12 @@ export default () => {
         name: 'hymn',
         component: () => import('./views/Hymn.vue'),
         props: route => ({ hymnalId: route.query.hymnal, hymnNo: route.query.hymnNo, suffix: route.query.suffix })
+      },
+      {
+        path: '/search.html',
+        name: 'search',
+        component: () => import('./views/SearchResults.vue'),
+        props: route => ({ keywords: route.query.keywords })
       },
     ],
     scrollBehavior(to, from, savedPosition) {

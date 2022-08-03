@@ -9,10 +9,10 @@
     </div>
   </nav>
   <main>
-    <div id="search-row" class="mt-0 pt-3 pb-3 mb-3 border-bottom">
+    <div class="top-block">
       <div class="container">
-        <h1 class="mb-3">Find a song</h1>
-        <Search hide-label="true" />
+        <h1>Find a song</h1>
+        <Search :hide-label="true" />
       </div>
     </div>
     <div class="container">
@@ -58,10 +58,6 @@ export default {
   background-repeat: no-repeat;
 }
 
-.navbar-brand {
-  text-overflow: ellipsis;
-}
-
 main {
   padding-top: 0;
 }
@@ -69,10 +65,5 @@ main {
 main a.btn-lg {
   text-align: left;
   white-space: normal;
-}
-
-#search-row {
-  background-color: white;
-  border-color: var(--gray-300);
 }
 </style>

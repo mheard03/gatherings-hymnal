@@ -1,7 +1,7 @@
 <template>
   <nav id="primaryNav" class="scaled navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container flex-nowrap overflow-hidden">
-      <button class="btn btn-fill back" @click="$router.push('/')"><svg class="icon"><use href="#back" /></svg></button>
+      <button class="btn btn-fill back" @click="$router.back()"><svg class="icon"><use href="#back" /></svg></button>
       <a class="navbar-brand flex-fill me-2 overflow-hidden">
         {{ hymnal.title }}
       </a>
@@ -9,10 +9,10 @@
     </div>
   </nav>
   <main class="hymnal">
-    <div id="header-row" class="mt-0 pt-3 pb-3 mb-3 bg-white border-bottom">
+    <div class="top-block">
       <div class="container">
         <div class="d-flex flex-wrap flex-fill align-items-center text-nowrap">
-          <h1 class="flex-grow-1">All Songs</h1>
+          <h1 class="flex-grow-1 mb-0">All Songs</h1>
           <div class="flex-shrink-0 btn-group scaled ms-auto mb-2" role="group" aria-label="Sort">
             <router-link :class="['btn', (sort == 'alpha') ? 'btn-fill' : 'btn-outline']" :to="{ name: 'hymnal', query: { hymnal: hymnal.hymnalId, sort: 'alpha' }}" replace>A-Z</router-link>
             <router-link :class="['btn', (sort == 'num') ? 'btn-fill' : 'btn-outline']" :to="{ name: 'hymnal', query: { hymnal: hymnal.hymnalId, sort: 'num' }}" replace>1-9</router-link>
