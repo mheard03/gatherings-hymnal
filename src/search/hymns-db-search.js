@@ -1,16 +1,28 @@
+import normalizeToAscii from './normalizeToAscii.js';
 import buildSearchIndex from './hymns-db-indexer.js';
+import lunr, { Query } from 'lunr';
 
 let hymns = undefined;
 let index = undefined;
+const MAX_PHRASE_LENGTH = 3;
 
 function attachSearchFunction(hymnsObj) {
+  console.log('attachSearchFunction')
   hymns = hymnsObj;
   let hymnArray = Object.values(hymnsObj).filter(h => !h.isStub);
+  if (hymnsObj.search) return;
   Object.defineProperty(hymnsObj, 'search', {
-    value: function() {
+    value: function(queryString) {
       index = index || buildSearchIndex(hymnArray);
-      let rawResults;
 
+      let clauses = buildClauses(queryString);
+      let rawResults = index.query(function (q) {
+        for (let clause of clauses) {
+          console.log('adding clause', clause)
+          q.term(clause.term, clause.options);
+        }
+      })
+      /*
       let params = [...arguments];
       if (params.length == 1 && typeof(params[0]) == "string" && params[0].includes('"')) {
         let query = buildPhraseQuery(params[0]);
@@ -19,11 +31,78 @@ function attachSearchFunction(hymnsObj) {
       else {
         rawResults = index.search(...arguments);
       }
+      */
 
       let results = processSearchResults(rawResults);
       return results;
     }
   });
+}
+
+function buildClauses(text) {
+  text = normalizeToAscii(text);
+
+  // Thank you https://stackoverflow.com/questions/11456850/split-a-string-by-commas-but-ignore-commas-within-double-quotes-using-javascript
+  let wordsAndPhrases = text.match(/[\-\+]?(".*?"|[^"\s]+)(?=\s*|\s*$)/g);
+  wordsAndPhrases = wordsAndPhrases.map(wp => wp.replaceAll('"', ''));
+
+  console.log('wordsAndPhrases', wordsAndPhrases);
+
+  let baseClauses = [];
+  for (let wop of wordsAndPhrases) {
+    let clause = { options: {} };
+    if (wop.startsWith("+")) clause.options.presence = lunr.Query.presence.REQUIRED;
+    if (wop.startsWith("-")) clause.options.presence = lunr.Query.presence.PROHIBITED;
+    
+    wop = wop.replace(/^[\-\+]+/, "");
+    clause.term = wop;
+    
+    let wordCount = (wop.match(/[\s]+/g) || []).length;
+    if (wordCount > 1) {
+      clause.options.boost = 0.5 + Math.pow(1.1, wordCount - 1);
+    }
+
+    baseClauses.push(clause);
+  }
+  console.log('baseClauses', baseClauses);
+
+  let clausesToChain = [];
+  for (let phraseLength = 2; phraseLength <= MAX_PHRASE_LENGTH; phraseLength++) {
+    for (let i = 0; i <= baseClauses.length - phraseLength; i++) {
+      clausesToChain.push(baseClauses.slice(i, i + phraseLength));
+    }
+  }
+  clausesToChain = clausesToChain.filter(chain => {
+    if (chain.some(c => c.options.presence == lunr.Query.presence.PROHIBITED)) return false;
+    if (chain.some(c => c.term.includes(" "))) return false;
+    return true;
+  });
+  let chainedClauses = clausesToChain.map(chain => {
+    let clause = { options: {} };
+    let words = chain.map(c => c.term);
+    
+    clause.term = words.join(" ");
+    clause.options.boost = Math.pow(1.1, words.length - 1);
+    return clause;
+  });
+  console.log('chainedClauses', chainedClauses);
+
+  let allClauses = [...baseClauses, ...chainedClauses];
+  console.log('allClauses', allClauses);
+
+  let uniqueTerms = [...new Set(allClauses.map(c => c.term))];
+  let uniqueClauses = uniqueTerms.map(t => {
+    let matchingClauses = allClauses.filter(c => c.term == t);
+    if (matchingClauses.length == 1) return matchingClauses[0];
+
+    let clauseWithPresence = matchingClauses.find(c => c.presence != lunr.Query.presence.OPTIONAL);
+    if (clauseWithPresence) return clauseWithPresence;
+
+    let maxScore = Math.max(...matchingClauses.map(c => c.options.boost || 1));
+    return matchingClauses.find(c => (c.options.boost || 1) == maxScore);
+  })
+  console.log('uniqueClauses', uniqueClauses);
+  return uniqueClauses;
 }
 
 function buildPhraseQuery(text) {
@@ -117,22 +196,24 @@ function findPreviewField(result) {
 function addHighlights(fieldInfo) {
   let allMarkPositions = fieldInfo.keywords
     .flatMap(k => k.markPositions)
-    .map(p => [p[0], p[0] + p[1]])
-    .reduce((all, p) => {
+    .map(p => [p[0], p[0] + p[1]]);
+  allMarkPositions.sort((a,b) => a[0] - b[0]);
+
+  let combinedMarkPositions = allMarkPositions.reduce((all, p) => {
       if (all.length == 0) return [p];
 
-      let prev = all[all.length - 1]
-      if (all[0] > prev[1]) {
-        prev[1] = p[1];
+      let prev = all.at(-1);
+      if (p[0] < prev[1]) {
+        prev[1] = Math.max(p[1], prev[1]);
       } else {
         all.push(p);
       }
       return all;
-    }, [])
+    }, []);
 
   let cursor = 0;
   let highlighted = "";
-  for (let p of allMarkPositions) {
+  for (let p of combinedMarkPositions) {
     if (cursor < p[0]) {
       highlighted += fieldInfo.text.substring(cursor, p[0]);
     }

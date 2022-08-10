@@ -1,4 +1,8 @@
 import lunr from 'lunr'
+import hymnalStemmer from './pipeline/hymnalStemmer.js';
+import hymnalTokenizer from './hymnalTokenizer.js';
+import repairContractions from './pipeline/repairContractions.js';
+
 const collator = new Intl.Collator('en', { sensitivity: "base", ignorePunctuation: true });
 
 let maxFieldCounts = {
@@ -39,7 +43,30 @@ function buildSearchIndex(hymnArray) {
     maxFieldCounts.chorus = Math.max(maxFieldCounts.chorus, uniqueChorusLines.length);
   }
 
+  var hymnalPlugin = function (builder) {
+    builder.tokenizer = hymnalTokenizer;
+
+    lunr.Pipeline.registerFunction(repairContractions, 'repairContractions');
+    lunr.Pipeline.registerFunction(hymnalStemmer, 'hymnalStemmer');
+    builder.pipeline.reset();
+    builder.pipeline.add(
+      lunr.trimmer,
+      repairContractions,
+      lunr.stopWordFilter,
+      hymnalStemmer
+    );
+    builder.searchPipeline.reset();
+    builder.searchPipeline.add(
+      repairContractions,
+      hymnalStemmer
+    );
+  }
+
   let searchIndex = lunr(function () {
+    let indexStart = performance.now();
+
+    this.use(hymnalPlugin);
+
     this.metadataWhitelist = ['position'];
     this.ref('hymnId');
     this.field('title', { boost: 3 });
@@ -52,15 +79,19 @@ function buildSearchIndex(hymnArray) {
         this.field(fieldName + suffix);
       }
     }
-  
+
     hymnArray.forEach(function (hymn) {
       let flattened = {}
       Object.assign(flattened, pick(hymn, ['hymnId', 'title']));
       Object.assign(flattened, hymn.searchLines);
       this.add(flattened)
     }, this)
+
+    console.log('time to index', performance.now() - indexStart);
+    lunr._indexingComplete = true;
   });
 
+  window.index = searchIndex;
   return searchIndex;
 }
 

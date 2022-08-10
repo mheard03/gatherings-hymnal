@@ -1,7 +1,6 @@
 import hymnArray from './hymns-db-generated.json';
 import hymnalArray from './hymnals.json';
-import attachSearchFunction from './hymns-db-search';
-import { h } from 'vue';
+import attachSearchFunction from '../search/hymns-db-search';
 
 let hymns = {};
 

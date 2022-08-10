@@ -70,6 +70,10 @@ export default {
         this.results = results; 
       },
       immediate: true
+    },
+    results(value) {
+      console.log(value);
+      this.$forceUpdate();
     }
   },
   components: {
@@ -96,4 +100,5 @@ export default {
   -webkit-line-clamp: 3;
   overflow: hidden;
 }
+
 </style>

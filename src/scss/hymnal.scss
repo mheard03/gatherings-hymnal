@@ -79,11 +79,13 @@ body.chonk {
 }
 
 mark {
-  @extend .rounded;
   padding: 0 0.15em;
   margin: 0 -0.15em;
   font-weight: 500;
   background-color: transparent;
+  color: var(--true-black);;
+}
+a mark {
   color: inherit;
 }
 
