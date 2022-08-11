@@ -56,12 +56,14 @@ export default {
     this.pinchManager = new PinchManager(document.scrollingElement);
     this.updateZoomProps();
     this.addPinchListeners();
+    document.addEventListener('keydown', this.onKeydown);
   },
   unmounted() {
     window.removeEventListener("resize", this.onResize);
     window.visualViewport.removeEventListener("resize", this.onResize);
     this.removePinchListeners();
     this.pinchManager.destroy();
+    document.removeEventListener('keydown', this.onKeydown);
   },
   methods: {
     setChonkClass() {
@@ -171,7 +173,13 @@ export default {
       this.updateZoomProps();
       this.zoomScale = undefined;
       this.zoomTarget = undefined;
-    }
+    },
+    onKeydown(e) {
+      if (e.key != "0") return;
+      if (e.metaKey || e.ctrlKey) {
+        this.userSettings.fontSize = 16;
+      }
+    },
   },
   watch: {
     fontSize: {
