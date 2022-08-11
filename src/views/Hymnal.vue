@@ -1,7 +1,7 @@
 <template>
   <nav id="primaryNav" class="scaled navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container flex-nowrap overflow-hidden">
-      <button class="btn btn-fill back" @click="$router.back()"><svg class="icon"><use href="#back" /></svg></button>
+      <button class="btn btn-fill back" @click="$router.backOrDefault()"><svg class="icon"><use href="#back" /></svg></button>
       <a class="navbar-brand flex-fill me-2 overflow-hidden">
         {{ hymnal.title }}
       </a>

@@ -65,7 +65,17 @@ export default () => {
       }
     },
   });
-  
+
+  router.backOrDefault = async function(fallbackRoute) {
+    fallbackRoute = fallbackRoute || { name: 'home' };
+    if (!history.state.back) {
+      router.push(fallbackRoute);
+    }
+    else {
+      router.go(-1);
+    }
+  }
+
   router.beforeResolve(enableInstantScroll);
   return router;
 }
