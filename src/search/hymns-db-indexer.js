@@ -1,5 +1,6 @@
 import lunr from 'lunr'
 import hymnalStemmer from './pipeline/hymnalStemmer.js';
+import blankKiller from './pipeline/blankKiller.js';
 import hymnalTokenizer from './hymnalTokenizer.js';
 import repairContractions from './pipeline/repairContractions.js';
 
@@ -45,15 +46,20 @@ function buildSearchIndex(hymnArray) {
 
   var hymnalPlugin = function (builder) {
     builder.tokenizer = hymnalTokenizer;
+    builder.tokenizer.separator = /[\-\s,]/;
 
+    // lunr.Pipeline.registerFunction(hymnalTrimmer, 'hymnalTrimmer');
     lunr.Pipeline.registerFunction(repairContractions, 'repairContractions');
     lunr.Pipeline.registerFunction(hymnalStemmer, 'hymnalStemmer');
+    lunr.Pipeline.registerFunction(blankKiller, 'blankKiller');
+    
     builder.pipeline.reset();
     builder.pipeline.add(
       lunr.trimmer,
       repairContractions,
       lunr.stopWordFilter,
-      hymnalStemmer
+      hymnalStemmer,
+      blankKiller
     );
     builder.searchPipeline.reset();
     builder.searchPipeline.add(
@@ -63,8 +69,6 @@ function buildSearchIndex(hymnArray) {
   }
 
   let searchIndex = lunr(function () {
-    let indexStart = performance.now();
-
     this.use(hymnalPlugin);
 
     this.metadataWhitelist = ['position'];
@@ -87,11 +91,8 @@ function buildSearchIndex(hymnArray) {
       this.add(flattened)
     }, this)
 
-    console.log('time to index', performance.now() - indexStart);
-    lunr._indexingComplete = true;
   });
 
-  window.index = searchIndex;
   return searchIndex;
 }
 
@@ -114,6 +115,11 @@ function getInnerText(html) {
     div.innerHTML = html;
     text = div.innerText;
   }
+
+  // Fix punctuation spacing
+  text = text.replaceAll(/([,;:!\.\?])([^\s])/g, "$1 $2");
+
+  // Remove double spaces and trim
   text = text.replace(/[\s]+/g, " ").trim();
   return text;
 }

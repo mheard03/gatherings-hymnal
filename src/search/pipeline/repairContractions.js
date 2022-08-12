@@ -64,6 +64,8 @@ function wildcardReplacer() {
 
 function repairContractions(token) {
   let str = token.str;
+  if (str) str = str.replaceAll("`", "'");
+  
   if (!str || !str.includes("'")) {
     // No apostrophes: do nothing and return
     return token;

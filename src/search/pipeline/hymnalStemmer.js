@@ -28,7 +28,7 @@ function hymnalStemmer(token) {
       }
     }
     
-    return sourceTokens.join(" ");
+    return sourceTokens.map(t => t.str).filter(str => str).join(" ");
   });
 }
 
