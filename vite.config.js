@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import mkcert from'vite-plugin-mkcert'
 const fs = require('fs');
 
 const { buildHymnals } = require('./hymnals/build-scripts/build-hymnals');
@@ -12,6 +13,7 @@ if (!existsSync('./src/assets/hymns-db-generated.json')) {
 export default defineConfig({
   server: {
     watch: {},
+    https: true,
     host: true
   },
   build: {
@@ -19,6 +21,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 1300
   },
   plugins: [
+    mkcert(),
     vue(),
     {
       name: 'hot-reload-hymns',
