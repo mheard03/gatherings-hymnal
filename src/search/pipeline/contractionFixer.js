@@ -62,7 +62,7 @@ function wildcardReplacer() {
   return (replacer) ? replacer(match) : match;
 }
 
-function repairContractions(token) {
+function contractionFixer(token) {
   let str = token.str;
   if (str) str = str.replaceAll("`", "'");
   
@@ -88,7 +88,11 @@ function repairContractions(token) {
   bestGuessToken.str = str;
 
   token.str = token.str.replaceAll("'", "");
+
+  if (bestGuessToken.str == token.str) {
+    return token;
+  }
   return [token, bestGuessToken];
 }
 
-export default repairContractions;
+export default contractionFixer;

@@ -2,7 +2,7 @@ import lunr from 'lunr'
 import hymnalStemmer from './pipeline/hymnalStemmer.js';
 import blankKiller from './pipeline/blankKiller.js';
 import hymnalTokenizer from './hymnalTokenizer.js';
-import repairContractions from './pipeline/repairContractions.js';
+import contractionFixer from './pipeline/contractionFixer.js';
 
 const collator = new Intl.Collator('en', { sensitivity: "base", ignorePunctuation: true });
 
@@ -49,21 +49,21 @@ function buildSearchIndex(hymnArray) {
     builder.tokenizer.separator = /[\-\s,]/;
 
     // lunr.Pipeline.registerFunction(hymnalTrimmer, 'hymnalTrimmer');
-    lunr.Pipeline.registerFunction(repairContractions, 'repairContractions');
+    lunr.Pipeline.registerFunction(contractionFixer, 'contractionFixer');
     lunr.Pipeline.registerFunction(hymnalStemmer, 'hymnalStemmer');
     lunr.Pipeline.registerFunction(blankKiller, 'blankKiller');
     
     builder.pipeline.reset();
     builder.pipeline.add(
       lunr.trimmer,
-      repairContractions,
+      contractionFixer,
       lunr.stopWordFilter,
       hymnalStemmer,
       blankKiller
     );
     builder.searchPipeline.reset();
     builder.searchPipeline.add(
-      repairContractions,
+      contractionFixer,
       hymnalStemmer
     );
   }
