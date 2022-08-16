@@ -1,37 +1,23 @@
 import normalizeToAscii from './normalizeToAscii.js';
-import buildSearchIndex from './hymns-db-indexer.js';
-import lunr, { Query } from 'lunr';
+import { buildSearchIndex, MAX_PHRASE_LENGTH } from './hymns-db-indexer.js';
+import lunr from 'lunr';
 
 let hymns = undefined;
 let index = undefined;
-const MAX_PHRASE_LENGTH = 3;
 
 function attachSearchFunction(hymnsObj) {
-  console.log('attachSearchFunction')
   hymns = hymnsObj;
   let hymnArray = Object.values(hymnsObj).filter(h => !h.isStub);
   if (hymnsObj.search) return;
   Object.defineProperty(hymnsObj, 'search', {
     value: function(queryString) {
       index = index || buildSearchIndex(hymnArray);
+      window.index = index;
 
       let clauses = buildClauses(queryString);
       let rawResults = index.query(function (q) {
-        for (let clause of clauses) {
-          console.log('adding clause', clause)
-          q.term(clause.term, clause.options);
-        }
-      })
-      /*
-      let params = [...arguments];
-      if (params.length == 1 && typeof(params[0]) == "string" && params[0].includes('"')) {
-        let query = buildPhraseQuery(params[0]);
-        rawResults = index.search(query);
-      }
-      else {
-        rawResults = index.search(...arguments);
-      }
-      */
+        clauses.forEach(c => q.term(c.term, c.options));
+      });
 
       let results = processSearchResults(rawResults);
       return results;
@@ -40,13 +26,11 @@ function attachSearchFunction(hymnsObj) {
 }
 
 function buildClauses(text) {
-  text = normalizeToAscii(text);
+  text = normalizeToAscii(text).toLocaleLowerCase();
 
   // Thank you https://stackoverflow.com/questions/11456850/split-a-string-by-commas-but-ignore-commas-within-double-quotes-using-javascript
   let wordsAndPhrases = text.match(/[\-\+]?(".*?"|[^"\s]+)(?=\s*|\s*$)/g);
   wordsAndPhrases = wordsAndPhrases.map(wp => wp.replaceAll('"', ''));
-
-  console.log('wordsAndPhrases', wordsAndPhrases);
 
   let baseClauses = [];
   for (let wop of wordsAndPhrases) {
@@ -64,10 +48,11 @@ function buildClauses(text) {
 
     baseClauses.push(clause);
   }
-  console.log('baseClauses', baseClauses);
+
+  if (!lunr.tokenizer.maxPhraseLength || lunr.tokenizer.maxPhraseLength <= 1) return;
 
   let clausesToChain = [];
-  for (let phraseLength = 2; phraseLength <= MAX_PHRASE_LENGTH; phraseLength++) {
+  for (let phraseLength = 2; phraseLength <= lunr.tokenizer.maxPhraseLength; phraseLength++) {
     for (let i = 0; i <= baseClauses.length - phraseLength; i++) {
       clausesToChain.push(baseClauses.slice(i, i + phraseLength));
     }
@@ -85,10 +70,8 @@ function buildClauses(text) {
     clause.options.boost = Math.pow(1.1, words.length - 1);
     return clause;
   });
-  console.log('chainedClauses', chainedClauses);
 
   let allClauses = [...baseClauses, ...chainedClauses];
-  console.log('allClauses', allClauses);
 
   let uniqueTerms = [...new Set(allClauses.map(c => c.term))];
   let uniqueClauses = uniqueTerms.map(t => {
@@ -101,19 +84,7 @@ function buildClauses(text) {
     let maxScore = Math.max(...matchingClauses.map(c => c.options.boost || 1));
     return matchingClauses.find(c => (c.options.boost || 1) == maxScore);
   })
-  console.log('uniqueClauses', uniqueClauses);
   return uniqueClauses;
-}
-
-function buildPhraseQuery(text) {
-  // Thank you https://stackoverflow.com/questions/11456850/split-a-string-by-commas-but-ignore-commas-within-double-quotes-using-javascript
-  let wordsAndPhrases = text.match(/[\-\+]?(".*?"|[^"\s]+)(?=\s*|\s*$)/g);
-
-  let processedWordsAndPhrases = wordsAndPhrases.map(wp => {
-    return wp.replaceAll('"', '')            // remove all quotation marks
-             .replaceAll(/[\s]+/g, '\\ ');   // escape all spaces
-  });
-  return processedWordsAndPhrases.join(" ")
 }
 
 function processSearchResults(rawResults) {

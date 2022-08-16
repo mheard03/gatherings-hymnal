@@ -1,20 +1,20 @@
 import lunr from 'lunr'
 
-lunr._standardStemmer = lunr._standardStemmer || lunr.stemmer;
-lunr._customStemmer = undefined;
-Object.defineProperty(lunr, 'stemmer', {
+lunr._standardTrimmer = lunr._standardTrimmer || lunr.trimmer;
+lunr._customTrimmer = undefined;
+Object.defineProperty(lunr, 'trimmer', {
   get() {
-    return lunr._customStemmer || lunr._standardStemmer;
+    return lunr._customTrimmer || lunr._standardTrimmer;
   },
   set(value) {
-    lunr._customStemmer = value;
+    lunr._customTrimmer = value;
   },
   enumerable: true
 });
 
-function hymnalStemmer(token) {
+function hymnalTrimmer(token) {
   if (!token || !token.str.length || !token.str.includes(" ")) {
-    return lunr._standardStemmer(token);
+    return lunr._standardTrimmer(token);
   }
 
   token.metadata.sourceTokens = token.metadata.sourceTokens || token.str.split(" ").map(s => new lunr.Token(s, {}));
@@ -22,9 +22,9 @@ function hymnalStemmer(token) {
   return token.update(function (str, metadata) {
     let sourceTokens = metadata.sourceTokens;
     for (let token of sourceTokens) {
-      if (!token.metadata.isStemmed) {
-        lunr._standardStemmer(token);
-        token.metadata.isStemmed = true;
+      if (!token.metadata.isTrimmed) {
+        lunr._standardTrimmer(token);
+        token.metadata.isTrimmed = true;
       }
     }
     
@@ -32,4 +32,4 @@ function hymnalStemmer(token) {
   });
 }
 
-export default hymnalStemmer;
+export default hymnalTrimmer;

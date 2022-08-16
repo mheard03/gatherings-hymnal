@@ -1,10 +1,13 @@
 import lunr from 'lunr'
 import hymnalStemmer from './pipeline/hymnalStemmer.js';
+import hymnalTrimmer from './pipeline/hymnalTrimmer.js';
 import blankKiller from './pipeline/blankKiller.js';
 import hymnalTokenizer from './hymnalTokenizer.js';
 import contractionFixer from './pipeline/contractionFixer.js';
+import consoleLogger from './pipeline/consoleLogger.js';
 
 const collator = new Intl.Collator('en', { sensitivity: "base", ignorePunctuation: true });
+const MAX_PHRASE_LENGTH = 2;
 
 let maxFieldCounts = {
   line: 0,
@@ -47,15 +50,17 @@ function buildSearchIndex(hymnArray) {
   var hymnalPlugin = function (builder) {
     builder.tokenizer = hymnalTokenizer;
     builder.tokenizer.separator = /[\-\s,]/;
+    builder.tokenizer.maxPhraseLength = MAX_PHRASE_LENGTH;
 
-    // lunr.Pipeline.registerFunction(hymnalTrimmer, 'hymnalTrimmer');
+    lunr.Pipeline.registerFunction(hymnalTrimmer, 'hymnalTrimmer');
     lunr.Pipeline.registerFunction(contractionFixer, 'contractionFixer');
     lunr.Pipeline.registerFunction(hymnalStemmer, 'hymnalStemmer');
     lunr.Pipeline.registerFunction(blankKiller, 'blankKiller');
+    lunr.Pipeline.registerFunction(consoleLogger, 'consoleLogger');
     
     builder.pipeline.reset();
     builder.pipeline.add(
-      lunr.trimmer,
+      hymnalTrimmer,
       contractionFixer,
       lunr.stopWordFilter,
       hymnalStemmer,
@@ -63,8 +68,10 @@ function buildSearchIndex(hymnArray) {
     );
     builder.searchPipeline.reset();
     builder.searchPipeline.add(
+      hymnalTrimmer,
       contractionFixer,
-      hymnalStemmer
+      hymnalStemmer,
+      // consoleLogger
     );
   }
 
@@ -138,3 +145,4 @@ function pick(obj, keys) {
 }
 
 export default buildSearchIndex;
+export { buildSearchIndex, MAX_PHRASE_LENGTH };

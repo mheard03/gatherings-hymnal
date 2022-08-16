@@ -1,5 +1,3 @@
-import lunr from 'lunr'
-
 function blankKiller(token) {
   if (!token) return null;
   if (!token.str) return null;

@@ -45,7 +45,7 @@ function hymnalTokenizer(obj, metadata) {
 
   return [...singleTokens, ...getPhrases(singleTokens, metadata)];
 }
-hymnalTokenizer.maxPhraseLength = 3;
+hymnalTokenizer.maxPhraseLength ||= 3;
 
 function getPhrases(tokens, metadata) {
   let phraseSet = [];
