@@ -41,7 +41,7 @@ function buildClauses(text) {
     wop = wop.replace(/^[\-\+]+/, "");
     clause.term = wop;
     
-    let wordCount = (wop.match(/[\s]+/g) || []).length;
+    let wordCount = (wop.match(/[\s]+/g) || []).length;  
     if (wordCount > 1) {
       clause.options.boost = 0.5 + Math.pow(1.1, wordCount - 1);
     }
@@ -49,7 +49,7 @@ function buildClauses(text) {
     baseClauses.push(clause);
   }
 
-  if (!lunr.tokenizer.maxPhraseLength || lunr.tokenizer.maxPhraseLength <= 1) return;
+  if (!lunr.tokenizer.maxPhraseLength || lunr.tokenizer.maxPhraseLength <= 1) return baseClauses;
 
   let clausesToChain = [];
   for (let phraseLength = 2; phraseLength <= lunr.tokenizer.maxPhraseLength; phraseLength++) {
@@ -57,7 +57,7 @@ function buildClauses(text) {
       clausesToChain.push(baseClauses.slice(i, i + phraseLength));
     }
   }
-  clausesToChain = clausesToChain.filter(chain => {
+  clausesToChain = clausesToChain.filter(chain => { 
     if (chain.some(c => c.options.presence == lunr.Query.presence.PROHIBITED)) return false;
     if (chain.some(c => c.term.includes(" "))) return false;
     return true;

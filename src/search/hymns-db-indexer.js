@@ -75,11 +75,17 @@ function buildSearchIndex(hymnArray) {
     );
   }
 
+
+  // Fix error on hot-reload
+  lunr.utils.warn = function (message) {
+    if (console && console.warn) console.warn(message);
+  };
+
   let searchIndex = lunr(function () {
     this.use(hymnalPlugin);
 
     this.metadataWhitelist = ['position'];
-    this.ref('hymnId');
+    this.ref('hymnId'); 
     this.field('title', { boost: 3 });
     this.field('line00', { boost: 1.5 });
     this.field('chorus00', { boost: 2 });
@@ -97,7 +103,6 @@ function buildSearchIndex(hymnArray) {
       Object.assign(flattened, hymn.searchLines);
       this.add(flattened)
     }, this)
-
   });
 
   return searchIndex;
