@@ -17,7 +17,7 @@
     "popper-max-size-modifier": "0.2.0",
     "vue": "^3.2.33",
     "vue-router": "^4.0.15",
-    "promise-worker": "^2.0.1"
+    "promise-worker-bi": "^4.0.3"
   },
   "devDependencies": {
     "@rollup/pluginutils": "^4.2.1",

@@ -13,6 +13,7 @@ function enableInstantScroll() {
   }, 500);
 }
 
+// TODO: Make sure this works somewhere other than the server root, lol
 export default () => {
   let router = createRouter({
     history: createWebHistory(),

@@ -1,6 +1,6 @@
-import hymnArray from './hymns-db-generated.json';
-import hymnalArray from './hymnals.json';
-import attachSearchFunction from '../search/hymns-db-search';
+import hymnArray from '@/assets/hymns-db-generated.json';
+import hymnalArray from '@/assets/hymnals.json';
+import attachSearchFunction from '@/search/hymns-db-search';
 
 let hymns = {};
 

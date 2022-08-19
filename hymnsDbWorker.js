@@ -1,33 +1,17 @@
-const HYMNSDB_STATUS = {
-  INIT: 1,
-  LOADING: 2,
-  PROCESSING: 3,
-  READY: 4,
-};
-Object.freeze(HYMNSDB_STATUS);
+import { PWBWorker } from 'promise-worker-bi';
+import HymnsDb from '@/hymnsDb/hymnsDb.js';
 
-let hymnsDbStatus = HYMNSDB_STATUS.INIT
-let hymnsDbSearchStatus = HYMNSDB_STATUS.INIT
+self.hymnsDb = new HymnsDb();
 
-function postMessageToPort(message, port) {
-  port.postMessage(message);
+var promiseWorker = new PWBWorker();
+async function messageHandler(message) {
+  let functionName = message.fn || message;
+  if (!functionName || typeof(functionName) != "string") {
+    throw "hymnsDbWorker accepts messages in the format { fn: 'functionName', args: [ arguments, to, pass ] } or simply 'functionName'"
+  }
+  let fn = self.hymnsDb[functionName];
+  let args = message.args || [];
+  let result = await fn.apply(self.hymnsDb, args);
+  return result;
 }
- 
-onconnect = function (e) {
-  var port = e.ports[0];
-
-  setInterval()
-
-  port.onmessage = function (e) {
-    var workerResult = "Result: " + e.data[0] * e.data[1];
-    port.postMessage(workerResult);
-  };
-};
-
-function getStatus() {
-  return hymnsDbStatus;
-}
-
-async function loadHymnsDB() {}
-
-export default HYMNSDB_STATUS
+promiseWorker.register(messageHandler);

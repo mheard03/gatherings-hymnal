@@ -1,3 +1,4 @@
+import { resolve, path } from 'path';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import mkcert from'vite-plugin-mkcert'
@@ -16,9 +17,23 @@ export default defineConfig({
     https: true,
     host: true
   },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, "./src/")
+    }
+  },
   build: {
     watch: {},
-    chunkSizeWarningLimit: 1300
+    chunkSizeWarningLimit: 1300,
+    emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        'index.html': resolve(__dirname, 'index.html'),
+        'hymn.html': resolve(__dirname, 'hymn.html'),
+        'hymnal.html': resolve(__dirname, 'hymnal.html'),
+        'search.html': resolve(__dirname, 'search.html')
+      }
+    }
   },
   plugins: [
     mkcert(),
