@@ -7,31 +7,18 @@ const promiseWorker = new PWBHost(worker);
 
 class HymnsDbClient {
   static {
-    HymnsDbClient.addFunctions(...HymnsDb.clientFunctions);
-    HymnsDbClient.addPromises(...HymnsDb.clientPromises);
-  }
-  
-  static addFunctions() {
-    [...arguments].forEach(arg => HymnsDbClient.addFunction(arg));
-  }
-
-  static addFunction(fn) {
-    HymnsDbClient[fn] = async function() {
-      let result = await promiseWorker.postMessage({ fn, args: [...arguments] });
-      return result;
+    for (let { helperId, functionNames } of HymnsDb.helperFunctions) {
+      for (let fn of functionNames) {
+        HymnsDbClient[fn] = async function() {
+          // console.log('HymnsDbClient', `waiting for worker.${fn} ready...`, performance.now());
+          await promiseWorker.postMessage({ fn: "awaitReady", args: [ helperId ] });
+          // console.log('HymnsDbClient', `calling worker.${fn}(${[...arguments]})...`, performance.now());
+          let result = await promiseWorker.postMessage({ fn, args: [...arguments] });
+          // console.log('HymnsDbClient', 'got result', performance.now(), result);
+          return result;
+        }  
+      }
     }
-  }
-
-  static addPromises() {
-    [...arguments].forEach(arg => HymnsDbClient.addPromise(arg));
-  }
-
-  static addPromise(promise) {
-    HymnsDbClient[promise] = new Promise((resolve, reject) => {
-      promiseWorker.postMessage({ promise })
-        .then(r => resolve(r))
-        .catch(r => reject(r));
-    });
   }
 }
 
