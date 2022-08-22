@@ -1,5 +1,5 @@
 import lunr from 'lunr'
-import normalizeToAscii from './normalizeToAscii.js';
+import normalizeToAscii from './normalize-to-ascii.js';
 
 /* Overridable tokenizer  ---------------------------------------------------------------------- */
 lunr._standardTokenizer = lunr._standardTokenizer || lunr.tokenizer;

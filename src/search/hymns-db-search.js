@@ -1,4 +1,4 @@
-import normalizeToAscii from './normalizeToAscii.js';
+import normalizeToAscii from './normalize-to-ascii.js';
 import { buildSearchIndex, MAX_PHRASE_LENGTH } from './hymns-db-indexer.js';
 import lunr from 'lunr';
 

@@ -2,7 +2,7 @@ import lunr from 'lunr'
 import hymnalStemmer from './pipeline/hymnalStemmer.js';
 import hymnalTrimmer from './pipeline/hymnalTrimmer.js';
 import blankKiller from './pipeline/blankKiller.js';
-import hymnalTokenizer from './hymnalTokenizer.js';
+import hymnalTokenizer from './hymnal-tokenizer.js';
 import contractionFixer from './pipeline/contractionFixer.js';
 import consoleLogger from './pipeline/consoleLogger.js';
 
