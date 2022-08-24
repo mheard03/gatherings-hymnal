@@ -8,7 +8,12 @@ let hymnals = hymnalArray.reduce((map, h) => {
 class HymnalBuilder {
   static functions = ["getHymnals"];
 
-  static async build(hymnsDbInstance) {
+  static async build(hymnsDbInstance, router) {
+    for (let hymnal of hymnals.values()) {
+      let route = router.resolve({ name: 'hymnal', query: { hymnal: hymnal.hymnalId } });
+      hymnal.url = route.href;
+    }
+
     hymnsDbInstance.getHymnals = function() {
       return hymnals;
     };

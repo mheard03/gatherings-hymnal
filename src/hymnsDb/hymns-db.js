@@ -1,12 +1,15 @@
+import { createHeadlessRouter } from '@/router.js';
 import HymnsDbAbstract from './hymns-db-abstract.js';
 import HymnalBuilder from './builders/hymnal-builder.js';
 import HymnsBuilder from './builders/hymns-builder.js';
 import HymnalSectionBuilder from './builders/hymnal-section-builder.js';
 
+let router = createHeadlessRouter();
+
 let dummyHelperOptions = { id: "hymnsDb", obj: { functions: ["awaitReady"] } }
 let helperOptions = [
-  { id: "hymnals", obj: HymnalBuilder },
-  { id: "hymns", obj: HymnsBuilder, dependsOn: ["hymnals"] },
+  { id: "hymnals", obj: HymnalBuilder, buildParams: [router] },
+  { id: "hymns", obj: HymnsBuilder, dependsOn: ["hymnals"], buildParams: [router] },
   { id: "hymnalSections", obj: HymnalSectionBuilder, dependsOn: ["hymnals", "hymns"] }
 ];
 let helperAndSelfOptions = [dummyHelperOptions, ...helperOptions];
@@ -14,6 +17,7 @@ helperAndSelfOptions.forEach(h => h.dependsOn = [dummyHelperOptions.id, ...(h.de
 
 class HymnsDb extends HymnsDbAbstract {
   constructor() {
+    verifyEnvironment();
     super();
 
     // Build helper objects
@@ -38,7 +42,8 @@ class HymnsDb extends HymnsDbAbstract {
 
       // when precedents are ready, run this helper's build function and resolve/reject accordingly
       let fnBuild = helper.obj.build || (() => true);
-      let buildPromise = precedentPromise.then(() => fnBuild(this));
+      let buildParams = helper.buildParams || [];
+      let buildPromise = precedentPromise.then(() => fnBuild(this, ...buildParams));
       buildPromise.then(() => helper.ready.resolve());
       buildPromise.catch(r => helper.ready.reject(r));
     } 
@@ -57,6 +62,21 @@ class HymnsDb extends HymnsDbAbstract {
       helperId: o.id, 
       functionNames: (o.obj.functions || [])
     }));
+  }
+}
+
+function verifyEnvironment() {
+  try {
+    if (self instanceof SharedWorkerGlobalScope) return true;
+  }
+  catch {
+    let message = "BIG WARNING! HymnsDb should only be instantiated in a SharedWorker!";
+    if (window) {
+      console.warn(message);
+    }
+    else {
+      throw new Error(message);
+    }
   }
 }
 

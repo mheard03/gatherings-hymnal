@@ -1,6 +1,7 @@
 import {
   createRouter,
   createWebHistory,
+  createMemoryHistory
 } from 'vue-router/dist/vue-router.esm-bundler';
 
 let instantScrollTimeout = 0;
@@ -13,39 +14,41 @@ function enableInstantScroll() {
   }, 500);
 }
 
-// TODO: Make sure this works somewhere other than the server root, lol
-export default () => {
+// TODO: Make sure this works if the app is deployed somewhere other than the server root, lol
+let routes = [
+  {
+    path: '/',
+    component: () => import('./views/Home.vue'),
+  },
+  {
+    path: '/index.html',
+    name: 'home',
+    component: () => import('./views/Home.vue'),
+  },
+  {
+    path: '/hymnal.html',
+    name: 'hymnal',
+    component: () => import('./views/Hymnal.vue'),
+    props: route => ({ hymnalId: route.query.hymnal, sort: route.query.sort })
+  },
+  {
+    path: '/hymn.html',
+    name: 'hymn',
+    component: () => import('./views/Hymn.vue'),
+    props: route => ({ hymnalId: route.query.hymnal, hymnNo: route.query.hymnNo, suffix: route.query.suffix })
+  },
+  {
+    path: '/search.html',
+    name: 'search',
+    component: () => import('./views/SearchResults.vue'),
+    props: route => ({ keywords: route.query.keywords })
+  }
+];
+
+function createFullRouter() {
   let router = createRouter({
+    routes,
     history: createWebHistory(),
-    routes: [
-      {
-        path: '/',
-        component: () => import('./views/Home.vue'),
-      },
-      {
-        path: '/index.html',
-        name: 'home',
-        component: () => import('./views/Home.vue'),
-      },
-      {
-        path: '/hymnal.html',
-        name: 'hymnal',
-        component: () => import('./views/Hymnal.vue'),
-        props: route => ({ hymnalId: route.query.hymnal, sort: route.query.sort })
-      },
-      {
-        path: '/hymn.html',
-        name: 'hymn',
-        component: () => import('./views/Hymn.vue'),
-        props: route => ({ hymnalId: route.query.hymnal, hymnNo: route.query.hymnNo, suffix: route.query.suffix })
-      },
-      {
-        path: '/search.html',
-        name: 'search',
-        component: () => import('./views/SearchResults.vue'),
-        props: route => ({ keywords: route.query.keywords })
-      },
-    ],
     scrollBehavior(to, from, savedPosition) {
       // console.log('scrollBehavior', to.fullPath, (from || {}).fullPath, savedPosition)
       if (savedPosition) {
@@ -64,9 +67,8 @@ export default () => {
           top: 0
         }
       }
-    },
+    }
   });
-
   router.backOrDefault = async function(fallbackRoute) {
     fallbackRoute = fallbackRoute || { name: 'home' };
     if (!history.state.back) {
@@ -80,3 +82,13 @@ export default () => {
   router.beforeResolve(enableInstantScroll);
   return router;
 }
+
+function createHeadlessRouter() {
+  return createRouter({ 
+    history: createMemoryHistory(), 
+    routes 
+  });
+}
+
+export default createFullRouter;
+export { createFullRouter, createHeadlessRouter };

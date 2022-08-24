@@ -6,9 +6,14 @@ let hymns;
 class HymnsBuilder {
   static functions = ["getHymns"];
 
-  static async build(hymnsDbInstance) {
+  static async build(hymnsDbInstance, router) {
     hymnArray = hymnArray || await fetchHymnArray();
     hymns = hymns || buildHymnsObject();
+
+    for (let hymn of hymns.values()) {
+      let route = router.resolve({ name: 'hymn', query: { hymnal: hymn.hymnalId, hymnNo: hymn.hymnNo }, hash: ((hymn.suffix && hymn.suffix != 'A') ? `#${hymn.suffix}` : '') });
+      hymn.url = route.href;
+    }
 
     let hymnals = hymnsDbInstance.getHymnals();
     for (let hymnal of hymnals.values()) {
@@ -39,6 +44,7 @@ function buildHymnsObject() {
     hymn.hymnNo = parseInt(idComponents[1]);
     if (idComponents[2]) hymn.suffix = idComponents[2];
     hymn.hymnNoTxt = hymn.hymnNo.toString() + (hymn.suffix || "");
+    delete hymn.modifiedDate;
 
     // Add to hymns object
     hymns.set(hymn.hymnId, hymn);
