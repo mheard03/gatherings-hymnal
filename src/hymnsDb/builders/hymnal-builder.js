@@ -1,14 +1,14 @@
 import hymnalArray from '@/assets/hymnals.json';
 
-let hymnals = hymnalArray.reduce((obj, h) => {
-  obj[h.hymnalId] = h
-  return obj;
-}, {});
+let hymnals = hymnalArray.reduce((map, h) => {
+  map.set(h.hymnalId, h);
+  return map;
+}, new Map());
 
 class HymnalBuilder {
   static functions = ["getHymnals"];
 
-  static build(hymnsDbInstance) {
+  static async build(hymnsDbInstance) {
     hymnsDbInstance.getHymnals = function() {
       return hymnals;
     };

@@ -53,7 +53,7 @@ let hymnals = hymnalArray.reduce((obj, h) => {
 for (let hymnal of Object.values(hymnals)) {
   getHymns(hymnal.hymnalId).forEach(h => h.hymnal = hymnal);
   for (let section of hymnal.sections || []) {
-    applySectionHeaders(hymnal.hymnalId, section);
+    // applySectionHeaders(hymnal.hymnalId, section);
   }
 }
 

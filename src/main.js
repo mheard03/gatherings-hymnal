@@ -7,9 +7,17 @@ import HymnsDbClient from '@/hymnsDb/hymns-db-client.js';
 const app = createApp(App);
 app.use(createRouter()).mount('#app');
 
+
+let result;
 window.client = HymnsDbClient;
-console.log('add');
-let result = await HymnsDbClient.add(3, 7);
-console.log('add done', result);
+console.log('getHymnals');
+result = await HymnsDbClient.getHymnals();
+console.log('getHymnals result', result);
 
+console.log('getHymns');
+result = await HymnsDbClient.getHymns(153);
+console.log('getHymns result', result);
 
+console.log('getHymnalSections');
+result = await HymnsDbClient.getHymnalSections("redbook");
+console.log('getHymnalSections result', result);

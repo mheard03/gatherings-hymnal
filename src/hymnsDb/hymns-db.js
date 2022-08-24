@@ -1,21 +1,27 @@
-import { h } from 'vue';
-import HymnalBuilder from './hymnal-builder.js';
+import HymnsDbAbstract from './hymns-db-abstract.js';
+import HymnalBuilder from './builders/hymnal-builder.js';
+import HymnsBuilder from './builders/hymns-builder.js';
+import HymnalSectionBuilder from './builders/hymnal-section-builder.js';
 
-let dummyHelperOptions = { id: "hymnsDb", obj: { functions: ["add", "awaitReady"] } }
+let dummyHelperOptions = { id: "hymnsDb", obj: { functions: ["awaitReady"] } }
 let helperOptions = [
   { id: "hymnals", obj: HymnalBuilder },
-  { id: "hymns", obj: HymnalBuilder, dependsOn: ["hymnals"] },
+  { id: "hymns", obj: HymnsBuilder, dependsOn: ["hymnals"] },
+  { id: "hymnalSections", obj: HymnalSectionBuilder, dependsOn: ["hymnals", "hymns"] }
 ];
 let helperAndSelfOptions = [dummyHelperOptions, ...helperOptions];
 helperAndSelfOptions.forEach(h => h.dependsOn = [dummyHelperOptions.id, ...(h.dependsOn || [])]);
 
-class HymnsDb {
+class HymnsDb extends HymnsDbAbstract {
   constructor() {
+    super();
+
     // Build helper objects
     let helpers = helperAndSelfOptions.reduce((helpers, options) => {
       let helper = Object.assign({ ready: getExposedPromise() }, options);
       helper.dependsOn = helper.dependsOn.map(id => id);
       helpers[options.id] = helper;
+      helper.ready.then(() => console.log("helper ready", options.id, options.obj.functions));
       return helpers;
     }, {});
     Object.values(helpers).forEach(h => h.dependsOn = h.dependsOn.map(id => helpers[id]));
@@ -38,13 +44,8 @@ class HymnsDb {
     } 
 
     // Kick the whole thing off by resolving hymnsDb;
-    let pause = new Promise(r => setTimeout(r, 1000));
+    let pause = new Promise(r => setTimeout(r, 0)); //5000));
     pause.then(() => this.promises[dummyHelperOptions.id].resolve());
-  }
-
-  async add(a, b) {
-    await new Promise(r => setTimeout(r, 1000));
-    return a + b;
   }
 
   async awaitReady(helperId) {

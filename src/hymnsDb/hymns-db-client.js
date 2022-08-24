@@ -1,11 +1,12 @@
 import { PWBHost } from "promise-worker-bi";
 import hymnsDbWorker from '/hymns-db-worker.js?sharedworker';
+import HymnsDbAbstract from './hymns-db-abstract.js';
 import HymnsDb from './hymns-db.js';
 
 const worker = new hymnsDbWorker();
 const promiseWorker = new PWBHost(worker);
 
-class HymnsDbClient {
+class HymnsDbClient extends HymnsDbAbstract {
   static {
     for (let { helperId, functionNames } of HymnsDb.helperFunctions) {
       for (let fn of functionNames) {
