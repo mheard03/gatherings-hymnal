@@ -232,3 +232,16 @@ $dropdown-divider-margin-y:         calc($scaled-spacer * .5);
 
 $dropdown-item-padding-y:           calc($scaled-spacer * .25);
 $dropdown-item-padding-x:           $scaled-spacer;
+
+
+
+/* Spinners ------------------------------------------------------------------------ */
+$spinner-width:           var(--input-height);
+$spinner-height:          $spinner-width;
+$spinner-border-width:    clamp(2px, calc($spinner-width / 8), 16px);
+$spinner-vertical-align:  calc($spinner-border-width / -2);
+$spinner-animation-speed: .75s;
+
+$spinner-width-sm:        $scaled-font-size;
+$spinner-height-sm:       $spinner-width-sm;
+$spinner-border-width-sm: clamp(2px, calc($spinner-width-sm / 8), 8px);
