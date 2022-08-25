@@ -1,18 +1,21 @@
 <template>
-  <div id="tocContainer" ref="tocContainer" v-show="sections.length">
+  <div id="tocContainer" ref="tocContainer">
     <div class="bg-white border-bottom">
       <div class="dropdown">
         <div id="tocCurrent" data-bs-toggle="dropdown" data-bs-offset="0, -10" aria-expanded="false" ref="toggler" class="container">
           <div id="tocHeadClosed">
             <div class="d-flex align-items-center">
-              <h5 class="mb-0 flex-grow-1"><span class="d-chonk-none d-none d-md-inline">{{ parentLabel }}</span>{{ label }}</h5>
-              <svg class="icon flex-shrink-0"><use href="#toc" /></svg>
+              <svg class="flex-shrink-0 me-2"><use href="#toc" /></svg>
+              <h5 class="mb-0 flex-grow-1">
+                <span class="d-chonk-none d-none d-md-inline">{{ parentLabel }}</span>{{ label }}
+              </h5>
             </div>
           </div>
           <div id="tocHeadOpen">
             <div class="d-flex align-items-center">
+              <svg class="flex-shrink-0 me-2"><use href="#toc" /></svg>
               <h5 class="mb-0 flex-grow-1">Contents</h5>
-              <svg class="icon flex-shrink-0"><use href="#close" /></svg>
+              <svg class="flex-shrink-0"><use href="#close" /></svg>
             </div>
           </div>
         </div>
@@ -138,7 +141,10 @@ export default {
     top: -1px;
     user-select: none;
   }
-
+  #tocContainer svg {
+    width: calc(var(--scaled-font-size) * 1.5);
+    height: calc(var(--scaled-font-size) * 1.5);
+  }
   #tocHeadClosed,
   .show #tocHeadOpen {
     display: block;

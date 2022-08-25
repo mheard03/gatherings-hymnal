@@ -9,76 +9,76 @@
     </div>
   </nav>
   <main class="hymnal">
-    <div class="top-block">
+    <div class="top-block pb-1">
       <div class="container">
         <div class="d-flex flex-wrap flex-fill align-items-center text-nowrap">
           <h1 class="flex-grow-1 mb-0">All Songs</h1>
           <div class="flex-shrink-0 btn-group scaled ms-auto mb-2" role="group" aria-label="Sort">
             <router-link :class="['btn', (sort == 'alpha') ? 'btn-fill' : 'btn-outline']" :to="{ name: 'hymnal', query: { hymnal: hymnal.hymnalId, sort: 'alpha' }}" replace>A-Z</router-link>
-            <router-link :class="['btn', (sort == 'num') ? 'btn-fill' : 'btn-outline']" :to="{ name: 'hymnal', query: { hymnal: hymnal.hymnalId, sort: 'num' }}" replace>1-9</router-link>
+            <router-link :class="['btn', (sort == 'numeric') ? 'btn-fill' : 'btn-outline']" :to="{ name: 'hymnal', query: { hymnal: hymnal.hymnalId, sort: 'numeric' }}" replace>1-9</router-link>
           </div>
         </div>
       </div>
     </div>
 
     <HymnalToc ref="toc" :sections="sections" :activeSectionId="currentSectionId" @input="onTocSelection"></HymnalToc>
-
-    <div id="sectionListing" class="container" ref="sectionListing">
-      <template v-for="section of sections">
-        <HymnalSection :sectionModel="section"></HymnalSection>
-      </template>
-    </div>
+    
+    <HymnsDbProgress progressProp="hymns">
+      <div id="sectionListing" class="container" ref="sectionListing">
+        <template v-for="section of sections">
+          <HymnalSection :sectionModel="section"></HymnalSection>
+        </template>
+      </div>
+    </HymnsDbProgress>
   </main>
 </template>
 
 <script>
-/* 
-"sections": [
-  { "name": "Hymns of Worship", "range": [1, 82], "children": [
-    { "name": "The Father", "range": [34, 40] },
-    { "name": "Christ", "range": [41, 67] },
-    { "name": "Lord's Day", "range": [68, 69] },
-    { "name": "Morning", "range": [70, 73] },
-    { "name": "Evening", "range": [74, 79] },
-    { "name": "Closing", "range": [80, 82] }
-  ] },
-*/
-
-import { scaleLinear } from 'd3-scale';
+import { nextTick } from 'vue';
 import { HymnalSectionModel as SectionModel } from '@/components/HymnalSectionModel.js';
+
+import HymnsDbProgress from '@/components/HymnsDbProgress.vue';
 import HymnalSection from '@/components/HymnalSection.vue';
 import HymnalToc from '@/components/HymnalToc.vue';
-import { nextTick } from 'vue';
-import * as bootstrap from 'bootstrap';
-import maxSize from 'popper-max-size-modifier';
-window.bootstrap = bootstrap;
 
 export default {
-  inject: ['hymnsDB'],
+  components: { HymnalSection, HymnalToc, HymnsDbProgress },
   props: {
     hymnalId: { required: true },
-    sort: { default: "num" }
-  },
+    sort: { default: "numeric" }
+  },  
   data() {
-    let hymnal = this.hymnsDB.hymnals[this.hymnalId];
     return {
-      hymnal,
-      hymnalHasSections: !!hymnal.sections,
-      hymns: this.hymnsDB.getHymns(this.hymnalId),
+      hymnal: { title: "Loading..." },
+      rawSections: { numeric: [], alpha: [] },
+      sections: [],
       scrollPosition: 0,
       leafSectionTags: [],
       currentSectionId: undefined
     }
   },
-  components: {
-    HymnalSection, HymnalToc
+  async mounted() {
+    document.addEventListener('scroll', this.onScroll);
+    document.addEventListener('resize', this.onScroll);
+    this.onScroll();
+
+    this.hymnal = await this.$hymnsDb.getHymnal(this.hymnalId);
+    this.hymns = await this.$hymnsDb.getHymns(this.hymnalId);
+    this.rawSections = await this.$hymnsDb.getHymnalSections(this.hymnalId);
+    this.sections = this.rawSections[this.sort].map(s => new SectionModel(s));
+  },
+  unmounted() {
+    document.removeEventListener('scroll', this.onScroll);
+    document.removeEventListener('resize', this.onScroll);
   },
   watch: {
     sort() {
-      this.$forceUpdate();
+      this.sections = this.rawSections[this.sort].map(s => new SectionModel(s));
     },
     sections: {
-      async handler() {
+      async handler(newValue) {
+        newValue.forEach(s => s.populateHymns(this.hymns));
+
         this.currentSectionId = undefined;
         await nextTick();
 
@@ -86,39 +86,13 @@ export default {
         this.leafSectionTags = [...document.querySelectorAll("#sectionListing section")]
           .filter(s => !s.querySelector("section"));
         this.onScrollChange();
+        this.$forceUpdate();
       },
       immediate: true
     },
     async scrollPosition() {
       this.onScrollChange();
-    },
-    /*
-    currentSectionId(newValue) {
-      console.log('currentSectionId change', newValue);
-      let currentSection = document.getElementById(newValue);
-      while (currentSection) {
-        let currentHeading = currentSection.querySelector("h1, h2, h3, h4, h5, h6");
-        if (currentHeading) {
-          this.tocLabel = currentHeading.innerText;
-          return;
-        }
-        else { 
-          currentSection = currentSection.parentElement.closest("section");
-        }
-      }
-      if (!currentSection) {
-        this.tocLabel = "Contents";
-      }      
-    } */
-  },
-  async mounted() {
-    document.addEventListener('scroll', this.onScroll);
-    document.addEventListener('resize', this.onScroll);
-    this.onScroll();
-  },
-  unmounted() {
-    document.removeEventListener('scroll', this.onScroll);
-    document.removeEventListener('resize', this.onScroll);
+    }
   },
   methods: {
     onScroll() {
@@ -127,14 +101,7 @@ export default {
       if (newPosition == 0 || Math.abs(newPosition - oldPosition) > 8) {
         this.scrollPosition = document.scrollingElement.scrollTop;
       }
-    },/*
-    async updateTocScrollPosition() {
-      await nextTick();
-      let activeItem = document.querySelector("#tocContainer a.active");
-      if (activeItem) {
-        activeItem.scrollIntoView({ block: "center" });
-      }
-    },*/
+    },
     onScrollChange() {
       let bodyTop = document.scrollingElement.scrollTop;
 
@@ -173,82 +140,18 @@ export default {
         document.scrollingElement.style.scrollBehavior = "";
       }
     }
-  },
-  computed: {
-    sections() {
-      let sections = [];
-      if (this.sort == "alpha") {
-        // A-Z headings
-        // TODO: Smarter chunking. Use https://observablehq.com/d/92bf24b8a3524026
-        this.hymns.sort((a,b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
-
-        let alphaHymns = this.hymns.filter(h => /[A-Z]/i.test(h.title));
-        let firstLetters = [...new Set(alphaHymns.map(h => h.title[0].toLocaleUpperCase()))];
-        firstLetters.sort();
-        for (let letter of firstLetters) {
-          sections.push(new SectionModel({ 
-            name: letter, 
-            hymns: alphaHymns.filter(h => h.title.toLocaleUpperCase().startsWith(letter))
-          }));
-        }
-
-        let nonAlphaHymns = this.hymns.filter(h => !/[A-Z]/i.test(h.title));
-        if (nonAlphaHymns.length) {
-          sections.unshift(new SectionModel({ 
-            name: "0-9", 
-            hymns: nonAlphaHymns
-          }));
-        }
-      }
-      else {
-        this.hymns.sort((a,b) => {
-          let result = a.hymnNo - b.hymnNo;
-          if (result == 0) result = a.suffix.localeCompare(b.suffix);
-          return result;
-        });
-        if (this.hymnalHasSections) {
-          sections = this.hymnal.sections.map(s => new SectionModel(s));
-        }
-        else {
-          // Numeric headings
-          const sectionSize = 100;
-          const minHymnsPerTick = 20;
-          const scale = scaleLinear().domain([1, this.hymns.length]);
-          let ticks = scale.ticks();
-          if (ticks[0] < minHymnsPerTick) {
-            let tickCount = scale.domain()[1] / minHymnsPerTick;
-            ticks = scale.ticks(tickCount);
-          }
-
-          let firstHymnNo = Math.min(...this.hymns.map(h => h.hymnNo));
-          let lastHymnNo = Math.max(...this.hymns.map(h => h.hymnNo));
-          if (ticks[ticks.length - 1] == lastHymnNo) {
-            ticks.pop();
-          }
-          if (ticks.length < 2) {
-            // No headings, just one big Section
-            sections.push(new SectionModel({ name: "", range: [firstHymnNo, lastHymnNo] }));
-          }
-          else {
-            // convert ticks to sections
-            ticks.unshift(firstHymnNo);
-            for (let i = 0; i < ticks.length; i++) {
-              let rangeStart = ticks[i];
-              let rangeEnd = (i == ticks.length - 1) ? lastHymnNo : ticks[i+1] - 1;
-              sections.push(new SectionModel({ name: `${rangeStart}-${rangeEnd}`, range: [rangeStart, rangeEnd] }));
-            }
-          }
-        }
-        sections.forEach(s => s.populateHymnsFromRanges(this.hymns));
-      }
-      return sections;
-    },
   }
 }
 </script>
 
-<style lang="scss">
+<style type="text/css">
   main.hymnal {
     margin-bottom: 66vh;
   }
+  main.hymnal .top-block {
+    margin-bottom: 0 !important;
+    border-bottom: none !important;
+    padding-bottom: 0.5rem !important;
+  }
+
 </style>

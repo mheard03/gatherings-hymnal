@@ -34,10 +34,14 @@ svg.icon {
   width: var(--scaled-font-size);
   height: var(--scaled-font-size);
 }
+svg.icon-lg {
+  width: var(--scaled-font-size-lg);
+  height: var(--scaled-font-size-lg);
+}
 
 #primaryNav {
   button.back {
-    margin-left: calc(-1 * $btn-padding-x)
+    margin-left: calc(-1 * $btn-padding-x + 4px)
   }
 
   .navbar-brand {

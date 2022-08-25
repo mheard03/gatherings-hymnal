@@ -6,7 +6,7 @@ let hymnals = hymnalArray.reduce((map, h) => {
 }, new Map());
 
 class HymnalBuilder {
-  static functions = ["getHymnals"];
+  static functions = ["getHymnals", "getHymnal"];
 
   static async build(hymnsDbInstance, router) {
     for (let hymnal of hymnals.values()) {
@@ -16,6 +16,9 @@ class HymnalBuilder {
     
     hymnsDbInstance.getHymnals = function() {
       return hymnals;
+    };
+    hymnsDbInstance.getHymnal = function(hymnalId) {
+      return hymnals.get(hymnalId);
     };
   }
 }
