@@ -247,30 +247,7 @@ export default {
 }
 </script>
 
-<style type="text/css">
-  #sectionListing section::before { 
-    display: block; 
-    content: " "; 
-    margin-top: calc(var(--input-height) * -1); 
-    height: var(--input-height); 
-    visibility: hidden; 
-    pointer-events: none;
-  }
-
-  #sectionListing li {
-    margin-bottom: max(0px, calc(40px - var(--font-size) * 1.5));
-  }
-  #sectionListing li::marker {
-    content: var(--hymnNo);
-    color: var(--ui-color);
-  }
-  .hymnalSection > h2 {
-    margin-top: 1.5rem;
-  }
-  .hymnalSection > h3 {
-    margin-top: 0.5rem;
-  }
-
+<style lang="scss">
   main.hymnal {
     margin-bottom: 66vh;
   }

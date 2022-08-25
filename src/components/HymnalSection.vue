@@ -100,3 +100,32 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="scss">
+  h1, h2, h3, h4, h5, h6 {
+    &::before { 
+      /* Padding for hash links, thanks https://css-tricks.com/hash-tag-links-padding/ */
+      display: block; 
+      content: " "; 
+      margin-top: calc(var(--input-height) * -1); 
+      height: var(--input-height); 
+      visibility: hidden; 
+      pointer-events: none;
+    }
+  }
+
+  h2 {
+    margin-top: 1.5rem;
+  }
+  h3 {
+    margin-top: 0.5rem;
+  }
+
+  li {
+    margin-bottom: max(0px, calc(40px - var(--font-size) * 1.5));
+    &::marker {
+      content: var(--hymnNo);
+      color: var(--ui-color);
+    }
+  }
+</style>
