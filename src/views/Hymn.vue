@@ -7,14 +7,16 @@
   </nav>
   <main>
     <div id="hymnContainer" class="container" ref="hymnContainer">
-      <template v-for="hymn of hymns">
-        <section :id="hymn.suffix" :class="hymn.special">
-          <h1>{{ hymn.title }}</h1>
-          <template v-for="line of hymn.lines">
-            <p :class="line.type" v-html="line.html"></p>
-          </template>
-        </section>
-      </template>
+      <HymnsDbProgress progressProp="hymns" loading="Loading hymn...">
+        <template v-for="hymn of hymns">
+          <section :id="hymn.suffix" :class="hymn.special">
+            <h1>{{ hymn.title }}</h1>
+            <template v-for="line of hymn.lines">
+              <p :class="line.type" v-html="line.html"></p>
+            </template>
+          </section>
+        </template>
+      </HymnsDbProgress>
     </div>
   </main>
   <Fab></Fab>
@@ -22,24 +24,25 @@
 
 <script>
 import { nextTick } from 'vue';
-import Fab from '../components/Fab.vue';
+import Fab from '@/components/Fab.vue';
+import HymnsDbProgress from '@/components/HymnsDbProgress.vue';
 
 export default {
+  components: { Fab, HymnsDbProgress },
   props: {
     hymnalId: { required: true },
     hymnNo: { required: true },
     suffix: { required: false }
   },
-  inject: ['hymnsDB'],
-  components: {
-    Fab
-  },
   data() {
     return {
-      hymns: this.hymnsDB.getHymns(this.hymnalId, parseInt(this.hymnNo) || 1)
+      hymns: [ { title: "Hymn", lines: [] } ]
     }
   },
-  mounted() {
+  async mounted() {
+    this.$hymnsDb.getHymns(this.hymnalId, parseInt(this.hymnNo) || 1)
+      .then(h => this.hymns = h);
+
     nextTick().then(() => {
       /* Scroll to second hymn, if needed */
       if (this.suffix || window.location.hash) {

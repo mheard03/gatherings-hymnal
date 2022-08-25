@@ -17,7 +17,7 @@
     </div>
     <div class="container">
       <h3 class="mb-3">Browse the songbooks</h3>
-      <HymnsDbProgress progressProp="hymnals" inline>
+      <HymnsDbProgress progressProp="hymnals">
         <template v-for="hymnal of hymnals">
           <p>
             <router-link class="btn btn-lg btn-fill w-100" :class="`theme-${hymnal.hymnalId}`" :to="hymnal.url">
