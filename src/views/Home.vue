@@ -18,9 +18,9 @@
     <div class="container">
       <h3 class="mb-3">Browse the songbooks</h3>
       <HymnsDbProgress progressProp="hymnals" inline>
-        <template v-for="hymnal of Object.values(hymnsDB.hymnals)">
+        <template v-for="hymnal of hymnals">
           <p>
-            <router-link :class="[hymnalClasses, `theme-${hymnal.hymnalId}`]" :to="{ name: 'hymnal', query: { hymnal: hymnal.hymnalId }}">
+            <router-link class="btn btn-lg btn-fill w-100" :class="`theme-${hymnal.hymnalId}`" :to="hymnal.url">
               <span>{{ hymnal.title }}</span>
             </router-link>
           </p>
@@ -36,14 +36,14 @@ import Search from '@/components/Search.vue';
 import HymnsDbProgress from '@/components/HymnsDbProgress.vue';
 
 export default {
-  inject: ['hymnsDB'],
   data() {
     return {
-      hymnalClasses: 'btn btn-lg btn-fill w-100',
+      hymnals: [],
     }
   },
-  mounted() {
-
+  async mounted() {
+    let hymnalsMap = await this.$hymnsDb.getHymnals();
+    this.hymnals = hymnalsMap.values();
   },
   components: {
     Search,

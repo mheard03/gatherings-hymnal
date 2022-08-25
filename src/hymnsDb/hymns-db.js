@@ -5,7 +5,7 @@ import HymnsBuilder from './builders/hymns-builder.js';
 import HymnalSectionBuilder from './builders/hymnal-section-builder.js';
 
 let router = createHeadlessRouter();
-let forceDelayTimeout = 50000;
+let forceDelayTimeout = 1000;
 
 let dummyHelperOptions = { id: "hymnsDb", obj: { functions: ["awaitReady"] } }
 let helperOptions = [

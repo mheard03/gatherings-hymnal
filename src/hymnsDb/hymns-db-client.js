@@ -62,6 +62,7 @@ class HymnsDbClient extends HymnsDbAbstract {
       // build an async HymnsDbClient function for each function specified by a helper; await ready, then call.
       for (let fn of functionNames) {
         HymnsDbClient[fn] = async function() {
+          let progressTracker = HymnsDbClient.progress[progressProp];
           if (!progressTracker || !progressTracker.status) {
             // console.log('HymnsDbClient', `waiting for worker.${fn} ready...`, performance.now());
             await promiseWorker.postMessage({ fn: "awaitReady", args: [ helperId ] });
