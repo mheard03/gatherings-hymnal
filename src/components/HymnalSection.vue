@@ -127,5 +127,8 @@ export default {
       content: var(--hymnNo);
       color: var(--ui-color);
     }
+    span {
+      user-select: none;
+    }
   }
 </style>
