@@ -15,7 +15,8 @@ export default {
   },
   mounted() {
     hymns.cacheRoutes(this.$router);
-    window.$hymnsDb = this.$hymnsDb;    
+    window.$hymnsDb = this.$hymnsDb;
+    window.$router = this.$router;
   },
   watch: {
     $route: {
@@ -65,7 +66,7 @@ export default {
     </symbol>
   </svg>
   <router-view />
-  <input type="range" min="14" max="64" step="0.25" v-model="userSettings.fontSize" style="position: absolute; top: 0;">
+  <input type="range" min="14" max="64" step="0.25" v-model="userSettings.fontSize" style="position: fixed; top: 0; z-index: 2000;">
 </template>
 <!--
 <template>

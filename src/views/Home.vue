@@ -36,6 +36,7 @@ import Search from '@/components/Search.vue';
 import HymnsDbProgress from '@/components/HymnsDbProgress.vue';
 
 export default {
+  components: { Search, HymnsDbProgress },
   data() {
     return {
       hymnals: [],
@@ -44,10 +45,6 @@ export default {
   async mounted() {
     let hymnalsMap = await this.$hymnsDb.getHymnals();
     this.hymnals = hymnalsMap.values();
-  },
-  components: {
-    Search,
-    HymnsDbProgress
   }
 };
 </script>

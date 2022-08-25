@@ -21,34 +21,7 @@
       </div>
     </div>
 
-    <div id="tocContainer" class="">
-      <div class="bg-white border-bottom">
-        <div class="dropdown">
-          <div id="tocCurrent" data-bs-toggle="dropdown" data-bs-offset="0, -10" aria-expanded="false" ref="tocDropdownToggle" class="container">
-            <div id="tocHeadClosed">
-              <div class="d-flex align-items-center">
-                <h5 class="mb-0 flex-grow-1">{{ tocLabel }}</h5>
-                <svg class="icon flex-shrink-0"><use href="#toc" /></svg>
-              </div>
-            </div>
-            <div id="tocHeadOpen">
-              <div class="d-flex align-items-center">
-                <h5 class="mb-0 flex-grow-1">Contents</h5>
-                <svg class="icon flex-shrink-0"><use href="#close" /></svg>
-              </div>
-            </div>
-          </div>
-          <ul class="dropdown-menu container w-100 scaled" area-labelledby="tocCurrent">
-            <template v-for="section of sections">
-              <li><a class="dropdown-item" @click="onTocClick" :href="`#${section.htmlId}`" :class="(section.htmlId == currentSectionId) ? 'active' : ''">{{ section.name }}</a></li>
-              <template v-for="child of section.children">
-                <li class="child" v-if="child.name"><a class="dropdown-item" @click="onTocClick" :class="(section.htmlId == currentSectionId) ? 'active' : ''" :href="`#${child.htmlId}`">{{ child.name }}</a></li>
-              </template>
-            </template>
-          </ul>
-        </div>
-      </div>
-    </div>
+    <HymnalToc ref="toc" :sections="sections" :activeSectionId="currentSectionId" @input="onTocSelection"></HymnalToc>
 
     <div id="sectionListing" class="container" ref="sectionListing">
       <template v-for="section of sections">
@@ -72,8 +45,9 @@
 */
 
 import { scaleLinear } from 'd3-scale';
-import { HymnalSectionModel as SectionModel } from '../components/HymnalSectionModel.js';
-import HymnalSection from '../components/HymnalSection.vue';
+import { HymnalSectionModel as SectionModel } from '@/components/HymnalSectionModel.js';
+import HymnalSection from '@/components/HymnalSection.vue';
+import HymnalToc from '@/components/HymnalToc.vue';
 import { nextTick } from 'vue';
 import * as bootstrap from 'bootstrap';
 import maxSize from 'popper-max-size-modifier';
@@ -91,15 +65,13 @@ export default {
       hymnal,
       hymnalHasSections: !!hymnal.sections,
       hymns: this.hymnsDB.getHymns(this.hymnalId),
-      tocLabel: "Contents",
       scrollPosition: 0,
       leafSectionTags: [],
-      tocDropdown: undefined,
       currentSectionId: undefined
     }
   },
   components: {
-    HymnalSection
+    HymnalSection, HymnalToc
   },
   watch: {
     sort() {
@@ -120,7 +92,9 @@ export default {
     async scrollPosition() {
       this.onScrollChange();
     },
+    /*
     currentSectionId(newValue) {
+      console.log('currentSectionId change', newValue);
       let currentSection = document.getElementById(newValue);
       while (currentSection) {
         let currentHeading = currentSection.querySelector("h1, h2, h3, h4, h5, h6");
@@ -135,51 +109,14 @@ export default {
       if (!currentSection) {
         this.tocLabel = "Contents";
       }      
-    }
+    } */
   },
   async mounted() {
-  
-    const applyMaxSize = {
-      name: 'applyMaxSize',
-      enabled: true,
-      phase: 'beforeWrite',
-      requires: ['maxSize'],
-      fn({state}) {
-        // The `maxSize` modifier provides this data
-        state.styles.popper = {
-          ...state.styles.popper,
-          maxHeight: `${state.modifiersData.maxSize.height}px`
-        };
-      }
-    };
-    let config = {
-      popperConfig(defaultBsPopperConfig) {
-        let cfg = JSON.parse(JSON.stringify(defaultBsPopperConfig));
-        cfg.strategy = 'fixed';
-        cfg.tether = false;
-        
-        cfg.modifiers.push(maxSize);
-        cfg.modifiers.push(applyMaxSize);
-        
-        let flip = cfg.modifiers.find(m => m.name == "flip");
-        if (!flip) {
-          flip = { name: 'flip', options: {} };
-          cfg.modifiers.push(flip);
-        }
-        flip.enabled = false;
-
-        return cfg;
-      }
-    }
-    this.tocDropdown = new bootstrap.Dropdown(this.$refs.tocDropdownToggle, config);
-    document.addEventListener('shown.bs.dropdown', this.updateTocScrollPosition);
     document.addEventListener('scroll', this.onScroll);
     document.addEventListener('resize', this.onScroll);
     this.onScroll();
   },
   unmounted() {
-    if (this.tocDropdown) this.tocDropdown.dispose();
-    document.removeEventListener('shown.bs.dropdown', this.updateTocScrollPosition);
     document.removeEventListener('scroll', this.onScroll);
     document.removeEventListener('resize', this.onScroll);
   },
@@ -190,22 +127,22 @@ export default {
       if (newPosition == 0 || Math.abs(newPosition - oldPosition) > 8) {
         this.scrollPosition = document.scrollingElement.scrollTop;
       }
-    },
+    },/*
     async updateTocScrollPosition() {
       await nextTick();
       let activeItem = document.querySelector("#tocContainer a.active");
       if (activeItem) {
         activeItem.scrollIntoView({ block: "center" });
       }
-    },
+    },*/
     onScrollChange() {
       let bodyTop = document.scrollingElement.scrollTop;
-      let tocContainer = document.querySelector("#tocContainer");
 
       let firstSection = this.leafSectionTags[0];
 
       let activeSection = undefined;
-      let tocHeight = tocContainer.offsetHeight;
+      let tocHeight = this.$refs.toc.getHeight();
+
       for (let section of this.leafSectionTags) {
         let clientTop = section.offsetTop - bodyTop;
         let clientBottom = clientTop + section.clientHeight;
@@ -226,23 +163,14 @@ export default {
         this.currentSectionId = undefined;
       }
     },
-    onTocClick(e) {
-      if (!e.target || !e.target.href) return;
-
-      let tocContainer = document.querySelector("#tocContainer");
-      let tocHeight = tocContainer.offsetHeight;
-
-      let url = new URL(e.target.href);     
-      let section = document.querySelector(url.hash);
+    onTocSelection(sectionId) {
+      let section = document.querySelector("#" + sectionId);
       if (section) {
-        let targetY = (section.querySelector("h1, h2, h3, h4, h5, h6") || section).offsetTop;
+        this.currentSectionId = sectionId;
+        let { name, path, query } = this.$router.currentRoute.value;
         document.scrollingElement.style.scrollBehavior = "auto";
-        document.scrollingElement.scrollTo({ top: targetY - tocHeight });
+        this.$router.replace({ name, path, query, hash: "#" + sectionId });
         document.scrollingElement.style.scrollBehavior = "";
-        nextTick().then(() => {
-          this.currentSectionId = url.hash.replace("#", "");
-        })
-        e.preventDefault();
       }
     }
   },
@@ -320,6 +248,15 @@ export default {
 </script>
 
 <style type="text/css">
+  #sectionListing section::before { 
+    display: block; 
+    content: " "; 
+    margin-top: calc(var(--input-height) * -1); 
+    height: var(--input-height); 
+    visibility: hidden; 
+    pointer-events: none;
+  }
+
   #sectionListing li {
     margin-bottom: max(0px, calc(40px - var(--font-size) * 1.5));
   }
@@ -333,38 +270,8 @@ export default {
   .hymnalSection > h3 {
     margin-top: 0.5rem;
   }
-  main .dropdown-menu a.dropdown-item {
-    padding-left: var(--bs-gutter-x, 0.75rem);
-  }
-  main .dropdown-menu .child a.dropdown-item {
-    padding-left: calc(var(--bs-gutter-x, 0.75rem) * 2);
-  }
-  #tocContainer {
-    position: sticky;
-    top: 0;
-    user-select: none;
-  }
 
-  #tocHeadClosed,
-  .show #tocHeadOpen {
-    display: block;
+  main.hymnal {
+    margin-bottom: 66vh;
   }
-  .show #tocHeadClosed,
-  #tocHeadOpen {
-    display: none;
-  }
-
-
-  #tocCurrent {
-    cursor: pointer;
-  }
-
-  #tocCurrent,
-  #tocCurrent h5 {
-    line-height: var(--input-height);
-  }
-  #tocContainer .dropdown-menu {
-    overflow-y: auto;
-  }
-  
 </style>

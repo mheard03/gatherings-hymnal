@@ -78,7 +78,7 @@ export default {
       this.viewportScale = window.visualViewport.scale;
       this.enableBrowserZoom = (this.viewportScale != 1 || this.fontSize >= maxFontSize);
       this.enableFontZoom = (this.viewportScale == 1);
-      this.setChonkClass;
+      this.setChonkClass();
 
       await nextTick();
       this.pinchManager.addOrUpdateListeners({ passive: !this.enableFontZoom });
@@ -262,6 +262,10 @@ function getOffset(el) {
     .pinching * {
       transition-property: none !important;
       scroll-behavior: auto !important;
+    }
+
+    body.chonk .d-chonk-none {
+      display: none !important;
     }
   </Teleport>
 </template>
