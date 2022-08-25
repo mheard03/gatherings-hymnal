@@ -2,6 +2,8 @@ import hymnArray from '@/assets/hymns-db-generated.json';
 import hymnalArray from '@/assets/hymnals.json';
 import attachSearchFunction from '@/search/hymns-db-search';
 
+
+console.log("This page still has a reference to the old hymns-db.")
 let hymns = {};
 
 // Build hymns object

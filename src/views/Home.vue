@@ -17,20 +17,23 @@
     </div>
     <div class="container">
       <h3 class="mb-3">Browse the songbooks</h3>
-      <template v-for="hymnal of Object.values(hymnsDB.hymnals)">
-        <p>
-          <router-link :class="[hymnalClasses, `theme-${hymnal.hymnalId}`]" :to="{ name: 'hymnal', query: { hymnal: hymnal.hymnalId }}">
-            <span>{{ hymnal.title }}</span>
-          </router-link>
-        </p>
-      </template>      
+      <HymnsDbProgress progressProp="hymnals" inline>
+        <template v-for="hymnal of Object.values(hymnsDB.hymnals)">
+          <p>
+            <router-link :class="[hymnalClasses, `theme-${hymnal.hymnalId}`]" :to="{ name: 'hymnal', query: { hymnal: hymnal.hymnalId }}">
+              <span>{{ hymnal.title }}</span>
+            </router-link>
+          </p>
+        </template>
+      </HymnsDbProgress>
     </div>
 
   </main>
 </template>
 
 <script>
-import Search from '../components/Search.vue';
+import Search from '@/components/Search.vue';
+import HymnsDbProgress from '@/components/HymnsDbProgress.vue';
 
 export default {
   inject: ['hymnsDB'],
@@ -39,8 +42,12 @@ export default {
       hymnalClasses: 'btn btn-lg btn-fill w-100',
     }
   },
+  mounted() {
+
+  },
   components: {
-    Search
+    Search,
+    HymnsDbProgress
   }
 };
 </script>

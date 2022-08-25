@@ -5,12 +5,13 @@ import HymnsBuilder from './builders/hymns-builder.js';
 import HymnalSectionBuilder from './builders/hymnal-section-builder.js';
 
 let router = createHeadlessRouter();
+let forceDelayTimeout = 50000;
 
 let dummyHelperOptions = { id: "hymnsDb", obj: { functions: ["awaitReady"] } }
 let helperOptions = [
-  { id: "hymnals", obj: HymnalBuilder, buildParams: [router] },
+  { id: "hymnals", obj: HymnalBuilder, buildParams: [router], progressProp: "hymnals" },
   { id: "hymns", obj: HymnsBuilder, dependsOn: ["hymnals"], buildParams: [router] },
-  { id: "hymnalSections", obj: HymnalSectionBuilder, dependsOn: ["hymnals", "hymns"] }
+  { id: "hymnalSections", obj: HymnalSectionBuilder, dependsOn: ["hymnals", "hymns"], progressProp: "hymns" }
 ];
 let helperAndSelfOptions = [dummyHelperOptions, ...helperOptions];
 helperAndSelfOptions.forEach(h => h.dependsOn = [dummyHelperOptions.id, ...(h.dependsOn || [])]);
@@ -18,14 +19,16 @@ helperAndSelfOptions.forEach(h => h.dependsOn = [dummyHelperOptions.id, ...(h.de
 class HymnsDb extends HymnsDbAbstract {
   constructor() {
     verifyEnvironment();
+    console.log("Initializing HymnsDb");
     super();
 
+   
     // Build helper objects
     let helpers = helperAndSelfOptions.reduce((helpers, options) => {
       let helper = Object.assign({ ready: getExposedPromise() }, options);
       helper.dependsOn = helper.dependsOn.map(id => id);
       helpers[options.id] = helper;
-      helper.ready.then(() => console.log("helper ready", options.id, options.obj.functions));
+      helper.ready.then(() => console.log("helper ready", options.id, 'functions', (options.obj || {}).functions));
       return helpers;
     }, {});
     Object.values(helpers).forEach(h => h.dependsOn = h.dependsOn.map(id => helpers[id]));
@@ -35,6 +38,7 @@ class HymnsDb extends HymnsDbAbstract {
       return promises;
     }, {});
 
+    let forceDelay = () => new Promise(r => setTimeout(r, forceDelayTimeout));
     for (let helper of Object.values(helpers)) {
       // if any precedent rejects, this helper rejects
       let precedentPromise = Promise.all(helper.dependsOn.map(h => h.ready));
@@ -44,13 +48,12 @@ class HymnsDb extends HymnsDbAbstract {
       let fnBuild = helper.obj.build || (() => true);
       let buildParams = helper.buildParams || [];
       let buildPromise = precedentPromise.then(() => fnBuild(this, ...buildParams));
-      buildPromise.then(() => helper.ready.resolve());
+      buildPromise.then(() => forceDelay()).then(() => helper.ready.resolve());
       buildPromise.catch(r => helper.ready.reject(r));
     } 
 
     // Kick the whole thing off by resolving hymnsDb;
-    let pause = new Promise(r => setTimeout(r, 0)); //5000));
-    pause.then(() => this.promises[dummyHelperOptions.id].resolve());
+    forceDelay().then(() => this.promises[dummyHelperOptions.id].resolve());
   }
 
   async awaitReady(helperId) {
@@ -60,7 +63,8 @@ class HymnsDb extends HymnsDbAbstract {
   static get helperFunctions() {
     return helperAndSelfOptions.map(o => ({
       helperId: o.id, 
-      functionNames: (o.obj.functions || [])
+      functionNames: (o.obj.functions || []),
+      progressProp: o.progressProp
     }));
   }
 }

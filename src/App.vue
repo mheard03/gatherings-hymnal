@@ -3,7 +3,6 @@ import { computed, nextTick } from 'vue';
 import userSettingsMixin from './userSettings.js'
 import hymns from './assets/hymns-db';
 import FontSizing from './components/FontSizing.vue';
-window.hymnsDB = hymns;
 
 export default {
   mixins: [userSettingsMixin],
@@ -16,6 +15,7 @@ export default {
   },
   mounted() {
     hymns.cacheRoutes(this.$router);
+    window.$hymnsDb = this.$hymnsDb;    
   },
   watch: {
     $route: {

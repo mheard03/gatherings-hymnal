@@ -13,7 +13,7 @@ class HymnalBuilder {
       let route = router.resolve({ name: 'hymnal', query: { hymnal: hymnal.hymnalId } });
       hymnal.url = route.href;
     }
-
+    
     hymnsDbInstance.getHymnals = function() {
       return hymnals;
     };

@@ -238,7 +238,7 @@ $dropdown-item-padding-x:           $scaled-spacer;
 /* Spinners ------------------------------------------------------------------------ */
 $spinner-width:           var(--input-height);
 $spinner-height:          $spinner-width;
-$spinner-border-width:    clamp(2px, calc($spinner-width / 8), 16px);
+$spinner-border-width:    clamp(2px, calc($spinner-width / 8), 12px);
 $spinner-vertical-align:  calc($spinner-border-width / -2);
 $spinner-animation-speed: .75s;
 
