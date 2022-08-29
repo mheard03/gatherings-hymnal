@@ -3,6 +3,7 @@ import HymnsDbAbstract from './hymns-db-abstract.js';
 import HymnalBuilder from './builders/hymnal-builder.js';
 import HymnsBuilder from './builders/hymns-builder.js';
 import HymnalSectionBuilder from './builders/hymnal-section-builder.js';
+import SearchBuilder from './builders/search-builder.js';
 
 let router = createHeadlessRouter();
 let forceDelayTimeout = 1000;
@@ -11,7 +12,8 @@ let dummyHelperOptions = { id: "hymnsDb", obj: { functions: ["awaitReady"] } }
 let helperOptions = [
   { id: "hymnals", obj: HymnalBuilder, buildParams: [router], progressProp: "hymnals" },
   { id: "hymns", obj: HymnsBuilder, dependsOn: ["hymnals"], buildParams: [router] },
-  { id: "hymnalSections", obj: HymnalSectionBuilder, dependsOn: ["hymnals", "hymns"], progressProp: "hymns" }
+  { id: "hymnalSections", obj: HymnalSectionBuilder, dependsOn: ["hymnals", "hymns"], progressProp: "hymns" },
+  { id: "search", obj: SearchBuilder, dependsOn: ["hymns"], progressProp: "search" }
 ];
 let helperAndSelfOptions = [dummyHelperOptions, ...helperOptions];
 helperAndSelfOptions.forEach(h => h.dependsOn = [dummyHelperOptions.id, ...(h.dependsOn || [])]);

@@ -1,10 +1,10 @@
 import lunr from 'lunr'
-import hymnalStemmer from './pipeline/hymnalStemmer.js';
-import hymnalTrimmer from './pipeline/hymnalTrimmer.js';
-import blankKiller from './pipeline/blankKiller.js';
+import hymnalStemmer from './pipeline/hymnal-stemmer.js';
+import hymnalTrimmer from './pipeline/hymnal-trimmer.js';
+import blankKiller from './pipeline/blank-killer.js';
 import hymnalTokenizer from './hymnal-tokenizer.js';
-import contractionFixer from './pipeline/contractionFixer.js';
-import consoleLogger from './pipeline/consoleLogger.js';
+import contractionFixer from './pipeline/contraction-fixer.js';
+import consoleLogger from './pipeline/console-logger.js';
 
 const collator = new Intl.Collator('en', { sensitivity: "base", ignorePunctuation: true });
 const MAX_PHRASE_LENGTH = 2;

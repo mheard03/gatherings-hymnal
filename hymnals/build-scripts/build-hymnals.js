@@ -7,6 +7,7 @@ const hymnFileReader = require('./read-hymn-files');
 const { readFile } = require('./read-file');
 const hymnalRoot = './hymnals/';
 const cachePath = './src/assets/hymns-db-generated.json';
+const versionPath = './src/assets/hymns-db-version.txt';
 
 run();
 async function run() {
@@ -32,10 +33,13 @@ async function run() {
     let newJson = JSON.stringify(cache, null, ' ');
     await fs.promises.writeFile(cachePath, newJson);
   }
+  if (cache || !fs.existsSync(versionPath)) {
+    let ts = new Date();
+    await fs.promises.writeFile(versionPath, ts.getTime());
+  }
 }
-
+  
 module.exports = { buildHymnals: run };
-
 
 function buildUpdatedCache(html, json) {
   let compare = {};
@@ -96,30 +100,5 @@ function buildUpdatedCache(html, json) {
   console.log(`  ${upsertCount} hymns created or updated from HTML.`);
   console.log(`  ${exceptions.length} hymns have issues.${exceptionsList}`);
 
-  return (upsertCount >= 0) ? cache : undefined;
+  return (upsertCount >= 1) ? cache : undefined;
 }
-/*
-function buildSearchIndex(db) {
-  var idx = lunr(function () {
-    this.ref('hymnId');
-    this.field('title');
-    this.field('body');
-
-    this.metadataWhitelist = ['position', 'index'];
-
-    for (let hymn of db) {
-      if (!hymn.lines || hymn.lines.length == 0) continue;
-
-      let indexed = {
-        hymnId: hymn.hymnId,
-        title: hymn.title,
-        body: hymn.lines
-          .filter((l) => l.type != 'copyright')
-          .map((l) => l.html)
-          .join('\n'),
-      };
-      this.add(indexed);
-    }
-  });
-}
-*/

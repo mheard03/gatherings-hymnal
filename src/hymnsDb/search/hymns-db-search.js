@@ -1,5 +1,5 @@
 import normalizeToAscii from './normalize-to-ascii.js';
-import { buildSearchIndex, MAX_PHRASE_LENGTH } from './hymns-db-indexer.js';
+import { buildSearchIndex } from './hymns-db-indexer.js';
 import lunr from 'lunr';
 
 let hymns = undefined;

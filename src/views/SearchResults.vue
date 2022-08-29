@@ -13,11 +13,14 @@
       </div>
     </div>
     <div id="search-results" class="container" v-if="mode == 'keyword'">
-      <h3 class="mb-3">{{ results.length }} Results</h3>
+      <p class="mb-3">
+        <template v-if="pageCount > 1">Page {{ page }} of</template>
+        {{ resultCount }} results
+      </p>
       <template v-for="result of results" key="hymnId">
-        <div class="result" :class="'theme-' + result.hymn.hymnalId">
+        <div class="result" :class="'theme-' + result.hymnalId">
           <div class="hymnal-label scaled"><span class="rounded">{{ result.hymn.hymnal.title }}</span></div>
-          <a class="result-link fs-5" :href="result.hymn.url" @click.stop.prevent="onResultClick(result.hymn)">{{ result.hymn.hymnNoTxt }}. <span v-html="result.title"></span></a>
+          <a class="result-link fs-5" :href="result.hymn.url" @click.stop.prevent="onResultClick(result.hymn)"><span v-html="result.hymn.title"></span></a>
           <p class="result-preview" v-if="result.preview" v-html="result.preview"></p>
         </div>
       </template>
@@ -30,14 +33,16 @@ import { nextTick } from 'vue';
 import Search from '../components/Search.vue';
 
 export default {
-  inject: ['hymnsDB'],
   props: {
-    keywords: { type: String, required: false, default: "" }
+    keywords: { type: String, required: false, default: "" },
+    page: { type: Number, required: false, default: 1 }
   },
   data() {
     return {
       mode: "keyword",
-      results: []
+      results: undefined,
+      resultCount: undefined,
+      pageCount: undefined
     }
   },
   mounted() {
@@ -62,17 +67,16 @@ export default {
   },
   watch: {
     $route: {
-      handler(value) {
+      async handler(value) {
         if (this.$route.name != "search") return;
-        let keywords = this.$route.query.keywords;
-        let results = this.hymnsDB.search(keywords);
-        results.forEach(r => r.hymn = this.hymnsDB[r.hymnId]);
-        this.results = results; 
+        let keywords = this.keywords || this.$route.query.keywords;
+        let page = this.page || this.$route.query.page;
+        this.results = await this.$hymnsDb.search(keywords, page);
       },
       immediate: true
     },
-    results(value) {
-      console.log(value);
+    results(newValue) {
+      ["resultCount", "perPage", "pageCount"].forEach(k => this[k] = newValue[k]);
       this.$forceUpdate();
     }
   },

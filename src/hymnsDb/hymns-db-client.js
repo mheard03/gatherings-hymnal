@@ -1,11 +1,11 @@
 import { reactive } from "vue";
 import { PWBHost } from "promise-worker-bi";
-import hymnsDbWorker from '/hymns-db-worker.js?sharedworker';
+import hymnsDbWorker from './hymns-db-worker.js?sharedworker';
 import HymnsDbAbstract from './hymns-db-abstract.js';
 import HymnsDb from './hymns-db.js';
 
-const worker = new hymnsDbWorker();
-const promiseWorker = new PWBHost(worker);
+const sharedWorker = new hymnsDbWorker();
+const promiseWorker = new PWBHost(sharedWorker);
 
 class HymnsDbClient extends HymnsDbAbstract {
   static STATES = {

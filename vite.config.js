@@ -45,7 +45,7 @@ export default defineConfig({
           console.log('updating hymns-db...');
           buildHymnals();
         }
-        else if (file.includes('hymns-db-generated.json')) {
+        else if (file.includes('hymns-db-version.js')) {
           console.log('hymns-db updated.');
         }
       }

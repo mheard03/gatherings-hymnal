@@ -1,13 +1,14 @@
 import HymnsDbAbstract from '../hymns-db-abstract.js';
+import { getMany as idbGet, setMany as idbSet } from 'idb-keyval';
 
 let hymnArray;
 let hymns;
 
 class HymnsBuilder {
-  static functions = ["getHymns"];
+  static functions = ["getHymns", "getAllHymns"];
 
   static async build(hymnsDbInstance, router) {
-    hymnArray = hymnArray || await fetchHymnArray();
+    hymnArray = hymnArray || await loadHymnArray();
     hymns = hymns || buildHymnsObject();
 
     for (let hymn of hymns.values()) {
@@ -21,18 +22,96 @@ class HymnsBuilder {
     }
 
     hymnsDbInstance.getHymns = getHymns;
+    hymnsDbInstance.getAllHymns = function() {
+      return hymns;
+    };
   }
 }
 
-async function fetchHymnArray() {
-  // https://vitejs.dev/guide/assets.html#new-url-url-import-meta-url
-  let arrayUrl = new URL("../../assets/hymns-db-generated.json", import.meta.url);
-  let response = await fetch(arrayUrl);
-  if (!response.ok) {
-    throw new Error("Unable to fetch", arrayUrl.toString(), response.status, response.statusText);
+
+// https://vitejs.dev/guide/assets.html#new-url-url-import-meta-url
+let arrayUrl = new URL("../../assets/hymns-db-generated.json", import.meta.url);
+let versionUrl = new URL("../../assets/hymns-db-version.txt", import.meta.url);
+
+async function loadHymnArray() {
+  const arrayAbortController = new AbortController();
+  const [ cachedVersion, cachedArrayString ] = await idbGet([versionUrl.toString(), arrayUrl.toString()]);
+  async function storeText(version, arrayString) {
+    await idbSet([
+      [versionUrl.toString(), version],
+      [arrayUrl.toString(), arrayString]
+    ]);
+    console.log('stored hymnsArray version', version);
   }
-  return await response.json();
+  
+  let fetchedVersionPromise = fetchString(versionUrl, undefined, 2);
+  fetchedVersionPromise.catch(e => console.log("Error fetching hymns version", e));
+
+  let fetchedArrayPromise = fetchString(arrayUrl, { signal: arrayAbortController.signal }, 2);
+  fetchedArrayPromise.catch(e => console.log("Error fetching hymns array", e));
+
+  let resultPromise = getExposedPromise();
+
+  if (!cachedVersion || !cachedArrayString) {
+    let fetchedArrayString = await fetchedArrayPromise;
+    resultPromise.resolve(JSON.parse(fetchedArrayString));
+
+    fetchedVersionPromise.then(fetchedVersion => storeText(fetchedVersion, fetchedArrayString));
+  }
+  else {
+    let cachedArray;
+    try {
+      cachedArray = JSON.parse(cachedArrayString);
+      cachedArray = (Array.isArray(cachedArray) && cachedArray.length) ? cachedArray : undefined;
+    }
+    catch {}
+
+    fetchedVersionPromise.then(fetchedVersion => {
+      if (cachedArray && fetchedVersion == cachedVersion) {
+        arrayAbortController.abort();
+        console.log('returned cachedArray');
+        resultPromise.resolve(cachedArray);
+      }
+    });
+    fetchedArrayPromise.then(fetchedArrayString => {
+      if (arrayAbortController.signal.aborted) {
+        console.log('aborted fetchArray');
+        return;
+      }
+      console.log('returned fetchedArray');
+      resultPromise.resolve(JSON.parse(fetchedArrayString));
+    }).catch(e => {
+      if (cachedArray) {
+        console.log('Error parsing fetched hymns array; returning cached version', e);
+        resultPromise.resolve(cachedArray);
+      }
+      else {
+        resultPromise.reject(e);
+      }
+    });
+  }
+  return await resultPromise;
 }
+
+async function fetchString(url, options, retryCount) {
+  retryCount = retryCount || 0;
+  try {
+    let response = await fetch(url, options);
+    if (!response.ok) {
+      if (retryCount > 0) {
+        await new Promise(r => setTimeout(r, Math.max(100, 1000 / retryCount)));
+        return await fetchString(url, options, retryCount - 1);
+      }
+      throw new Error("Unable to fetch", url.toString(), response.status, response.statusText);
+    }
+    return await response.text();
+  }
+  catch (e) {
+    if (e.name == "AbortError") return "";
+    throw e;
+  }
+}
+
 
 function buildHymnsObject() {
   hymns = new Map();
@@ -111,150 +190,14 @@ function getHymns() {
   return results;
 }
 
+function getExposedPromise() {
+  let resolve, reject;
+  let promise = new Promise((fnResolve, fnReject) => {
+    resolve = fnResolve;
+    reject = fnReject;
+  });
+  Object.assign(promise, { resolve, reject });
+  return promise;
+}
+
 export default HymnsBuilder;
-
-/*
-// Build hymns object
-for (let hymn of hymnArray) {
-  // Populate metadata
-  let idComponents = hymn.hymnId.split("-");
-  hymn.hymnalId = idComponents[0];
-  hymn.hymnNo = parseInt(idComponents[1]);
-  if (idComponents[2]) hymn.suffix = idComponents[2];
-
-  // Add to hymns object
-  hymns[hymn.hymnId] = hymn;
-}
-
-// Find gaps and fill with stubs
-for (let hymn of Object.values(hymns)) {
-  if (hymn.isStub) continue;
-
-  let suffix = hymn.suffix || ""; 
-  hymn.hymnNoTxt = hymn.hymnNo.toString() + suffix;
-
-  let hymnPlusOne = findHymnPlusN(hymn, 1);
-  if (hymnPlusOne) continue;
-
-  let hymnPlusTwo = findHymnPlusN(hymn, 2);
-  if (!hymnPlusTwo) continue;
- 
-  hymn.hymnNoTxt = `${hymn.hymnNoTxt}/${(hymn.hymnNo + 1).toString() + suffix}`;
-  let stubHymnId = `${hymn.hymnalId}-${hymn.hymnNo + 1}`;
-  if (suffix) stubHymnId += `-${suffix}`;
-
-  hymns[stubHymnId] = {
-    hymnId: stubHymnId,
-    hymnal: hymn.hymnalId,
-    hymnNo: hymn.hymnNo + 1,
-    hymnNoTxt: hymn.hymnNoTxt,
-    suffix: hymn.suffix,
-    title: hymn.title,
-    isStub: true
-  }
-}
-
-// Build hymnals object
-let hymnals = hymnalArray.reduce((obj, h) => {
-  obj[h.hymnalId] = h
-  return obj;
-}, {});
-
-for (let hymnal of Object.values(hymnals)) {
-  getHymns(hymnal.hymnalId).forEach(h => h.hymnal = hymnal);
-  for (let section of hymnal.sections || []) {
-    applySectionHeaders(hymnal.hymnalId, section);
-  }
-}
-
-function applySectionHeaders(hymnalId, section, parentHeadings) {
-  parentHeadings = parentHeadings || [];
-  
-  if (section.range) {
-    for (let i = section.range[0]; i <= section.range[1]; i++) {
-      for (let hymn of getHymns(hymnalId, i)) {
-        hymn.sectionHeaders = [...parentHeadings, section.name];
-      }
-    }
-  }
-  for (let childSection of section.children || []) {
-    applySectionHeaders(hymnalId, childSection, [...parentHeadings, section.name]);
-  }
-}
-
-
-// Attach search functions
-attachSearchFunction(hymns);
-
-
-function findHymnPlusN(hymn, n) {
-  let hymnNoPlusN = hymn.hymnNo + n;
-  let likelyId = `${hymn.hymnalId}-${hymnNoPlusN}`;
-  let hymnPlusN = hymns[likelyId];
-  if (!hymnPlusN) hymnPlusN = hymnArray.find(h => h.hymnalId == hymn.hymnalId && h.hymnNo == hymnNoPlusN);
-  return hymnPlusN;
-}
-
-function hymnCompare(a,b) {
-  let result = 0;
-  if (result == 0 && a.hymnal && b.hymnal) result = a.hymnal.priority - b.hymnal.priority;
-  if (result == 0) result = a.hymnNo - b.hymnNo;
-  if (result == 0) result = a.hymnNoTxt - b.hymnNoTxt;
-  if (result == 0) result = a.suffix - b.suffix;
-  return result;
-}
-
-function getHymns() {
-  let params = [];
-  for (let arg of [...arguments].filter(a => a)) {
-    if (typeof(arg) == "number") {
-      params.push(arg);
-    }
-    else if (typeof(arg) == "string") {
-      let intArg = parseInt(arg);
-      if (intArg.toString() == arg) {
-        params.push(intArg);
-      }
-      else {
-        params.push(arg);
-      }
-    }
-  }
-
-  let results = Object.values(hymns);
-  for (let param of params) {
-    results = results.filter(h => h.hymnalId == param || h.hymnNo == param || h.suffix == param);
-  }
-  results.sort(hymnCompare);
-  return results;
-}
-
-Object.defineProperty(hymns, 'getHymns', {
-  value: getHymns,
-  writable: false,
-  configurable: false,
-  enumerable: false
-});
-
-Object.defineProperty(hymns, 'length', {
-  get() {
-    return Object.values(this).length;
-  },
-  configurable: false,
-  enumerable: false
-});
-
-Object.defineProperty(hymns, 'hymnals', {
-  value: hymnals,
-  configurable: false,
-  enumerable: false
-});
-
-hymns.cacheRoutes = function(router) {
-  let allHymns = Object.values(hymns).filter(h => h.hymnId);
-  for (let hymn of allHymns) {
-    let route = router.resolve({ name: 'hymn', query: { hymnal: hymn.hymnalId, hymnNo: hymn.hymnNo }, hash: ((hymn.suffix && hymn.suffix != 'A') ? `#${hymn.suffix}` : '') });
-    hymn.url = route.href;
-  }
-}
-*/

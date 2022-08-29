@@ -41,7 +41,7 @@ let routes = [
     path: '/search.html',
     name: 'search',
     component: () => import('./views/SearchResults.vue'),
-    props: route => ({ keywords: route.query.keywords })
+    props: route => ({ keywords: route.query.keywords, page: parseInt(route.query.page) || undefined })
   }
 ];
 
