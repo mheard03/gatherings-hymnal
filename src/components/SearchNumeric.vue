@@ -1,29 +1,26 @@
-  <script>
-import { nextTick } from 'vue';
-import { hymnCompare } from '../assets/hymns-db';
-
+<script>
 // TODO: Fix inputs like 144 generating multiple focused links on cursor down
-
 export default {
-  inject: ['hymnsDB'],
   data() {
     return {
       hideLabel: this.$parent.$props.hideLabel,
       value: '',
       // TODO: Get defaultFocusedHymnalId from router
       defaultFocusedHymnalId: 'redbook',
-      userFocusedHymnalId: ''
+      userFocusedHymnalId: '',
+      hymnsProgress: this.$hymnsDb.progress["hymns"],
+      results: []
     }
   },
   computed: {
     valueasnumber() {
       return parseInt(this.value);
     },
-    results() {
-      let hymnNo = this.valueasnumber;
-      if (!hymnNo || hymnNo < 0) return [];
-      let filtered = this.hymnsDB.getHymns(hymnNo);
-      return filtered;
+    hymnsState() {
+      const STATES = this.$hymnsDb.STATES;
+      if (this.hymnsProgress.status === STATES.ERROR) return 'error';
+      if (this.hymnsProgress.status === STATES.READY) return 'ready';
+      return 'loading';
     },
     resultState() {
       if (!this.valueasnumber) return 'blank';
@@ -38,6 +35,11 @@ export default {
     }
   },
   watch: {
+    async valueasnumber(newValue) {
+      let hymnNo = newValue;
+      if (!hymnNo || hymnNo < 0) return [];
+      this.results = await this.$hymnsDb.getHymns(hymnNo);
+    },
     results(newValue, oldValue) {
       if (this.focusedHymnalId != this.userFocusedHymnalId) this.userFocusedHymnalId = '';
     }
@@ -91,13 +93,20 @@ export default {
       <div id="songLookup" class="form-control d-flex flex-column flex-fill" style="position:absolute;" ref="songLookup" @keydown="onKeyDown">
         <input id="txtSongNumber" class="form-control" type="text" autocomplete="off" placeholder="Song number" inputmode="decimal" ref="txtSongNumber" v-model="value" @input="onInput">
         <div id="songLookupResults" class="dropdown-menu force-show" ref="songLookupResults">
-          <a class="dropdown-item disabled" v-show="resultState == 'no-results'">No hymns found</a>
-          <template v-for="hymn in results">
-            <router-link :to="{ name: 'hymn', query: { hymnal: hymn.hymnalId, hymnNo: hymn.hymnNo }, hash: ((hymn.suffix && hymn.suffix != 'A') ? `#${hymn.suffix}` : '')  }" :class="['dropdown-item', ...getHymnClasses(hymn)]">
-              <!-- TODO: Actual hymnal name -->
-              <div class="hymnal-label scaled"><span>{{ hymn.hymnalId }}</span></div>
-              {{ hymn.hymnNoTxt }} - {{ hymn.title }}
-            </router-link>
+          <a class="dropdown-item disabled" v-show="hymnsState === 'loading' && value != ''">
+            <div class="spinner-border spinner-border-sm me-2"></div>
+            <span class="message" role="status">Loading hymns</span>
+          </a>
+          <a class="dropdown-item disabled" v-show="hymnsState === 'error'">Couldn't load hymns</a>
+          <template v-if="hymnsState == 'ready'">
+            <a class="dropdown-item disabled" v-show="resultState == 'no-results'">No hymns found</a>
+            <template v-for="hymn in results">
+              <router-link :to="hymn.url" :class="['dropdown-item', ...getHymnClasses(hymn)]">
+                <!-- TODO: Actual hymnal name -->
+                <div class="hymnal-label scaled"><span>{{ hymn.hymnalId }}</span></div>
+                {{ hymn.hymnNoTxt }} - {{ hymn.title }}
+              </router-link>
+            </template>
           </template>
         </div>
       </div>

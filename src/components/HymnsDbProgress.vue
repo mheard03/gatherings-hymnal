@@ -5,7 +5,6 @@ let STATES = HymnsDbClient.STATES;
 export default {
   props: {
     progressProp: { required: true },
-    inline: { type: Boolean, default: false },
     content: { type: String, default (props) { return props.progressProp } },
     loading: { type: String, default (props) { return `Loading ${props.content}...` } },
     error: { type: String, default (props) { return `Error loading ${props.content}.` } },
@@ -29,38 +28,22 @@ export default {
     }
   }
 }
-
 </script>
 
 <template>
   <div v-bind="$attrs" v-if="!progressPropObj.status">
-    <template v-if="inline">
-      <div class="hymns-db-status-inline" :class="className">
-        <div class="hymns-db-status-content">
-          <template v-if="className == 'error'">
-            <span class="message">{{ error }}</span>
-          </template>  
-          <template v-else>
-            <div class="spinner-border spinner-border-sm me-2"></div>
-            <span class="message" role="status">{{ loading }}</span>
-          </template> 
-        </div>
+    <div class="hymns-db-status-block" :class="className">
+      <div class="hymns-db-status-content">
+        <template v-if="className == 'error'">
+          <span class="message">{{ error }}</span>
+          <span class="message-details" v-if="progressPropObj.errorMesage">{{ progressPropObj.errorMesage }}</span>
+        </template>  
+        <template v-else>
+          <div class="spinner-border mb-2"></div>
+          <span class="message fs-5" role="status">{{ loading }}</span>
+        </template> 
       </div>
-    </template>
-    <template v-else>
-      <div class="hymns-db-status-block" :class="className">
-        <div class="hymns-db-status-content">
-          <template v-if="className == 'error'">
-            <span class="message">{{ error }}</span>
-            <span class="message-details" v-if="progressPropObj.errorMesage">{{ progressPropObj.errorMesage }}</span>
-          </template>  
-          <template v-else>
-            <div class="spinner-border mb-2"></div>
-            <span class="message fs-5" role="status">{{ loading }}</span>
-          </template> 
-        </div>
-      </div>
-    </template>
+    </div>
   </div>
   <template v-else>
     <slot></slot>

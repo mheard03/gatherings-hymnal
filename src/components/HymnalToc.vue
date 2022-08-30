@@ -44,15 +44,15 @@
 
 <script>
 import { nextTick } from 'vue';
-import * as bootstrap from 'bootstrap';
+import { Dropdown } from 'bootstrap';
 import maxSize from 'popper-max-size-modifier';
-window.bootstrap = bootstrap;
 
 export default {
   props: {
     sections: { default: [] },
     activeSectionId: undefined
   },
+  emits: ['input'],
   data() {
     return {
       bsDropdown: undefined
@@ -106,7 +106,7 @@ export default {
       }
     }
 
-    this.tocDropdown = new bootstrap.Dropdown(this.$refs.toggler, config);
+    this.tocDropdown = new Dropdown(this.$refs.toggler, config);
     document.addEventListener('shown.bs.dropdown', this.updateTocScrollPosition);
   },
   unmounted() {

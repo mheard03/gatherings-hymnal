@@ -1,7 +1,6 @@
 <script>
 import { computed, nextTick } from 'vue';
 import userSettingsMixin from './userSettings.js'
-import hymns from './assets/hymns-db';
 import FontSizing from './components/FontSizing.vue';
 
 export default {
@@ -9,19 +8,18 @@ export default {
   provide() {
     return {
       userSettings: this.userSettings,
-      hymnsDB: hymns,
       fontSizing: computed(() => this.$refs.fontSizing)
     };
   },
   mounted() {
-    hymns.cacheRoutes(this.$router);
     window.$hymnsDb = this.$hymnsDb;
     window.$router = this.$router;
   },
   watch: {
     $route: {
-      handler(value) {
-        let allHymnals = Object.keys(hymns.hymnals);
+      async handler(value) {
+        let allHymnals = await this.$hymnsDb.getHymnals();
+        allHymnals = [...allHymnals.keys()];
         document.body.classList.remove(...allHymnals.map(h => `theme-${h}`));
         
         let hymnalClass = this.$route.query.hymnal;

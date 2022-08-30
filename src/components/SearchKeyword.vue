@@ -1,7 +1,4 @@
-  <script>
-import { nextTick } from 'vue';
-import { hymnCompare } from '../assets/hymns-db';
-
+<script>
 export default {
   props: {
     hideButton: { type: Boolean, required: false, default: false },
