@@ -1,3 +1,44 @@
+const helperOptions = [
+  {
+    id: "hymnsDb", 
+    functionNames: ["awaitReady"]
+  },
+  {
+    id: "hymnals",
+    progressProp: "hymnals",
+    functionNames: ["getHymnals", "getHymnal", "cacheHymnalUrls"],
+    objType: "HymnalBuilder"
+  },
+  {
+    id: "hymns",
+    dependsOn: ["hymnals"],
+    functionNames: ["getHymns", "getAllHymns", "cacheHymnUrls"],
+    objType: "HymnsBuilder"
+  },
+  {
+    id: "hymnalSections",
+    progressProp: "hymns",
+    functionNames: ["getHymnalSections"],
+    dependsOn: ["hymnals", "hymns"],
+    objType: "HymnalSectionBuilder"
+  },
+  {
+    id: "search",
+    progressProp: "search",
+    functionNames: ["search"],
+    dependsOn: ["hymns"], 
+    objType: "SearchBuilder"
+  }
+];
+/*
+Object.freeze(helperOptions);
+for (let ho of helperOptions) {
+  Object.freeze(ho);
+  if (ho.functionNames) Object.freeze(ho.functionNames);
+  if (ho.dependsOn) Object.freeze(ho.dependsOn);
+}
+*/
+
 class HymnsDbAbstract {
   static hymnCompare(a,b) {
     let result = 0;
@@ -10,6 +51,20 @@ class HymnsDbAbstract {
 
   static hymnCompareAlpha(a,b) {
     return a.title.localeCompare(b.title, undefined, { sensitivity: 'base' });
+  }
+
+  static get helperOptions() {
+    return helperOptions;
+  }
+    
+  static getExposedPromise() {
+    let resolve, reject;
+    let promise = new Promise((fnResolve, fnReject) => {
+      resolve = fnResolve;
+      reject = fnReject;
+    });
+    Object.assign(promise, { resolve, reject });
+    return promise;
   }
 }
 

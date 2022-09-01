@@ -5,16 +5,18 @@ let hymnArray;
 let hymns;
 
 class HymnsBuilder {
-  static functions = ["getHymns", "getAllHymns"];
+  static functions = ["getHymns", "getAllHymns", "cacheHymnUrls"];
 
   static async build(hymnsDbInstance, router) {
     hymnArray = hymnArray || await loadHymnArray();
     hymns = hymns || buildHymnsObject();
 
+    /*
     for (let hymn of hymns.values()) {
       let route = router.resolve({ name: 'hymn', query: { hymnal: hymn.hymnalId, hymnNo: hymn.hymnNo }, hash: ((hymn.suffix && hymn.suffix != 'A') ? `#${hymn.suffix}` : '') });
       hymn.url = route.href;
     }
+    */
 
     let hymnals = hymnsDbInstance.getHymnals();
     for (let hymnal of hymnals.values()) {
@@ -24,6 +26,11 @@ class HymnsBuilder {
     hymnsDbInstance.getHymns = getHymns;
     hymnsDbInstance.getAllHymns = function() {
       return hymns;
+    };
+    hymnsDbInstance.cacheHymnUrls = function(hymnUrls) {
+      for (let hymn of hymnArray) {
+        hymn.url = hymnUrls.get(hymn.hymnId);
+      }
     };
   }
 }

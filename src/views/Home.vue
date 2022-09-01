@@ -1,3 +1,21 @@
+<script>
+  import Search from '@/components/Search.vue';
+  import HymnsDbProgress from '@/components/HymnsDbProgress.vue';
+  
+  export default {
+    components: { Search, HymnsDbProgress },
+    data() {
+      return {
+        hymnals: [],
+      }
+    },
+    async mounted() {
+      let hymnalsMap = await this.$hymnsDb.getHymnals();
+      this.hymnals = hymnalsMap.values();
+    }
+  };
+</script>
+
 <template>
   <nav id="primaryNav" class="scaled navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container flex-nowrap overflow-hidden">
@@ -30,24 +48,6 @@
 
   </main>
 </template>
-
-<script>
-import Search from '@/components/Search.vue';
-import HymnsDbProgress from '@/components/HymnsDbProgress.vue';
-
-export default {
-  components: { Search, HymnsDbProgress },
-  data() {
-    return {
-      hymnals: [],
-    }
-  },
-  async mounted() {
-    let hymnalsMap = await this.$hymnsDb.getHymnals();
-    this.hymnals = hymnalsMap.values();
-  }
-};
-</script>
  
 <style  lang="scss">
 /* --- Home.vue --- */

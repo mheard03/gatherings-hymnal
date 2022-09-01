@@ -1,22 +1,19 @@
-import { createHeadlessRouter } from '@/router.js';
 import HymnsDbAbstract from './hymns-db-abstract.js';
 import HymnalBuilder from './builders/hymnal-builder.js';
 import HymnsBuilder from './builders/hymns-builder.js';
 import HymnalSectionBuilder from './builders/hymnal-section-builder.js';
 import SearchBuilder from './builders/search-builder.js';
 
-let router = createHeadlessRouter();
+// let router = createHeadlessRouter();
 let forceDelayTimeout = 1000;
 
-let dummyHelperOptions = { id: "hymnsDb", obj: { functions: ["awaitReady"] } }
-let helperOptions = [
-  { id: "hymnals", obj: HymnalBuilder, buildParams: [router], progressProp: "hymnals" },
-  { id: "hymns", obj: HymnsBuilder, dependsOn: ["hymnals"], buildParams: [router] },
-  { id: "hymnalSections", obj: HymnalSectionBuilder, dependsOn: ["hymnals", "hymns"], progressProp: "hymns" },
-  { id: "search", obj: SearchBuilder, dependsOn: ["hymns"], progressProp: "search" }
-];
-let helperAndSelfOptions = [dummyHelperOptions, ...helperOptions];
-helperAndSelfOptions.forEach(h => h.dependsOn = [dummyHelperOptions.id, ...(h.dependsOn || [])]);
+let objTypes = {};
+[HymnalBuilder, HymnsBuilder, HymnalSectionBuilder, SearchBuilder].forEach(obj => objTypes[obj.name] = obj);
+let helperOptions = HymnsDbAbstract.helperOptions;
+for (let ho of helperOptions.filter(h => h.objType)) {
+  ho.obj = objTypes[ho.objType];
+};
+let ownOptions = helperOptions.find(ho => ho.id == "hymnsDb")
 
 class HymnsDb extends HymnsDbAbstract {
   constructor() {
@@ -24,11 +21,10 @@ class HymnsDb extends HymnsDbAbstract {
     console.log("Initializing HymnsDb");
     super();
 
-   
     // Build helper objects
-    let helpers = helperAndSelfOptions.reduce((helpers, options) => {
-      let helper = Object.assign({ ready: getExposedPromise() }, options);
-      helper.dependsOn = helper.dependsOn.map(id => id);
+    let helpers = helperOptions.reduce((helpers, options) => {
+      let helper = Object.assign({ ready: HymnsDbAbstract.getExposedPromise() }, options);
+      helper.dependsOn = (helper.dependsOn || []).map(id => id);
       helpers[options.id] = helper;
       helper.ready.then(() => console.log("helper ready", options.id, 'functions', (options.obj || {}).functions));
       return helpers;
@@ -47,27 +43,18 @@ class HymnsDb extends HymnsDbAbstract {
       precedentPromise.catch(r => helper.ready.reject(r));
 
       // when precedents are ready, run this helper's build function and resolve/reject accordingly
-      let fnBuild = helper.obj.build || (() => true);
-      let buildParams = helper.buildParams || [];
-      let buildPromise = precedentPromise.then(() => fnBuild(this, ...buildParams));
+      let fnBuild = (helper.obj && helper.obj.build) ? helper.obj.build : (() => true);
+      let buildPromise = precedentPromise.then(() => fnBuild(this));
       buildPromise.then(() => forceDelay()).then(() => helper.ready.resolve());
       buildPromise.catch(r => helper.ready.reject(r));
     } 
 
     // Kick the whole thing off by resolving hymnsDb;
-    forceDelay().then(() => this.promises[dummyHelperOptions.id].resolve());
+    forceDelay().then(() => this.promises[ownOptions.id].resolve());
   }
 
   async awaitReady(helperId) {
     await this.promises[helperId];
-  }
-
-  static get helperFunctions() {
-    return helperAndSelfOptions.map(o => ({
-      helperId: o.id, 
-      functionNames: (o.obj.functions || []),
-      progressProp: o.progressProp
-    }));
   }
 }
 
@@ -84,16 +71,6 @@ function verifyEnvironment() {
       throw new Error(message);
     }
   }
-}
-
-function getExposedPromise() {
-  let resolve, reject;
-  let promise = new Promise((fnResolve, fnReject) => {
-    resolve = fnResolve;
-    reject = fnReject;
-  });
-  Object.assign(promise, { resolve, reject });
-  return promise;
 }
 
 export default HymnsDb;

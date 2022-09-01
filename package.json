@@ -27,7 +27,7 @@
     "jsdom": "^19.0.0",
     "recursive-readdir": "^2.2.2",
     "sass": "^1.52.2",
-    "vite": "^3.0.8",
+    "vite": "^3.0.9",
     "vite-plugin-mkcert": "^1.9.0"
   }
 }
