@@ -14,6 +14,9 @@ function enableInstantScroll() {
   }, 500);
 }
 
+let base = new URL("..", import.meta.url);
+base = base.pathname;
+
 // TODO: Make sure this works if the app is deployed somewhere other than the server root, lol
 let routes = [
   {
@@ -48,7 +51,7 @@ let routes = [
 function createFullRouter() {
   let router = createRouter({
     routes,
-    history: createWebHistory(),
+    history: createWebHistory(base),
     scrollBehavior(to, from, savedPosition) {
       // console.log('scrollBehavior', to.fullPath, (from || {}).fullPath, savedPosition)
       if (savedPosition) {
@@ -85,8 +88,8 @@ function createFullRouter() {
 
 function createHeadlessRouter() {
   return createRouter({ 
-    history: createMemoryHistory(), 
-    routes 
+    routes,
+    history: createMemoryHistory(base)
   });
 }
 

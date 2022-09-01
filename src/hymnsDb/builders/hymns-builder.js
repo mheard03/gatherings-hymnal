@@ -37,7 +37,7 @@ class HymnsBuilder {
 
 
 // https://vitejs.dev/guide/assets.html#new-url-url-import-meta-url
-let arrayUrl = new URL("../../assets/hymns-db-generated.json", import.meta.url);
+let arrayUrl = new URL("../../assets/hymns-db-data.json", import.meta.url);
 let versionUrl = new URL("../../assets/hymns-db-version.txt", import.meta.url);
 
 async function loadHymnArray() {

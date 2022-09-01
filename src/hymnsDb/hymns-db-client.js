@@ -3,20 +3,25 @@ import { createHeadlessRouter } from '@/router.js';
 import { PWBHost } from "promise-worker-bi";
 import HymnsDbAbstract from './hymns-db-abstract.js';
 
-let promiseWorker;
+let hymnsDbWorkerUrl = new URL('./hymns-db-worker.js', import.meta.url);
+const sharedWorker = new SharedWorker(hymnsDbWorkerUrl, { type: 'module' });
+const promiseWorker = new PWBHost(sharedWorker);
+/*
 try {
   throw "potato";
-  let hymnsDbWorkerUrl = new URL('./hymns-db-worker.js', import.meta.url);
   const sharedWorker = new SharedWorker(hymnsDbWorkerUrl, { type: 'module' });
   promiseWorker = new PWBHost(sharedWorker);
   console.log("SharedWorker launched successfully.");
 }
 catch (e) {
-  console.warn("Unable to launch shared worker; falling back");
-  const HymnsDb = (await import('./hymns-db.js')).default;
-  const hymnsDb = new HymnsDb();
+  console.warn("Unable to launch shared worker; falling back by creating HymnsDb instance in main browser window.");
+  let hymnsDb;
+  console.log('hymnsDbWorkerUrl.pathname', hymnsDbWorkerUrl.pathname);
+  import(hymnsDbWorkerUrl.pathname).catch(e => console.log('import failure', e));
+  const importPromise = import(hymnsDbWorkerUrl.pathname).then(r => hymnsDb = r.hymnsDbInstance);
   promiseWorker = {
     async postMessage(message) {
+      await importPromise;
       let { fn, args } = message;
       
       fn = hymnsDb[fn];
@@ -26,6 +31,7 @@ catch (e) {
     }
   }
 }
+*/
 
 let router = createHeadlessRouter();
 let onReadyFunctions = {

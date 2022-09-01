@@ -18,15 +18,20 @@ export default {
   watch: {
     $route: {
       async handler(value) {
-        let allHymnals = await this.$hymnsDb.getHymnals();
-        allHymnals = [...allHymnals.keys()];
-        document.body.classList.remove(...allHymnals.map(h => `theme-${h}`));
+        let oldTheme = [...document.body.classList].find(c => c.startsWith("theme-")) || "";
+        let newHymnalId = this.$route.query.hymnal;
+        let newTheme = newHymnalId ? `theme-${newHymnalId}` : "";
+        if (oldTheme == newTheme) return;
+
+        document.body.classList.add("no-transitions");        
+        await this.$nextTick();
+
+        let classNames = [...document.body.classList].filter(c => !c.startsWith("theme-"));
+        if (newTheme) classNames.push(newTheme);
+        document.body.className = classNames.join(" ");
         
-        let hymnalClass = this.$route.query.hymnal;
-        if (!hymnalClass) return;
-        let match = allHymnals.filter(h => h.localeCompare(hymnalClass, undefined, { sensitivity: 'base' }) == 0);
-        if (match.length != 1) return;
-        document.body.classList.add(`theme-${match[0]}`);
+        await this.$nextTick();
+        document.body.classList.remove("no-transitions");
       },
       immediate: true
     }

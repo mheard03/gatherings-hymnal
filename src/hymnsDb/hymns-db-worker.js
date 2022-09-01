@@ -1,7 +1,8 @@
 import { PWBWorker } from 'promise-worker-bi';
 import HymnsDb from '@/hymnsDb/hymns-db.js';
 
-self.hymnsDb = new HymnsDb();
+let hymnsDbInstance = new HymnsDb();
+self.hymnsDb = hymnsDbInstance;
 
 async function messageHandler(message) {
   let functionName = message.fn;
@@ -23,3 +24,4 @@ const promiseWorker = new PWBWorker();
 promiseWorker.register(messageHandler);
 
 export default self;
+export { hymnsDbInstance };

@@ -6,7 +6,7 @@ const fs = require('fs');
 const hymnFileReader = require('./read-hymn-files');
 const { readFile } = require('./read-file');
 const hymnalRoot = './hymnals/';
-const cachePath = './src/assets/hymns-db-generated.json';
+const cachePath = './src/assets/hymns-db-data.json';
 const versionPath = './src/assets/hymns-db-version.txt';
 
 run();
@@ -14,17 +14,17 @@ async function run() {
   console.log('Loading hymns from HTML files and JSON cache...');
   let html = await hymnFileReader.readAllHymnFiles(hymnalRoot);
 
-  let json;
-  try {
-    let jsonFile = await readFile(cachePath);
-    json = JSON.parse(jsonFile.textContent);
-    for (let hymn of json) {
-      hymn.modifiedDate = new Date(hymn.modifiedDate);
+  let json = [];
+  if (fs.existsSync(cachePath)) {
+    try {
+      let jsonFile = await readFile(cachePath);
+      json = JSON.parse(jsonFile.textContent);
+      for (let hymn of json) {
+        hymn.modifiedDate = new Date(hymn.modifiedDate);
+      }
+    } catch (e) {
+      console.log("Couldn't load existing JSON cache.");
     }
-  } catch (e) {
-    console.log("Couldn't load existing JSON cache.");
-    console.log(e);
-    json = [];
   }
 
   console.log('Comparing versions...');
@@ -35,7 +35,7 @@ async function run() {
   }
   if (cache || !fs.existsSync(versionPath)) {
     let ts = new Date();
-    await fs.promises.writeFile(versionPath, ts.getTime());
+    await fs.promises.writeFile(versionPath, ts.getTime().toString());
   }
 }
   

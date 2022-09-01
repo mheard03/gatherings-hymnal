@@ -5,9 +5,9 @@ import mkcert from'vite-plugin-mkcert'
 const fs = require('fs');
 
 const { buildHymnals } = require('./hymnals/build-scripts/build-hymnals');
-import { existsSync } from 'fs';
 
-if (!existsSync('./src/assets/hymns-db-generated.json')) {
+
+if (!fs.existsSync('./src/assets/hymns-db-data.json')) {
   buildHymnals();
 }
 
@@ -27,7 +27,7 @@ export default defineConfig({
   build: {
     watch: false,
     emptyOutDir: true,
-    assetsInlineLimit: 2048,
+    assetsInlineLimit: 1024,
     rollupOptions: {
       input: {
         'index.html': resolve(__dirname, 'index.html'),
@@ -51,7 +51,7 @@ export default defineConfig({
     {
       name: 'hot-reload-hymns',
       async handleHotUpdate({ file, server }) {
-        if (file.includes('hymnals') && file.endsWith(".html")) {
+        if (file.includes('hymnals/') && file.endsWith(".html")) {
           console.log('updating hymns-db...');
           await buildHymnals();
         }
@@ -62,10 +62,11 @@ export default defineConfig({
     },
     {
       name: 'copy-index',
-      handleHotUpdate({ file, server }) {
+      async handleHotUpdate({ file, server }) {
         if (file.endsWith('/index.html')) {
           let targets = ["hymn.html", "hymnal.html", "search.html"];
-          targets.forEach(t => fs.copyFileSync("index.html", t, (err) => { if (err) throw err; }));
+          let copyPromises = targets.map(t => fs.promises.copyFile("index.html", t));
+          await Promise.all(copyPromises);
         }
       }
     }

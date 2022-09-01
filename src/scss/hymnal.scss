@@ -7,6 +7,11 @@
 body {
   --page-margin-bottom: calc(var(--font-size) * 5);
   overflow-y: scroll;
+  &.no-transitions,
+  &.no-transitions * {
+    transition: none !important;
+    transition-delay: 0s !important;
+  }
 }
 
 main {

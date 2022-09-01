@@ -63,7 +63,7 @@ function verifyEnvironment() {
     if (self instanceof SharedWorkerGlobalScope) return true;
   }
   catch {
-    let message = "BIG WARNING! HymnsDb should only be instantiated in a SharedWorker!";
+    let message = "Warning! HymnsDb instance created in main browser window. For performance reasons, HymnsDb should only be instantiated in a SharedWorker!";
     if (window) {
       console.warn(message);
     }

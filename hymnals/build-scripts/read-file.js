@@ -11,10 +11,12 @@ async function readFile(fileName) {
   } catch (e) {
     fileException = e;
   } finally {
-    await file.close();
+    if (file) {
+      await file.close();
+    }
   }
 
-  if (fileException) throw e;
+  if (fileException) throw fileException;
   return { modifiedDate, textContent };
 }
 
