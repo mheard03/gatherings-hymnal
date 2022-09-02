@@ -30,14 +30,6 @@ const helperOptions = [
     objType: "SearchBuilder"
   }
 ];
-/*
-Object.freeze(helperOptions);
-for (let ho of helperOptions) {
-  Object.freeze(ho);
-  if (ho.functionNames) Object.freeze(ho.functionNames);
-  if (ho.dependsOn) Object.freeze(ho.dependsOn);
-}
-*/
 
 class HymnsDbAbstract {
   static hymnCompare(a,b) {

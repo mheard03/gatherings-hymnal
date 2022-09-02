@@ -8,14 +8,12 @@ let docs = undefined;
 const HYMNS_PER_PAGE = 30;
 
 class SearchBuilder {
-  static functions = ["search"]
-
   static async build(hymnsDbInstance) {
     hymns = hymnsDbInstance.getAllHymns();
     docs = buildDocuments(hymns);
     index = buildSearchIndex(docs);
     
-    hymnsDbInstance.search = function(strQuery, page) {
+    hymnsDbInstance["search"] = function(strQuery, page) {
       let clauses = buildClauses(strQuery);
       let docResults = index.query(function (q) {
         clauses.forEach(c => q.term(c.term, c.options));

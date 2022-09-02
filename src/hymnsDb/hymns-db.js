@@ -4,8 +4,10 @@ import HymnsBuilder from './builders/hymns-builder.js';
 import HymnalSectionBuilder from './builders/hymnal-section-builder.js';
 import SearchBuilder from './builders/search-builder.js';
 
+console.log('import.meta.env', import.meta.env);
+
 // let router = createHeadlessRouter();
-let forceDelayTimeout = 1000;
+let forceDelayTimeout = 1500;
 
 let objTypes = {};
 [HymnalBuilder, HymnsBuilder, HymnalSectionBuilder, SearchBuilder].forEach(obj => objTypes[obj.name] = obj);
@@ -26,7 +28,7 @@ class HymnsDb extends HymnsDbAbstract {
       let helper = Object.assign({ ready: HymnsDbAbstract.getExposedPromise() }, options);
       helper.dependsOn = (helper.dependsOn || []).map(id => id);
       helpers[options.id] = helper;
-      helper.ready.then(() => console.log("helper ready", options.id, 'functions', (options.obj || {}).functions));
+      helper.ready.then(() => console.log("helper ready", options.id));
       return helpers;
     }, {});
     Object.values(helpers).forEach(h => h.dependsOn = h.dependsOn.map(id => helpers[id]));
@@ -51,10 +53,10 @@ class HymnsDb extends HymnsDbAbstract {
 
     // Kick the whole thing off by resolving hymnsDb;
     forceDelay().then(() => this.promises[ownOptions.id].resolve());
-  }
 
-  async awaitReady(helperId) {
-    await this.promises[helperId];
+    this["awaitReady"] = async function (helperId) {
+      await this.promises[helperId];
+    }
   }
 }
 

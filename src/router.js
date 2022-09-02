@@ -14,9 +14,6 @@ function enableInstantScroll() {
   }, 500);
 }
 
-let base = new URL("..", import.meta.url);
-base = base.pathname;
-
 // TODO: Make sure this works if the app is deployed somewhere other than the server root, lol
 let routes = [
   {
@@ -47,6 +44,12 @@ let routes = [
     props: route => ({ keywords: route.query.keywords, page: parseInt(route.query.page) || undefined })
   }
 ];
+
+
+//console.log('import.meta.env.BASE_URL', import.meta.env.BASE_URL)
+let base = new URL(import.meta.env.BASE_URL, import.meta.url);
+base = base.pathname;
+//console.log('router base', base)
 
 function createFullRouter() {
   let router = createRouter({
@@ -83,14 +86,17 @@ function createFullRouter() {
   }
 
   router.beforeResolve(enableInstantScroll);
+  router.base = base;
   return router;
 }
 
 function createHeadlessRouter() {
-  return createRouter({ 
+  let router = createRouter({ 
     routes,
     history: createMemoryHistory(base)
   });
+  router.base = base;
+  return router;
 }
 
 export default createFullRouter;

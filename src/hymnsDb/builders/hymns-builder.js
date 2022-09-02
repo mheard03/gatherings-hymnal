@@ -1,33 +1,26 @@
 import HymnsDbAbstract from '../hymns-db-abstract.js';
 import { getMany as idbGet, setMany as idbSet } from 'idb-keyval';
+import arrayUrl from '../../assets/hymns-db-data.json?url';
+import versionUrl from '../../assets/hymns-db-version.txt?url';
 
 let hymnArray;
 let hymns;
 
 class HymnsBuilder {
-  static functions = ["getHymns", "getAllHymns", "cacheHymnUrls"];
-
   static async build(hymnsDbInstance, router) {
     hymnArray = hymnArray || await loadHymnArray();
     hymns = hymns || buildHymnsObject();
-
-    /*
-    for (let hymn of hymns.values()) {
-      let route = router.resolve({ name: 'hymn', query: { hymnal: hymn.hymnalId, hymnNo: hymn.hymnNo }, hash: ((hymn.suffix && hymn.suffix != 'A') ? `#${hymn.suffix}` : '') });
-      hymn.url = route.href;
-    }
-    */
 
     let hymnals = hymnsDbInstance.getHymnals();
     for (let hymnal of hymnals.values()) {
       getHymns(hymnal.hymnalId).forEach(h => h.hymnal = hymnal);
     }
 
-    hymnsDbInstance.getHymns = getHymns;
-    hymnsDbInstance.getAllHymns = function() {
+    hymnsDbInstance["getHymns"] = getHymns;
+    hymnsDbInstance["getAllHymns"] = function() {
       return hymns;
     };
-    hymnsDbInstance.cacheHymnUrls = function(hymnUrls) {
+    hymnsDbInstance["cacheHymnUrls"] = function(hymnUrls) {
       for (let hymn of hymnArray) {
         hymn.url = hymnUrls.get(hymn.hymnId);
       }
@@ -35,10 +28,7 @@ class HymnsBuilder {
   }
 }
 
-
-// https://vitejs.dev/guide/assets.html#new-url-url-import-meta-url
-let arrayUrl = new URL("../../assets/hymns-db-data.json", import.meta.url);
-let versionUrl = new URL("../../assets/hymns-db-version.txt", import.meta.url);
+console.log('arrayUrl', arrayUrl);
 
 async function loadHymnArray() {
   const arrayAbortController = new AbortController();
@@ -109,7 +99,8 @@ async function fetchString(url, options, retryCount) {
         await new Promise(r => setTimeout(r, Math.max(100, 1000 / retryCount)));
         return await fetchString(url, options, retryCount - 1);
       }
-      throw new Error("Unable to fetch", url.toString(), response.status, response.statusText);
+      console.log("Unable to fetch", url.toString(), response.status, response.statusText);
+      throw new Error("Unable to fetch " + url.toString());
     }
     return await response.text();
   }

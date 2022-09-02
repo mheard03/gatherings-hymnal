@@ -25,24 +25,45 @@ export default defineConfig({
     }
   },
   build: {
+    base: "/dist/",
+    sourcemap: true,
+    minify: false,
     watch: false,
     emptyOutDir: true,
-    assetsInlineLimit: 1024,
+    assetsInlineLimit: -1,
     rollupOptions: {
+      /*
+      external: [
+        resolve(__dirname, 'hymns-db-worker.js')
+      ],
+      */
       input: {
         'index.html': resolve(__dirname, 'index.html'),
         'hymn.html': resolve(__dirname, 'hymn.html'),
         'hymnal.html': resolve(__dirname, 'hymnal.html'),
-        'search.html': resolve(__dirname, 'search.html'),
-        'hymns-db-worker': resolve(__dirname, 'src/hymnsDb', 'hymns-db-worker.js'),
+        'search.html': resolve(__dirname, 'search.html')
       },
       output: {
-        entryFileNames: function (assetInfo) {
+        entryFileNames: `assets/[name].js`,
+        chunkFileNames: `assets/[name].js`,
+        assetFileNames: `assets/[name].[ext]`,
+        /*
+        function (assetInfo) {
           return assetInfo.name === 'hymns-db-worker'
-             ? '[name]-[hash].js'            // put service worker in root
-             : 'assets/[name]-[hash].js';    // others in `assets/js/`
+             ? '[name].js'            // put service worker in root
+             : 'assets/[name].js';    // others in `assets/js/`
         }
+        */
       },
+    }
+  },
+  worker: {
+    rollupOptions: {
+      output: {
+        entryFileNames: `assets/[name].js`,
+        chunkFileNames: `assets/[name].js`,
+        assetFileNames: `assets/[name].[ext]`
+      }
     }
   },
   plugins: [

@@ -4,8 +4,6 @@ import HymnsDbAbstract from '../hymns-db-abstract.js';
 let hymnalSections;
 
 class HymnalSectionBuilder {
-  static functions = ["getHymnalSections"];
-
   static async build(hymnsDbInstance) {
     hymnalSections = new Map();
 
@@ -17,7 +15,7 @@ class HymnalSectionBuilder {
       delete hymnal.sections;
     }
 
-    hymnsDbInstance.getHymnalSections = function(hymnalId, type) {
+    hymnsDbInstance["getHymnalSections"] = function(hymnalId, type) {
       let sections = hymnalSections.get(hymnalId);
       return (type) ? sections[type] : sections;
     };

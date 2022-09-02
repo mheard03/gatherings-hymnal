@@ -3,9 +3,10 @@ import { createHeadlessRouter } from '@/router.js';
 import { PWBHost } from "promise-worker-bi";
 import HymnsDbAbstract from './hymns-db-abstract.js';
 
-let hymnsDbWorkerUrl = new URL('./hymns-db-worker.js', import.meta.url);
-const sharedWorker = new SharedWorker(hymnsDbWorkerUrl, { type: 'module' });
+
+const sharedWorker = new SharedWorker(new URL('./hymns-db-worker.js', import.meta.url), { type: 'module' });
 const promiseWorker = new PWBHost(sharedWorker);
+
 /*
 try {
   throw "potato";
@@ -40,7 +41,7 @@ let onReadyFunctions = {
     let hymnals = await promiseWorker.postMessage({ fn: "getHymnals" });
     for (let hymnal of hymnals.values()) {
       let route = router.resolve({ name: 'hymnal', query: { hymnal: hymnal.hymnalId } });
-      hymnalUrls.set(hymnal.hymnalId, route.href);
+      hymnalUrls.set(hymnal.hymnalId, route.fullPath);
     }
     await promiseWorker.postMessage({ fn: "cacheHymnalUrls", args: [ hymnalUrls ] });
   },
@@ -49,7 +50,7 @@ let onReadyFunctions = {
     let hymns = await promiseWorker.postMessage({ fn: "getHymns" });
     for (let hymn of hymns.values()) {
       let route = router.resolve({ name: 'hymn', query: { hymnal: hymn.hymnalId, hymnNo: hymn.hymnNo }, hash: ((hymn.suffix && hymn.suffix != 'A') ? `#${hymn.suffix}` : '') });
-      hymnUrls.set(hymn.hymnId, route.href);
+      hymnUrls.set(hymn.hymnId, route.fullPath);
     }
     await promiseWorker.postMessage({ fn: "cacheHymnUrls", args: [ hymnUrls ] });
   }
