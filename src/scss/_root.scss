@@ -1,5 +1,18 @@
 @use "sass:math";
 
+@font-face {
+  font-family: Segoe;
+  src: local("Segoe UI Variable"), local("Segoe UI");
+}
+@font-face {
+  font-family: Google;
+  src: local("Roboto Flex"), local("Roboto");
+}
+@font-face {
+  font-family: Apple;
+  src: local("SF Pro");
+}
+
 :root {
   --black: #000000;
   --white: #ffffff;
@@ -40,6 +53,13 @@
   --gray-800: #303d3d;
   --gray-900: #1e2727;
 
+  /* Custom */
+  --ui-text-color-inactive: var(--gray-200);
+  --bs-gutter-x: #{fnScaleLinearPx(16px, 32px)};
+  --line-height-extra-y: calc(var(--scaled-font-size) * #{$line-height-base - 1});
+  --line-height-extra-y-half: calc(var(--scaled-font-size) * #{math.div($line-height-base - 1, 2)});
+  --font-family-sans-serif: Segoe, Apple, Google;
+
   /* Built-in */
   --#{$variable-prefix}font-family-sans-serif:   #{inspect($font-family-sans-serif)};
   --#{$variable-prefix}font-family-monospace:    #{inspect($font-family-monospace)};
@@ -55,13 +75,6 @@
   --#{$variable-prefix}link-color: #{$link-color};
   --#{$variable-prefix}link-hover-color: #{$link-hover-color};
   --#{$variable-prefix}link-active-color: #{$link-active-color};
-
-  /* Custom */
-  --ui-text-color-inactive: var(--gray-200);
-  --bs-gutter-x: #{fnScaleLinearPx(16px, 32px)};
-  --line-height-extra-y: calc(var(--scaled-font-size) * #{$line-height-base - 1});
-  --line-height-extra-y-half: calc(var(--scaled-font-size) * #{math.div($line-height-base - 1, 2)});
-  
 
   /* Variables overridden by HC themes */
   --body-color: var(--bs-body-color);
