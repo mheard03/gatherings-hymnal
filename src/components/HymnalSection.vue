@@ -16,7 +16,7 @@
   </section>
 </template>
 <script>
-import fontSizeMixin from '../fontSizeMixin.js'
+import fontSizeMixin from '../utils/fontSizeMixin.js'
 
 const baseHeadingLevel = 2;
 export default {

@@ -1,5 +1,5 @@
 <script>
-import { scaleLinear } from 'd3-scale';
+import scaleLinear from '@/utils/scaleLinear/scaleLinear.js';
 import PinchManager from './Pinch.js';
 
 const minFontSize = 14;

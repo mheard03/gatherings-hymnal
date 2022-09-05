@@ -1,6 +1,6 @@
 <script>
 import { computed, nextTick } from 'vue';
-import userSettingsMixin from './userSettings.js'
+import userSettingsMixin from './utils/userSettings.js'
 import FontSizing from './components/FontSizing.vue';
 
 export default {
