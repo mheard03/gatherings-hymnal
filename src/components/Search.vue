@@ -1,7 +1,6 @@
   <script>
 import SearchNumeric from './SearchNumeric.vue';
 import SearchKeyword from './SearchKeyword.vue';
-import { nextTick } from 'vue';
 
 export default {
   emits: ['input'],
@@ -46,7 +45,7 @@ export default {
       this.$emit("input", { mode: this.mode, value: newValue });
     },
     async mode() {
-      await nextTick();
+      await this.$nextTick();
       this.activeField.$el.querySelector("input").focus();
     }
   }

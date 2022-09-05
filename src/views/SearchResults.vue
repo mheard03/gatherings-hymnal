@@ -29,7 +29,6 @@
 </template>
 
 <script>
-import { nextTick } from 'vue';
 import Search from '../components/Search.vue';
 
 export default {
@@ -61,7 +60,7 @@ export default {
       }
       catch {}
       
-      await nextTick();
+      await this.$nextTick();
       this.$router.push(hymn.url);
     }
   },

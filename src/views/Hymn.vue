@@ -23,7 +23,6 @@
 </template>
 
 <script>
-import { nextTick } from 'vue';
 import Fab from '@/components/Fab.vue';
 import HymnsDbProgress from '@/components/HymnsDbProgress.vue';
 
@@ -43,7 +42,7 @@ export default {
     this.$hymnsDb.getHymns(this.hymnalId, parseInt(this.hymnNo) || 1)
       .then(h => this.hymns = h);
 
-    nextTick().then(() => {
+    this.$nextTick().then(() => {
       /* Scroll to second hymn, if needed */
       if (this.suffix || window.location.hash) {
         let id = this.suffix || window.location.hash.replace("#", "");

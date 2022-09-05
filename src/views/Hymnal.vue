@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import { nextTick } from 'vue';
 import { HymnalSectionModel as SectionModel } from '@/components/HymnalSectionModel.js';
 
 import HymnsDbProgress from '@/components/HymnsDbProgress.vue';
@@ -80,7 +79,7 @@ export default {
         newValue.forEach(s => s.populateHymns(this.hymns));
 
         this.currentSectionId = undefined;
-        await nextTick();
+        await this.$nextTick();
 
         let listing = document.getElementById("sectionListing");
         this.leafSectionTags = [...document.querySelectorAll("#sectionListing section")]

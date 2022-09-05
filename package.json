@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --base=/dist/",
     "preview": "vite preview",
     "buildHymnsDB": "node ./hymnals/build-scripts/build-hymnals.js"
   },
@@ -28,6 +28,7 @@
     "recursive-readdir": "^2.2.2",
     "sass": "^1.52.2",
     "vite": "^3.0.9",
-    "vite-plugin-mkcert": "^1.9.0"
+    "vite-plugin-mkcert": "^1.9.0",
+    "terser": "^5.15.0"
   }
 }

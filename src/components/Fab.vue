@@ -1,6 +1,4 @@
 <script>
-import { nextTick } from 'vue';
-
 export default {
   data() {
     return {

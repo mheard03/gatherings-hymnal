@@ -1,8 +1,6 @@
 <script>
 import { scaleLinear } from 'd3-scale';
-import userSettings from '../userSettings';
 import PinchManager from './Pinch.js';
-import { nextTick } from 'vue';
 
 const minFontSize = 14;
 const maxFontSize = 64;
@@ -80,7 +78,7 @@ export default {
       this.enableFontZoom = (this.viewportScale == 1);
       this.setChonkClass();
 
-      await nextTick();
+      await this.$nextTick();
       this.pinchManager.addOrUpdateListeners({ passive: !this.enableFontZoom });
     },
     onResize() {
@@ -161,7 +159,7 @@ export default {
       newFontSize = Math.round(newFontSize * 4) / 4;
       this.userSettings.fontSize = newFontSize;
 
-      await nextTick();
+      await this.$nextTick();
       if (this.zoomTarget) {
         let offset = getOffset(this.zoomTarget.element);
         let currentY = offset.top + offset.height * this.zoomTarget.elementPct;

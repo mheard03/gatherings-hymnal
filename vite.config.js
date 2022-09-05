@@ -26,17 +26,26 @@ export default defineConfig({
   },
   build: {
     base: "/dist/",
+    minify: "terser",
     sourcemap: true,
-    minify: false,
     watch: false,
     emptyOutDir: true,
     assetsInlineLimit: -1,
+    terserOptions: {
+      compress: {
+        passes: 2,
+        module: true,
+        unused: false,
+        keep_classnames: true,
+        keep_fnames: true
+      },
+      mangle: {
+        keep_classnames: true,
+        keep_fnames: true,
+        module: true
+      }
+    },
     rollupOptions: {
-      /*
-      external: [
-        resolve(__dirname, 'hymns-db-worker.js')
-      ],
-      */
       input: {
         'index.html': resolve(__dirname, 'index.html'),
         'hymn.html': resolve(__dirname, 'hymn.html'),
@@ -47,13 +56,6 @@ export default defineConfig({
         entryFileNames: `assets/[name].js`,
         chunkFileNames: `assets/[name].js`,
         assetFileNames: `assets/[name].[ext]`,
-        /*
-        function (assetInfo) {
-          return assetInfo.name === 'hymns-db-worker'
-             ? '[name].js'            // put service worker in root
-             : 'assets/[name].js';    // others in `assets/js/`
-        }
-        */
       },
     }
   },

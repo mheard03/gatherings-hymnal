@@ -14,7 +14,6 @@ function enableInstantScroll() {
   }, 500);
 }
 
-// TODO: Make sure this works if the app is deployed somewhere other than the server root, lol
 let routes = [
   {
     path: '/',

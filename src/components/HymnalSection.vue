@@ -16,7 +16,6 @@
   </section>
 </template>
 <script>
-import { nextTick } from 'vue';
 import fontSizeMixin from '../fontSizeMixin.js'
 
 const baseHeadingLevel = 2;
@@ -82,7 +81,7 @@ export default {
       handler: async function () {
         if (this.renderMode == "children") return;
 
-        await nextTick();
+        await this.$nextTick();
         if (!this.$refs.lis) return;
 
         let markerWidths = this.$refs.lis

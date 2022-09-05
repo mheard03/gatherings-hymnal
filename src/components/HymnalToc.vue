@@ -43,8 +43,7 @@
 </template>
 
 <script>
-import { nextTick } from 'vue';
-import { Dropdown } from 'bootstrap';
+import Dropdown from 'bootstrap/js/src/dropdown';
 import maxSize from 'popper-max-size-modifier';
 
 export default {
@@ -118,7 +117,7 @@ export default {
       return this.$refs.tocContainer.offsetHeight;
     },
     async updateTocScrollPosition() {
-      await nextTick();
+      await this.$nextTick();
       let activeItem = document.querySelector("#tocContainer a.active");
       if (activeItem) {
         activeItem.scrollIntoView({ block: "center" });
