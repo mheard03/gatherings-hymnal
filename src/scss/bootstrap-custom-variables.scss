@@ -245,3 +245,9 @@ $spinner-animation-speed: .75s;
 $spinner-width-sm:        $scaled-font-size;
 $spinner-height-sm:       $spinner-width-sm;
 $spinner-border-width-sm: clamp(2px, calc($spinner-width-sm / 8), 8px);
+
+
+
+/* Modals ------------------------------------------------------------------------ */
+$modal-fade-transform:              translate(0, 100vh);
+$modal-transition:                  transform .2s ease-out;

@@ -105,7 +105,7 @@ export default {
       }
     }
 
-    this.tocDropdown = new Dropdown(this.$refs.toggler, config);
+    this.bsDropdown = new Dropdown(this.$refs.toggler, config);
     document.addEventListener('shown.bs.dropdown', this.updateTocScrollPosition);
   },
   unmounted() {

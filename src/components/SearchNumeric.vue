@@ -4,9 +4,10 @@ export default {
   data() {
     return {
       hideLabel: this.$parent.$props.hideLabel,
+      label: "Go to song...",
       value: '',
       // TODO: Get defaultFocusedHymnalId from router
-      defaultFocusedHymnalId: 'redbook',
+      defaultFocusedHymnalId: this.$root.routeHymnalId,
       userFocusedHymnalId: '',
       hymnsProgress: this.$hymnsDb.progress["hymns"],
       results: []
@@ -37,8 +38,12 @@ export default {
   watch: {
     async valueasnumber(newValue) {
       let hymnNo = newValue;
-      if (!hymnNo || hymnNo < 0) return [];
-      this.results = await this.$hymnsDb.getHymns(hymnNo);
+      if (!hymnNo || hymnNo < 0) {
+        this.results = [];
+      }
+      else {
+        this.results = await this.$hymnsDb.getHymns(hymnNo);
+      }
     },
     results(newValue, oldValue) {
       if (this.focusedHymnalId != this.userFocusedHymnalId) this.userFocusedHymnalId = '';
@@ -88,7 +93,7 @@ export default {
 
 <template>
   <div class="form-group">
-    <label v-if="!hideLabel" for="txtSongNumber" class="form-label" :class="this.$parent.$props.labelClass">Go to song...</label>
+    <label v-if="!hideLabel" for="txtSongNumber" class="form-label" :class="this.$parent.$props.labelClass">{{ label }}</label>
     <div style="position: relative; min-height: var(--input-height)">
       <div id="songLookup" class="form-control d-flex flex-column flex-fill" style="position:absolute;" ref="songLookup" @keydown="onKeyDown">
         <input id="txtSongNumber" class="form-control" type="text" autocomplete="off" placeholder="Song number" inputmode="decimal" ref="txtSongNumber" v-model="value" @input="onInput">

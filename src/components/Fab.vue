@@ -12,6 +12,7 @@ export default {
       expandMarkerVisible: false
     }
   },
+  emits: ["click"],
   mounted() {
     this.observer = new IntersectionObserver((entries) => {
       this.expandMarkerVisible = entries[0].isIntersecting;
@@ -44,7 +45,7 @@ export default {
     <div id="expand-marker" ref="expandMarker"></div>
     <div class="fab-wrapper" :class="footerClass" ref="fabFixed">
       <div class="d-flex justify-content-center">
-        <button class="btn btn-fill btn-lg fab shadow"><svg class="icon"><use href="#hymnal" /></svg><span>Go to...</span></button>
+        <button class="btn btn-fill btn-lg fab shadow" @click="$emit('click')"><svg class="icon"><use href="#hymnal" /></svg><span>Go to...</span></button>
       </div>
     </div>
   </nav>

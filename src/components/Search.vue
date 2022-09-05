@@ -3,7 +3,7 @@ import SearchNumeric from './SearchNumeric.vue';
 import SearchKeyword from './SearchKeyword.vue';
 
 export default {
-  emits: ['input'],
+  emits: ['input', 'labelChange', 'heightChange'],
   props: {
     hideLabel: { type: Boolean, required: false, default: false },
     labelClass: { type: String, required: false, default: "" },
@@ -12,7 +12,8 @@ export default {
   data() {
     return {
       mode: this.initialMode,
-      activeField: {}
+      activeField: {},
+      label: undefined
     };
   },
   mounted() {
@@ -24,6 +25,10 @@ export default {
       mode = mode || "numeric";
       this.activeField = (mode == "keyword") ? this.$refs.searchKeyword : this.$refs.searchNumeric;
       this.mode = mode;
+      this.$emit('labelChange', this.activeField.label);
+    },
+    focus() {
+      this.activeField.$el.querySelector("input").focus();
     }
   },
   computed: {
@@ -46,7 +51,7 @@ export default {
     },
     async mode() {
       await this.$nextTick();
-      this.activeField.$el.querySelector("input").focus();
+      this.focus();
     }
   }
 }

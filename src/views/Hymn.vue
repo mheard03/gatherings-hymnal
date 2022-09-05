@@ -8,7 +8,7 @@
   <main>
     <div id="hymnContainer" class="container" ref="hymnContainer">
       <HymnsDbProgress progressProp="hymns" loading="Loading hymn...">
-        <template v-for="hymn of hymns">
+        <template v-for="hymn of hymns" :key="hymn.hymnId">
           <section :id="hymn.suffix" :class="hymn.special">
             <h1>{{ hymn.title }}</h1>
             <template v-for="line of hymn.lines">
@@ -17,17 +17,18 @@
           </section>
         </template>
       </HymnsDbProgress>
+      <p id="dummyVerse" ref="dummyVerse" class="verse"></p>
     </div>
   </main>
-  <Fab></Fab>
+  <GoTo></GoTo>
 </template>
 
 <script>
-import Fab from '@/components/Fab.vue';
+import GoTo from '@/components/GoTo.vue';
 import HymnsDbProgress from '@/components/HymnsDbProgress.vue';
 
 export default {
-  components: { Fab, HymnsDbProgress },
+  components: { GoTo, HymnsDbProgress },
   props: {
     hymnalId: { required: true },
     hymnNo: { required: true },
@@ -35,15 +36,39 @@ export default {
   },
   data() {
     return {
+      fontResizeObserver: undefined,
       hymns: [ { title: "Hymn", lines: [] } ]
     }
   },
   async mounted() {
-    this.$hymnsDb.getHymns(this.hymnalId, parseInt(this.hymnNo) || 1)
-      .then(h => this.hymns = h);
+    let oldMarkerWidth = -1;
+    function onFontResize() {
+      let markerWidth = getComputedStyle(this.$refs.dummyVerse, '::marker').width;
+      markerWidth = parseFloat(markerWidth);
+      if (markerWidth) {
+        if (markerWidth != oldMarkerWidth) {
+          oldMarkerWidth = markerWidth;
+          root.style.setProperty("--verse-indent", newValue + "px");
+        }
+      }
+      else {
+        root.style.removeProperty("--verse-indent");
+      }
+    }
+    this.fontResizeObserver = new ResizeObserver(onFontResize);
+    console.log('dummyVerse', this.$refs.dummyVerse);
+    this.fontResizeObserver.observe(this.$refs.dummyVerse);
 
-    this.$nextTick().then(() => {
-      /* Scroll to second hymn, if needed */
+    this.loadHymns();
+  },
+  unmounted() {
+    this.fontResizeObserver.disconnect();
+  },
+  methods: {
+    async loadHymns() {
+      this.hymns = await this.$hymnsDb.getHymns(this.hymnalId, parseInt(this.hymnNo) || 1);
+      await this.$nextTick();
+
       if (this.suffix || window.location.hash) {
         let id = this.suffix || window.location.hash.replace("#", "");
         if (id) {
@@ -53,32 +78,11 @@ export default {
           }
         }
       }
-
-      /* Dynamic margins to support verse numbers */
-      if (document.querySelector("p.verse")) {
-        const root = this.$refs.hymnContainer;
-        const dummyVerse = document.createElement("p");
-        dummyVerse.className = "verse";
-        dummyVerse.style.position = "absolute";
-        dummyVerse.style.visibility = "hidden";
-        dummyVerse.style.left = 0;
-        dummyVerse.style.top = 0;
-        document.body.append(dummyVerse);
-        let oldMarkerWidth = 0;
-
-        function onFontResize() {
-          let markerWidth = getComputedStyle(dummyVerse, '::marker').width;
-          markerWidth = parseFloat(markerWidth);
-          if (markerWidth != oldMarkerWidth) {
-            root.style.setProperty("--verse-indent", markerWidth + "px");
-            oldMarkerWidth = markerWidth;
-          }
-        }
-
-        const fontResizeObserver = new ResizeObserver(onFontResize);
-        fontResizeObserver.observe(dummyVerse);
-      }
-    })
+    }
+  },
+  watch: {
+    hymnNo() { this.loadHymns(); },
+    hymnalId() { this.loadHymns(); }
   }
 };
 </script>
@@ -176,5 +180,12 @@ p.intro, p.outro {
 }
 p.intro {
   color: var(--chorus-color);
+}
+
+#dummyVerse {
+  position: absolute;
+  visibility: hidden;
+  left: 0;
+  top: 0;
 }
 </style>

@@ -5,6 +5,11 @@ import FontSizing from './components/FontSizing.vue';
 
 export default {
   mixins: [userSettingsMixin],
+  data() {
+    return {
+      routeHymnalId: undefined
+    }
+  },
   provide() {
     return {
       userSettings: this.userSettings,
@@ -15,23 +20,28 @@ export default {
     window.$hymnsDb = this.$hymnsDb;
     window.$router = this.$router;
   },
+  methods: {
+    async setTheme(newHymnalId) {
+      let oldTheme = [...document.body.classList].find(c => c.startsWith("theme-")) || "";
+      let newTheme = newHymnalId ? `theme-${newHymnalId}` : "";
+      if (oldTheme == newTheme) return;
+
+      document.body.classList.add("no-transitions");        
+      await this.$nextTick();
+
+      let classNames = [...document.body.classList].filter(c => !c.startsWith("theme-"));
+      if (newTheme) classNames.push(newTheme);
+      document.body.className = classNames.join(" ");
+      
+      await this.$nextTick();
+      document.body.classList.remove("no-transitions");
+    }
+  },
   watch: {
     $route: {
-      async handler(value) {
-        let oldTheme = [...document.body.classList].find(c => c.startsWith("theme-")) || "";
-        let newHymnalId = this.$route.query.hymnal;
-        let newTheme = newHymnalId ? `theme-${newHymnalId}` : "";
-        if (oldTheme == newTheme) return;
-
-        document.body.classList.add("no-transitions");        
-        await this.$nextTick();
-
-        let classNames = [...document.body.classList].filter(c => !c.startsWith("theme-"));
-        if (newTheme) classNames.push(newTheme);
-        document.body.className = classNames.join(" ");
-        
-        await this.$nextTick();
-        document.body.classList.remove("no-transitions");
+      handler(value) {
+        this.routeHymnalId = this.$route.query.hymnal;
+        this.setTheme(this.routeHymnalId);
       },
       immediate: true
     }
