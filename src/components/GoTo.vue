@@ -53,7 +53,7 @@ export default {
 <template>
   <Fab @click="onFabClick" :style="{ opacity: (isModalVisible ? 0 : 1) }"></Fab>
   <div class="modal fade" id="goToModal" ref="goToModal" tabindex="-1" aria-labelledby="goToModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen-md-down">
+    <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="goToModalLabel">{{ heading }}</h5>

@@ -7,7 +7,7 @@ import SearchBuilder from './builders/search-builder.js';
 console.log('import.meta.env', import.meta.env);
 
 // let router = createHeadlessRouter();
-let forceDelayTimeout = 1500;
+let forceDelayTimeout = 25;
 
 let objTypes = {};
 [HymnalBuilder, HymnsBuilder, HymnalSectionBuilder, SearchBuilder].forEach(obj => objTypes[obj.name] = obj);

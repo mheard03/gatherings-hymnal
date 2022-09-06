@@ -249,5 +249,13 @@ $spinner-border-width-sm: clamp(2px, calc($spinner-width-sm / 8), 8px);
 
 
 /* Modals ------------------------------------------------------------------------ */
+$modal-dialog-margin:  var(--bs-gutter-x);
+$modal-max-width:      min(100vw - calc(var(--bs-gutter-x) * 2));
+$modal-sm:             min($modal-max-width, max(300px, calc(300 * var(--font-size, 16px) / 16)));
+$modal-md:             min($modal-max-width, calc(500 * var(--font-size, 16px) / 16));
+$modal-lg:             min($modal-max-width, calc(800 * var(--font-size, 16px) / 16));
+$modal-xl:             min($modal-max-width, calc(1140 * var(--font-size, 16px) / 16));
+
+$modal-dialog-margin-y-sm-up:       $modal-dialog-margin;
 $modal-fade-transform:              translate(0, 100vh);
 $modal-transition:                  transform .2s ease-out;

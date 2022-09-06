@@ -10,14 +10,16 @@
       <HymnsDbProgress progressProp="hymns" loading="Loading hymn...">
         <template v-for="hymn of hymns" :key="hymn.hymnId">
           <section :id="hymn.suffix" :class="hymn.special">
-            <h1>{{ hymn.title }}</h1>
-            <template v-for="line of hymn.lines">
-              <p :class="line.type" v-html="line.html"></p>
-            </template>
+            <h1 class="mb-4">{{ hymn.title }}</h1>
+            <div class="lines">
+              <template v-for="line of hymn.lines">
+                <p :class="line.type" v-html="line.html"></p>
+              </template>
+              <p ref="dummyVerses" class="dummyVerse verse"></p>
+            </div>
           </section>
         </template>
-      </HymnsDbProgress>
-      <p id="dummyVerse" ref="dummyVerse" class="verse"></p>
+      </HymnsDbProgress>      
     </div>
   </main>
   <GoTo></GoTo>
@@ -37,14 +39,17 @@ export default {
   data() {
     return {
       fontResizeObserver: undefined,
-      hymns: [ { title: "Hymn", lines: [] } ]
+      hymns: []
     }
   },
   async mounted() {
     let oldMarkerWidth = -1;
     function onFontResize() {
-      let markerWidth = getComputedStyle(this.$refs.dummyVerse, '::marker').width;
-      markerWidth = parseFloat(markerWidth);
+      if (!this.$refs) return;
+      let markerWidths = this.$refs.dummyVerses
+        .map(dv => getComputedStyle(dv, '::marker').width)
+        .map(w => parseFloat(w));
+      markerWidths = Math.max(...markerWidths, 1);
       if (markerWidth) {
         if (markerWidth != oldMarkerWidth) {
           oldMarkerWidth = markerWidth;
@@ -56,8 +61,6 @@ export default {
       }
     }
     this.fontResizeObserver = new ResizeObserver(onFontResize);
-    console.log('dummyVerse', this.$refs.dummyVerse);
-    this.fontResizeObserver.observe(this.$refs.dummyVerse);
 
     this.loadHymns();
   },
@@ -68,6 +71,8 @@ export default {
     async loadHymns() {
       this.hymns = await this.$hymnsDb.getHymns(this.hymnalId, parseInt(this.hymnNo) || 1);
       await this.$nextTick();
+  
+      (this.$refs.dummyVerses || []).forEach(dv => this.fontResizeObserver.observe(dv));
 
       if (this.suffix || window.location.hash) {
         let id = this.suffix || window.location.hash.replace("#", "");
@@ -103,36 +108,25 @@ main {
 */
 section {
   counter-reset: verse;
+  position: relative;
   &:not(:first-of-type) > h1 {
     margin-top: 2rem;
   }
 }
+.lines {
+  max-width: 40rem;
+  --width: min(40rem, 100%);
+  margin-left: calc((100% - var(--width)) / 4);
+}
 h1 {
   color: var(--ui-color);
   scroll-margin-top: 0.5rem;
-}
-/*
-h1 {
-  font-family: sans-serif;
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  color: var(--ui-color);
-  font-size: 1.5rem;
-  scroll-margin-top: 0.5rem;
-}
-p {
-  line-height: 1.2;
-  margin: 1rem 0;
-}
-*/
-h1 + p {
-  margin-top: 0;
 }
 p.lines {
   white-space: pre-line;
 }
 p.copyright {
-  font-size: max(16px, 0.25rem);
+  font-size: min(var(--font-size), 24px);
   line-height: 1;
   margin-top: 2.5em;
   margin-bottom: 0;
@@ -182,9 +176,10 @@ p.intro {
   color: var(--chorus-color);
 }
 
-#dummyVerse {
-  position: absolute;
-  visibility: hidden;
+/* Dummy verse (for marker sizing) */
+p.dummyVerse {
+  position: absolute !important;
+  visibility: hidden !important;
   left: 0;
   top: 0;
 }
