@@ -3,10 +3,22 @@ import scaleLinear from '@/utils/scaleLinear/scaleLinear.js';
 import PinchManager from './Pinch.js';
 
 const minFontSize = 14;
+const defaultFontSize = 16;
 const maxFontSize = 64;
-const h1FontWeightScale = scaleLinear().domain([1.2, 1.067]).range([400, 600]).clamp(true);
-const fontSizeScale = scaleLinear().domain([24, 64]).range([1, 0.5]).clamp(true);
+
+/* 
+This used to be just
+  const fontSizeScale = scaleLinear().domain([24, 64]).range([1, 0.5]).clamp(true);
+but since fontSizeScale is multiplied by the current font size, the result turned out to be a parabola and scaled values were getting too big and then shrinking towards the right side of the domain.
+*/
+const fontSizeScaleScale = scaleLinear()
+  .domain([minFontSize, 24, maxFontSize])
+  .range([defaultFontSize, defaultFontSize, (maxFontSize / 2)])
+  .clamp(true);
+
 const h1MaxSize = 90;
+const h1FontWeightScale = scaleLinear().domain([1.2, 1.067]).range([400, 600]).clamp(true);
+
 
 export default {
   inject: ['userSettings'],
@@ -23,13 +35,13 @@ export default {
   computed: {
     fontSize() {
       let result = this.userSettings.fontSize;
-      if (!result || isNaN(result)) result = 16;
+      if (!result || isNaN(result)) result = defaultFontSize;
       result = Math.max(result, minFontSize);
       result = Math.min(result, maxFontSize);
       return result;
     },
     fontSizeScale() {
-      return fontSizeScale(this.fontSize);
+      return fontSizeScaleScale(this.fontSize) / this.fontSize;
     },
     headingSizeIncrease() {
       // size of h1 = fontSize * fontSizePower⁵, therefore fontSizePower = fifth root of h1/fontSize
@@ -175,7 +187,7 @@ export default {
     onKeydown(e) {
       if (e.key != "0") return;
       if (e.metaKey || e.ctrlKey) {
-        this.userSettings.fontSize = 16;
+        this.userSettings.fontSize = defaultFontSize;
       }
     },
   },
