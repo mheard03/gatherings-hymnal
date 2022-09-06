@@ -167,6 +167,7 @@ export default {
     display: block;
   }
   & > .dropdown-item {
+    overflow-x: scroll;
     padding: $input-padding-y $input-padding-x;
     .hymnalIdlabel {
       color: var(--ui-color);
