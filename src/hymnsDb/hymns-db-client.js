@@ -15,7 +15,7 @@ catch (e) {
   console.log("Unable to launch shared worker; falling back by creating HymnsDb instance in main browser window.");
 
   let hymnsDb;
-  const importPromise = import(hymnsDbWorkerUrl).then(r => {
+  const importPromise = import(/* @vite-ignore */ hymnsDbWorkerUrl).then(r => {
     hymnsDb = r.hymnsDbInstance;
     console.log("HymnsDb browser instance created.");
     

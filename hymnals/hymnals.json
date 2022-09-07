@@ -1,0 +1,71 @@
+[
+  {
+    "hymnalId": "app",
+    "title": "Gatherings in Jesus' Name",
+    "themeColor": "#006e70"
+  },
+  {
+    "hymnalId": "redbook",
+    "priority": 1,
+    "title": "Great Hymns of the Faith",
+    "themeColor": "#a03e3f",
+    "sections": [
+      { "name": "Hymns of Worship", "range": [1, 82], "children": [
+        { "name": "The Father", "range": [34, 40] },
+        { "name": "Christ", "range": [41, 67] },
+        { "name": "Lord's Day", "range": [68, 69] },
+        { "name": "Morning", "range": [70, 73] },
+        { "name": "Evening", "range": [74, 79] },
+        { "name": "Closing", "range": [80, 82] }
+      ] },
+      { "name": "Jesus our Savior", "children": [
+        { "name": "Advent", "range": [83,84] },
+        { "name": "Birth", "range": [85,101] },
+        { "name": "Early Ministry", "range": [102,106] },
+        { "name": "Triumphal Entry", "range": [107,109] },
+        { "name": "Suffering and Death", "range": [110,130] },
+        { "name": "Resurrection", "range": [131,138] },
+        { "name": "Ascension and Reign", "range": [139,145] },
+        { "name": "Return", "range": [146,157] }
+      ] },
+      { "name": "The Holy Spirit", "range": [158,171] },
+      { "name": "The Word of God", "range": [172,179] },
+      { "name": "The Church", "range": [180, 193], "children": [
+        { "name": "Baptism", "range": [189,190] },
+        { "name": "The Lord's Supper", "range": [191,193] }
+      ] },
+      { "name": "Salvation", "range": [194,236] },
+      { "name": "Invitation", "range": [237,254] },
+      { "name": "Assurance and Trust", "range": [255,283] },
+      { "name": "Peace and Comfort", "range": [284,289] },
+      { "name": "Guidance and Care", "range": [290,305] },
+      { "name": "Aspiration", "range": [306,343] },
+      { "name": "Prayer", "range": [344,362] },
+      { "name": "Challenge", "range": [363,382] },
+      { "name": "Commitment", "range": [383,401] },
+      { "name": "Christian Warfare", "range": [402,415] },
+      { "name": "Service", "range": [416,440] },
+      { "name": "Praise and Testimony", "range": [441,496] },
+      { "name": "Eternal Destiny", "range": [497,518] },
+      { "name": "Special Subjects", "children": [
+        { "name": "New Year", "range": [519,520] },
+        { "name": "Home and Family", "range": [521,525] },
+        { "name": "Thanksgiving", "range": [526,527] },
+        { "name": "The Nation", "range": [528,532] }
+      ] },
+      { "name": "Service Music", "range": [533,538] }
+    ]
+  },
+  { 
+    "hymnalId": "supplement",
+    "priority": 2,
+    "title": "Supplement",
+    "themeColor": "#4e4646"
+  },
+  {
+    "hymnalId": "missions",
+    "priority": 3,
+    "title": "Songs for World Evangelism",
+    "themeColor": "#076387"
+  }
+]

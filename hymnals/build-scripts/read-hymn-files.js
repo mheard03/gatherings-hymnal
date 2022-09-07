@@ -1,9 +1,8 @@
 // reads <main> content from #.html files and returns a .json database
 
-const fs = require('fs');
-const { readFile } = require('./read-file');
-const jsdom = require('jsdom');
-const JSDOM = jsdom.JSDOM;
+import fs from 'node:fs';
+import readFile from './read-file';
+import { JSDOM } from 'jsdom';
 
 async function readAllHymnFiles(hymnalRoot = './hymnals/') {
   let folderNames = fs
@@ -124,4 +123,4 @@ function readHymnContentFromElement(element) {
   return hymnContent;
 }
 
-module.exports = { readAllHymnFiles, readHymnsFromFile };
+export { readAllHymnFiles, readHymnsFromFile };

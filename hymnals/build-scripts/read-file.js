@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'node:fs';
 
 async function readFile(fileName) {
   let file, modifiedDate, textContent, fileException;
@@ -20,4 +20,4 @@ async function readFile(fileName) {
   return { modifiedDate, textContent };
 }
 
-module.exports = { readFile };
+export default readFile;
