@@ -9,12 +9,20 @@ import buildHymns from './hymnals/build-scripts/build-hymns';
 import buildThemes from './hymnals/build-scripts/build-themes';
 
 async function buildMaterialColorUtilities() {
+  let outfile = './hymnals/build-scripts/build-themes/jch/material-color-utilities.js';
   await esbuild.build({
     entryPoints: ['./node_modules/@material/material-color-utilities/dist/index.js'],
-    outfile: './src/utils/material-color-utilities.js',
+    outfile,
     format: 'esm',
-    bundle: true
+    bundle: true,
+    banner: {
+      js: "/* Exact copy of @material/material-color-utilities, but bundled because Google didn't write the export statements correctly. */\n/* Built automatically by vite.config */\n"
+    }
   });
+  let file = await fs.promises.open(outfile, 'r');
+  let textContent = await file.readFile('utf-8');
+  let revised = textContent.replaceAll(/(export {[^}]+)(^[\s]+Hct,[\s]*$)/gm, "$1  Hct, HctSolver,");
+  await fs.promises.writeFile(outfile, revised);
   console.log('rebuilt material-color-utilities from source');
   return;
 };

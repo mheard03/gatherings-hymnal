@@ -1,3 +1,6 @@
+/* Exact copy of @material/material-color-utilities, but bundled because Google didn't write the export statements correctly. */
+/* Built automatically by vite.config */
+
 // node_modules/@material/material-color-utilities/dist/utils/math_utils.js
 function signum(num) {
   if (num < 0) {
@@ -2131,7 +2134,7 @@ export {
   Blend,
   Cam16,
   CorePalette,
-  Hct,
+  Hct, HctSolver,
   QuantizerCelebi,
   QuantizerMap,
   QuantizerWsmeans,
