@@ -55,13 +55,14 @@ svg.icon-lg {
 }
 
 .top-block {
-  background-color: white;
+  background-color: var(--panel-bg);
   @extend .mt-0;
   @extend .mb-3;
   @extend .pt-3;
   @extend .pb-3;
   @extend .border-bottom;
-  border-color: var(--gray-300);
+  border-color: var(--panel-border-bolor);
+  --bs-body-color: var(--panel-text-color);
 
   h1, .h1 {
     &:not([class*="mb-"]) {

@@ -77,6 +77,10 @@ export default {
     <symbol viewBox="0 0 24 24" id="toc">
       <path d="M4 9H16C16.55 9 17 8.55 17 8C17 7.45 16.55 7 16 7H4C3.45 7 3 7.45 3 8C3 8.55 3.45 9 4 9ZM4 13H16C16.55 13 17 12.55 17 12C17 11.45 16.55 11 16 11H4C3.45 11 3 11.45 3 12C3 12.55 3.45 13 4 13ZM4 17H16C16.55 17 17 16.55 17 16C17 15.45 16.55 15 16 15H4C3.45 15 3 15.45 3 16C3 16.55 3.45 17 4 17ZM19 17H21V15H19V17ZM19 7V9H21V7H19ZM19 13H21V11H19V13Z" />
     </symbol>
+    <symbol width="9" height="9" viewBox="0 0 9 9" id="double-border">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M9 0H0V9H9V0ZM8 1H1V8H8V1Z" />
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M7 2H2V7H7V2ZM6 3H3V6H6V3Z" />
+    </symbol>
   </svg>
   <router-view />
   <input type="range" min="14" max="64" step="0.25" v-model="userSettings.fontSize" style="position: fixed; top: 0; z-index: 2000;">

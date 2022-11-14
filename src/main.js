@@ -4,11 +4,11 @@ import App from './App.vue';
 import createRouter from './router';
 import HymnsDbClient from '@/hymnsDb/hymns-db-client.js';
 import * as d3 from "d3-scale";
-import Color from '../hymnals/build-scripts/build-themes/jch/cam16';
-import PaletteBase from '../hymnals/build-scripts/build-themes/palette-base';
+import Color from '../hymnals/build-scripts/build-themes/jch/jch-color';
+import PaletteBase from '../hymnals/build-scripts/build-themes/palette';
 import Palette from '../hymnals/build-scripts/build-themes/palette'
 import NeutralPalette from '../hymnals/build-scripts/build-themes/neutral-palette'
-import Scheme from '../hymnals/build-scripts/build-themes/scheme'
+import ModeBuilder from '../hymnals/build-scripts/build-themes/mode-builder'
 
 
 // import ColorSpace from "colorjs.io/src/space.js";
@@ -21,7 +21,7 @@ window.Palette = Palette;
 window.PaletteBase = PaletteBase;
 window.NeutralPalette = NeutralPalette;
 window.Color = Color;
-window.Scheme = Scheme;
+window.ModeBuilder = ModeBuilder;
 // window.ColorSpace = ColorSpace;
 
 // TODO: app.config.globalProperties.userSettings

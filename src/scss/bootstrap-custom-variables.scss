@@ -77,9 +77,9 @@ $line-height-lg:              2 !default;
 
 // Body
 $body-bg: #f8f6f2;
-$link-color: $primary;
-$link-hover-color: var(--dark-2);
-$link-active-color: var(--dark-4);
+$link-color: var(--link-color, var(--ui-color));
+$link-hover-color: var(--link-hover-color, var(--dark-2));
+$link-active-color: var(--link-active-color, var(--dark-4));
 $link-focus-width: calc($scaled-font-size * 3 / 16);
 $link-focus-box-shadow: 0 0 0 $link-focus-width var(--link-outline-color);
 $link-active-box-shadow: 0 0 0 0 var(--link-outline-color);
@@ -112,8 +112,7 @@ $container-max-widths: (
 
 
 /* Components -------------------------------------------------------------------- */
-
-$border-width:                1px;
+$border-width:                var(--border-width, 1px);
 
 $border-radius:               calc(.25 * $scaled-font-size);
 $border-radius-sm:            calc(.2 * $scaled-font-size);
@@ -177,7 +176,7 @@ $btn-transition: color .15s ease-in-out, fill .15s ease-in-out, background-color
 $input-font-size: $input-btn-font-size;
 $input-line-height: $line-height-base;
 
-$input-bg: $white;
+$input-bg: var(--white);
 $input-border-color: var(--ui-color);
 $input-placeholder-color: $gray-600;
 
@@ -213,6 +212,12 @@ $navbar-padding-y:                  calc(0.5 * $scaled-font-size);
 $navbar-padding-x:                  null;
 $navbar-nav-link-padding-x:         calc(0.5 * $scaled-font-size);
 $navbar-brand-font-size:            calc($font-size-lg * $font-size-scale);
+$navbar-light-brand-color:          var(--ui-text-color);
+$navbar-light-active-color:         var(--ui-text-color);
+$navbar-dark-brand-color:           var(--ui-text-color);
+$navbar-dark-active-color:          var(--ui-text-color);
+
+
 
 // Compute the navbar-brand padding-y so the navbar-brand will have the same height as navbar-text and nav-link
 $nav-link-height:                   calc($scaled-font-size * $line-height-base + $nav-link-padding-y * 2);

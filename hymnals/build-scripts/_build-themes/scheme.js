@@ -1,4 +1,4 @@
-import Color from "./jch/cam16";
+import Color from "./jch/jch-color";
 import Palette from "./palette";
 import NeutralPalette from "./neutral-palette";
 

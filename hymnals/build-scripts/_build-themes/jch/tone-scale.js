@@ -1,4 +1,4 @@
-import Color from "./cam16";
+import Color from "./jch-color";
 import * as d3 from "d3-scale";
 import * as material from "./material-color-utilities";
 

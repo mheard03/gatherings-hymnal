@@ -1,4 +1,4 @@
-import Color from "./jch/cam16";
+import Color from "./jch/jch-color";
 import toneToJScale from "./jch/tone-scale";
 import * as d3 from "d3-scale";
 
