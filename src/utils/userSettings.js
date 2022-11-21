@@ -4,7 +4,8 @@ const onUpdate = {};
 const getFinal = {};
 
 let defaultValues = {
-  fontSize: 16
+  fontSize: 16,
+  mode: undefined
 };
 let readers = {
   fontSize: readFloat

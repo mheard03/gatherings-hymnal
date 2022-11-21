@@ -14,46 +14,6 @@
 }
 
 :root {
-  --black: #000000;
-  --white: #ffffff;
-  --primary: #006e70;
-  --primary-rgb: 0, 110, 112;
-  --redbook: #a03e3f;
-  --redbook-rgb: 160, 62, 63;
-  --supplement: #4e4646;
-  --supplement-rgb: 78, 70, 70;
-  --missions: #076387;
-  --missions-rgb: 7, 99, 135;
-  --hc-white: #ffffff;
-  --hc-white-rgb: 255, 255, 255;
-  --hc-black: #000000;
-  --hc-black-rgb: 0, 0, 0;
-
-  --ui-color: #006e70;
-  --ui-color-rgb: 0, 110, 112;
-  --ui-text-color: #ffffff;
-  --ui-outline-color: rgba(0, 110, 112, 0.4);
-  --link-color: var(--primary);
-  --light-5: #4d9899;
-  --light-4: #419091;
-  --light-3: #348789;
-  --light-2: #277f81;
-  --light-1: #187678;
-  --dark-1: #0e6465;
-  --dark-2: #145a5b;
-  --dark-3: #175051;
-  --dark-4: #184747;
-  --dark-5: #173d3e;
-  --gray-100: #f7f9f9;
-  --gray-200: #e7eded;
-  --gray-300: #dce4e4;
-  --gray-400: #cad7d6;
-  --gray-500: #a8b9b8;
-  --gray-600: #677878;
-  --gray-700: #445353;
-  --gray-800: #303d3d;
-  --gray-900: #1e2727;
-
   /* Custom */
   --ui-text-color-inactive: var(--gray-200);
   --bs-gutter-x: #{fnScaleLinearPx(16px, 32px)};

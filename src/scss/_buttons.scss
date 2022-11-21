@@ -51,59 +51,18 @@
   }
 }
 
-.btn-fill,
-.btn-outline.active {
-  color: var(--ui-text-color-inactive);
-  fill: var(--ui-text-color-inactive);
-  background-color: var(--ui-color);
 
-  &:hover,
-  &:active,
-  &.active:not(.btn-outline),
-  &:focus-visible {
-    color: var(--ui-text-color);
-    fill: var(--ui-text-color);
-  }
-  &:hover {
-    background-color: var(--dark-1);
-  }
-  &:active,
-  &.active:not(.btn-outline) {
-    background-color: var(--dark-2);
-  }
-
-  &:disabled,
-  &.disabled {
-    fill: $btn-link-disabled-color;
-    background-color: $btn-disabled-color;
-  }
-}
-
-@mixin btn-ghost {
-  color: var(--ui-color);
-  fill: var(--ui-color);
-
-  &:hover,
-  &:focus {
-    color: var(--dark-1);
-    fill: var(--dark-1);
-    background-color: rgba(var(--ui-color-rgb), 0.07);
-  }
-  &:active,
-  &.active {
-    color: var(--dark-2);
-    fill: var(--dark-2);
-    background-color: rgba(var(--ui-color-rgb), 0.14);
-  }
-
-  .btn-check:checked + & {
+@include mode("default") {
+  .btn-fill,
+  .btn-outline.active {
     color: var(--ui-text-color-inactive);
     fill: var(--ui-text-color-inactive);
     background-color: var(--ui-color);
 
     &:hover,
-    &:focus,
-    &:active {
+    &:active,
+    &.active:not(.btn-outline),
+    &:focus-visible {
       color: var(--ui-text-color);
       fill: var(--ui-text-color);
     }
@@ -111,58 +70,193 @@
       background-color: var(--dark-1);
     }
     &:active,
-    &.active {
+    &.active:not(.btn-outline) {
       background-color: var(--dark-2);
+    }
+
+    &:disabled,
+    &.disabled {
+      fill: $btn-link-disabled-color;
+      background-color: $btn-disabled-color;
     }
   }
 
-  .btn-check:active + &,
-  .btn-check:checked + &:active {
-    color: var(--ui-text-color);
-    background-color: var(--dark-2);
+  %btn-ghost {
+    color: var(--ui-color);
+    fill: var(--ui-color);
+
+    &:hover,
+    &:focus {
+      color: var(--dark-1);
+      fill: var(--dark-1);
+      background-color: rgba(var(--ui-color-rgb), 0.07);
+    }
+    &:active,
+    &.active {
+      color: var(--dark-2);
+      fill: var(--dark-2);
+      background-color: rgba(var(--ui-color-rgb), 0.14);
+    }
+
+    .btn-check:checked + & {
+      color: var(--ui-text-color-inactive);
+      fill: var(--ui-text-color-inactive);
+      background-color: var(--ui-color);
+
+      &:hover,
+      &:focus,
+      &:active {
+        color: var(--ui-text-color);
+        fill: var(--ui-text-color);
+      }
+      &:hover {
+        background-color: var(--dark-1);
+      }
+      &:active,
+      &.active {
+        background-color: var(--dark-2);
+      }
+    }
+
+    .btn-check:active + &,
+    .btn-check:checked + &:active {
+      color: var(--ui-text-color);
+      background-color: var(--dark-2);
+    }
+
+    &:disabled,
+    &.disabled {
+      border-color: $btn-disabled-color;
+      color: $btn-disabled-color;
+      fill: $btn-disabled-color;
+      background-color: transparent;
+    }
   }
 
-  &:disabled,
-  &.disabled {
-    border-color: $btn-disabled-color;
-    color: $btn-disabled-color;
-    fill: $btn-disabled-color;
-    background-color: transparent;
+  .btn-ghost {
+    @extend %btn-ghost;
+  }
+
+  .btn-outline {
+    @extend %btn-ghost;
+    border-color: var(--ui-color);
+
+    &:hover,
+    &:focus {
+      border-color: var(--dark-1);
+    }
+    &:active,
+    &.active {
+      border-color: var(--dark-2);
+    }
+    &:disabled,
+    &.disabled {
+      border-color: $btn-disabled-color;
+    }
   }
 }
 
-.btn-ghost {
-  @include btn-ghost;
+@include mode("hcDark") {
+  .btn-fill,
+  .btn-outline.active {
+    color: var(--ui-color);
+    fill: var(--ui-color);
+    border-color: var(--ui-color);
+    background-color: var(--bs-body-bg);
+
+    &:hover,
+    &:active,
+    &.active:not(.btn-outline),
+    &:focus-visible {
+      color: var(--black);
+      fill: var(--black);
+      border-color: var(--light-2);
+      background-color: var(--true-gray-400);
+    }
+
+    &:disabled,
+    &.disabled {
+      color: $btn-disabled-color;
+      fill: $btn-disabled-color;
+      border-color: $btn-disabled-color;
+    }
+  }
+
+  %btn-ghost {
+    color: var(--ui-color);
+    fill: var(--ui-color);
+
+    &:hover,
+    &:focus {
+      color: var(--dark-1);
+      fill: var(--dark-1);
+      background-color: rgba(var(--ui-color-rgb), 0.07);
+    }
+    &:active,
+    &.active {
+      color: var(--dark-2);
+      fill: var(--dark-2);
+      background-color: rgba(var(--ui-color-rgb), 0.14);
+    }
+
+    .btn-check:checked + & {
+      color: var(--ui-text-color-inactive);
+      fill: var(--ui-text-color-inactive);
+      background-color: var(--ui-color);
+
+      &:hover,
+      &:focus,
+      &:active {
+        color: var(--ui-text-color);
+        fill: var(--ui-text-color);
+      }
+      &:hover {
+        background-color: var(--dark-1);
+      }
+      &:active,
+      &.active {
+        background-color: var(--dark-2);
+      }
+    }
+
+    .btn-check:active + &,
+    .btn-check:checked + &:active {
+      color: var(--ui-text-color);
+      background-color: var(--dark-2);
+    }
+
+    &:disabled,
+    &.disabled {
+      border-color: $btn-disabled-color;
+      color: $btn-disabled-color;
+      fill: $btn-disabled-color;
+    }
+  }
+
+  .btn-ghost {
+    @extend %btn-ghost;
+  }
+
+  .btn-outline {
+    @extend %btn-ghost;
+    border-color: var(--ui-color);
+
+    &:hover,
+    &:focus {
+      border-color: var(--dark-1);
+    }
+    &:active,
+    &.active {
+      border-color: var(--dark-2);
+    }
+    &:disabled,
+    &.disabled {
+      border-color: $btn-disabled-color;
+      background-color: var(--gray-200);
+    }
+  }
 }
 
-.btn-outline {
-  @include btn-ghost;
-  border-color: var(--ui-color);
-
-  &:hover,
-  &:focus {
-    border-color: var(--dark-1);
-  }
-  &:active,
-  &.active {
-    border-color: var(--dark-2);
-  }
-  &:disabled,
-  &.disabled {
-    border-color: $btn-disabled-color;
-  }
-}
-
-.btn-shadow {
-  box-shadow:   $btn-box-shadow, 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 2px 4px rgba(0, 0, 0, 0.15);
-  &:focus {
-    box-shadow: $btn-focus-box-shadow, 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 2px 4px rgba(0, 0, 0, 0.15);
-  }
-  &:active,
-  &.active {
-    box-shadow: $btn-box-shadow, 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.15);
-  }
-}
 
 .btn-lg {
   @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-border-radius-lg);

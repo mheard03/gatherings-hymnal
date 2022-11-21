@@ -36,3 +36,16 @@ $vminDeltaPx:           1080px - $mobileScreenWidthPx;
   @return $value;
 }
 
+@mixin mode($mode: "default") {
+  @if ($mode == "default") {
+    html.mode-light,
+    html:not([class*="mode-"]) {
+      @content;
+    }
+  }
+  @else {
+    html.mode-#{$mode} {
+      @content;
+    }
+  }
+}

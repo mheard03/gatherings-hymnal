@@ -19,7 +19,7 @@
 <template>
   <nav id="primaryNav" class="scaled navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container flex-nowrap overflow-hidden">
-      <button id="candle" class="btn flex-shrink-0 me-2">&nbsp;</button>
+      <button id="candle" class="btn btn-outline flex-shrink-0 me-2">&nbsp;</button>
       <a class="navbar-brand flex-fill me-2 overflow-hidden">
         Gatherings in Jesus' Name
       </a>
@@ -55,11 +55,16 @@
 
 #candle {
   box-sizing: content-box;
-  border-width: 0;
   width: 1em;
   background-image: url(../assets/candle.png);
   background-size: contain;
   background-repeat: no-repeat;
+}
+
+@include mode("light") {
+  #candle {
+    border-width: 0;
+  }
 }
 
 main {
@@ -70,4 +75,5 @@ main a.btn-lg {
   text-align: left;
   white-space: normal;
 }
+
 </style>

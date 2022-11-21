@@ -116,6 +116,12 @@ function buildRegressions() {
       return findInverse(result[key], jValue, range);
     }
 
+    result[key].coefficients = regression.coefficients;
+    result[key].offset = regression.offset;
+    if (regression.domain) {
+      result[key].domain = regression.domain();  
+      result[key].range = regression.range();
+    }
   });
   return result;
 }
@@ -201,7 +207,7 @@ function getBestFitRegression(centralized) {
       result.offset = bestSurvivor;
       return result;
     }
-    if (right - left < 0.01) {
+    if (right - left < 1) {   // was 0.01
       // console.log('getBestQuadraticRecursive', 'done');
       midRegression.offset = mid;
       return midRegression;
@@ -242,7 +248,7 @@ function findInverse(predict, targetValue, range) {
     let midDistance = Math.abs(predict(mid) - targetValue);
     if (midDistance == 0) return mid;
 
-    if (right - left < 0.01) {
+    if (right - left < 1) {   // was 0.01
       return mid;
     }
     if (leftDistance > rightDistance) {

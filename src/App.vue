@@ -44,6 +44,16 @@ export default {
         this.setTheme(this.routeHymnalId);
       },
       immediate: true
+    },
+    'userSettings.mode': {
+      handler(value, oldValue) {
+        let html = document.querySelector("html");
+        html.classList.remove(`mode-${oldValue}`);
+        if (value) {
+          html.classList.add(`mode-${value}`);
+        }
+      },
+      immediate: true
     }
   },
   components: { FontSizing }
@@ -83,7 +93,12 @@ export default {
     </symbol>
   </svg>
   <router-view />
-  <input type="range" min="14" max="64" step="0.25" v-model="userSettings.fontSize" style="position: fixed; top: 0; z-index: 2000;">
+  <div class="scaled" style="position: fixed; bottom: 0; z-index: 2000; font-size: 16px; --font-size: 16px; --font-size-scale: 1">
+    <input type="range" min="14" max="64" step="0.25" v-model="userSettings.fontSize"><br />
+    <select class="form-select" v-model="userSettings.mode">
+      <option v-for="mode in ['', 'light', 'hcDark']" :value="mode" >{{mode}}</option>
+    </select>
+  </div>
 </template>
 <!--
 <template>

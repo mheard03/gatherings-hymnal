@@ -61,7 +61,7 @@ svg.icon-lg {
   @extend .pt-3;
   @extend .pb-3;
   @extend .border-bottom;
-  border-color: var(--panel-border-bolor);
+  border-bottom-color: var(--panel-border-color) !important;
   --bs-body-color: var(--panel-text-color);
 
   h1, .h1 {
@@ -88,24 +88,75 @@ body.chonk {
   }
 }
 
-mark {
-  padding: 0 0.15em;
-  margin: 0 -0.15em;
-  font-weight: 500;
-  background-color: transparent;
-  color: var(--true-black);;
-}
-a mark {
-  color: inherit;
+@include mode("default") {
+  mark {
+    padding: 0 0.15em;
+    margin: 0 -0.15em;
+    font-weight: 500;
+    background-color: transparent;
+    color: var(--true-black);
+  }
+  a mark {
+    color: inherit;
+  }
+  
+  .hymnal-label {
+    text-transform: uppercase;
+    font-size: var(--scaled-font-size-sm);
+    color: var(--gray-600);
+    line-height: 1;
+    .dropdown-item.active &, 
+    .dropdown-item:active & {
+       color: var(--gray-400);
+    }
+  }
 }
 
-.hymnal-label {
-  text-transform: uppercase;
-  font-size: var(--scaled-font-size-sm);
-  color: var(--gray-600);
-  line-height: 1;
-  .dropdown-item.active &, 
-  .dropdown-item:active & {
-     color: var(--gray-400);
+@include mode("hcDark") {
+  --bs-border-width: #{minMaxClamp(2px, calc(var(--scaled-font-size) / 8), 4px)};
+  --bs-input-btn-border-width: #{minMaxClamp(4px, calc(var(--scaled-font-size) / 4), 8px)};
+  --bs-btn-border-width: #{minMaxClamp(2px, calc(var(--scaled-font-size) / 8), 8px)};
+
+  #primaryNav {
+    &.bg-primary {
+      background-color: var(--bs-body-bg);
+      border-bottom: var(--bs-border-width) solid var(--ui-color);
+    }
+    
+    .navbar-brand {
+      color: var(--ui-color);
+    }
+    .btn.back {
+      @extend .me-2;
+    }
+  }
+
+  .form-control {
+    border-style: double;
+    &::placeholder {
+      color: var(--gray-700);
+    }
+  }
+
+  mark {
+    padding: 0 0.15em;
+    margin: 0 -0.15em;
+    font-weight: 500;
+    background-color: transparent;
+    color: var(--true-black);;
+  }
+  a mark {
+    color: inherit;
+  }
+  
+  .hymnal-label {
+    text-transform: uppercase;
+    font-size: var(--scaled-font-size-sm);
+    color: var(--gray-600);
+    line-height: 1;
+    .dropdown-item.active &, 
+    .dropdown-item:active & {
+       color: var(--gray-400);
+    }
   }
 }
