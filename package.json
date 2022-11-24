@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=/dist/",
+    "build": "vite build --base=/gatherings-hymnal/",
     "preview": "vite preview",
     "buildHymnsDB": "node ./hymnals/build-scripts/build-hymns.js"
   },

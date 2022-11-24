@@ -23,7 +23,7 @@
       <a class="navbar-brand flex-fill me-2 overflow-hidden">
         Gatherings in Jesus' Name
       </a>
-      <button class="btn btn-fill"><svg class="icon"><use href="#text-options" /></svg></button>
+      <!-- <button class="btn btn-fill"><svg class="icon"><use href="#text-options" /></svg></button> -->
     </div>
   </nav>
   <main>

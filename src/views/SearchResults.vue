@@ -3,7 +3,7 @@
     <div class="container flex-nowrap overflow-hidden">
       <button class="btn btn-fill back" @click="$router.backOrDefault()"><svg class="icon"><use href="#back" /></svg></button>
       <a class="navbar-brand flex-fill me-2">Search</a>
-      <button class="btn btn-fill"><svg class="icon"><use href="#text-options" /></svg></button>
+      <!-- <button class="btn btn-fill"><svg class="icon"><use href="#text-options" /></svg></button> -->
     </div>
   </nav>
   <main>
@@ -12,15 +12,19 @@
         <Search ref="searchForm" initial-mode="keyword" label-class="h1" />
       </div>
     </div>
-    <div id="search-results" class="container" v-if="mode == 'keyword'">
+    <div id="loading" v-if="loading">
+      <div class="spinner-border mb-2"></div>
+      <span class="message fs-5" role="status">Searching...</span>
+    </div>
+    <div id="search-results" class="container" v-if="!loading && mode == 'keyword'">
       <p class="mb-3">
         <template v-if="pageCount > 1">Page {{ page }} of</template>
         {{ resultCount }} results
       </p>
-      <template v-for="result of results" key="hymnId">
-        <div class="result" :class="'theme-' + result.hymnalId">
-          <div class="hymnal-label scaled"><span class="rounded">{{ result.hymn.hymnal.title }}</span></div>
-          <a class="result-link fs-5" :href="result.hymn.url" @click.stop.prevent="onResultClick(result.hymn)"><span v-html="result.hymn.title"></span></a>
+      <template v-for="result of results" :key="result.hymn.hymnId">
+        <div class="result" :class="'theme-' + result.hymn.hymnalId">
+          <div class="hymnal-label scaled"><span class="rounded">{{ result.hymn.hymnal.title }} #{{result.hymn.hymnNoTxt}}</span></div>
+          <a class="result-link fs-5" :href="result.hymn.url" @click.stop.prevent="onResultClick(result.hymn)"><span v-html="result.title"></span></a>
           <p class="result-preview" v-if="result.preview" v-html="result.preview"></p>
         </div>
       </template>
@@ -41,7 +45,8 @@ export default {
       mode: "keyword",
       results: undefined,
       resultCount: undefined,
-      pageCount: undefined
+      pageCount: undefined,
+      loading: true
     }
   },
   mounted() {
@@ -68,8 +73,9 @@ export default {
     $route: {
       async handler(value) {
         if (this.$route.name != "search") return;
-        let keywords = this.keywords || this.$route.query.keywords;
-        let page = this.page || this.$route.query.page;
+        let keywords = this.$route.query.keywords; // this.keywords || this.$route.query.keywords;
+        let page = this.$route.query.page; // this.page || this.$route.query.page;
+        this.loading = true;
         this.results = await this.$hymnsDb.search(keywords, page);
       },
       immediate: true
@@ -77,6 +83,7 @@ export default {
     results(newValue) {
       ["resultCount", "perPage", "pageCount"].forEach(k => this[k] = newValue[k]);
       this.$forceUpdate();
+      this.loading = false;
     }
   },
   components: {
@@ -102,6 +109,18 @@ export default {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
+}
+
+.chonk .hymnNo {
+  display: none;
+}
+
+#loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(var(--font-size) * 12);
+  flex-direction: column;
 }
 
 </style>

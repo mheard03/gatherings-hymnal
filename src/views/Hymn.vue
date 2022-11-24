@@ -2,7 +2,7 @@
   <nav id="primaryNav" class="scaled navbar navbar-expand-lg">
     <div class="container">
       <button class="btn btn-ghost back" @click="$router.backOrDefault()"><svg class="icon"><use href="#back" /></svg></button>
-      <button class="btn btn-ghost"><svg class="icon"><use href="#text-options" /></svg></button>
+      <!-- <button class="btn btn-ghost"><svg class="icon"><use href="#text-options" /></svg></button> -->
     </div>
   </nav>
   <main>

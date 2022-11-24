@@ -77,6 +77,7 @@
     --ui-color: #a03e3f;
     --ui-color-rgb: 160, 62, 63;
     --ui-outline-color: rgba(160, 62, 63, 0.4);
+    --link-color: var(--ui-color);
     --light-5: #c37573;
     --light-4: #bc6a68;
     --light-3: #b65f5d;
@@ -102,6 +103,7 @@
     --ui-color: #4e4646;
     --ui-color-rgb: 78, 70, 70;
     --ui-outline-color: rgba(78, 70, 70, 0.4);
+    --link-color: var(--ui-color);
     --light-5: #77706f;
     --light-4: #6f6767;
     --light-3: #675f5e;
@@ -127,6 +129,7 @@
     --ui-color: #076387;
     --ui-color-rgb: 7, 99, 135;
     --ui-outline-color: rgba(7, 99, 135, 0.4);
+    --link-color: var(--ui-color);
     --light-5: #628ba4;
     --light-4: #54839e;
     --light-3: #467b98;
@@ -202,11 +205,11 @@
   --panel-text-color: var(--gray-900);
   --ui-text-color: var(--dark-2);
   --ui-text-color-inactive: var(--ui-color);
+  --link-color: var(--ui-color);
 
   .theme-primary {
     --ui-color: #ffffff;
     --ui-color-rgb: 100%, 100%, 100%;
-    --link-color: var(--ui-color);
     --light-5: #ffffff;
     --light-4: #ffffff;
     --light-3: #ffffff;

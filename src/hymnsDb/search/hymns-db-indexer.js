@@ -47,7 +47,7 @@ function buildSearchIndex(documents) {
 
     this.metadataWhitelist = ['position'];
     this.ref('hymnId'); 
-    this.field('title', { boost: 3 });
+    this.field('title', { boost: 5 });
     this.field('line00', { boost: 1.5 });
     this.field('chorus00', { boost: 2 });
     fieldNames.forEach(f => this.field(f));

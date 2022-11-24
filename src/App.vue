@@ -17,6 +17,7 @@ export default {
     };
   },
   mounted() {
+    this.userSettings.mode = "light";
     window.$hymnsDb = this.$hymnsDb;
     window.$router = this.$router;
   },
@@ -93,12 +94,14 @@ export default {
     </symbol>
   </svg>
   <router-view />
+  <!-- 
   <div class="scaled" style="position: fixed; bottom: 0; z-index: 2000; font-size: 16px; --font-size: 16px; --font-size-scale: 1">
     <input type="range" min="14" max="64" step="0.25" v-model="userSettings.fontSize"><br />
     <select class="form-select" v-model="userSettings.mode">
       <option v-for="mode in ['', 'light', 'hcDark']" :value="mode" >{{mode}}</option>
     </select>
   </div>
+  -->
 </template>
 <!--
 <template>

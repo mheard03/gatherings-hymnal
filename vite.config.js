@@ -52,7 +52,7 @@ export default defineConfig(async ({ command, mode }) => {
       },
     },
     build: {
-      base: "/dist/",
+      base: "/",
       minify: "terser",
       sourcemap: true,
       watch: false,

@@ -93,7 +93,8 @@ body.chonk {
     padding: 0 0.15em;
     margin: 0 -0.15em;
     font-weight: 500;
-    background-color: transparent;
+    background-color: rgba(var(--ui-color-rgb), 0.2);
+    border-radius: 0.125rem;
     color: var(--true-black);
   }
   a mark {
